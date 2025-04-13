@@ -429,7 +429,10 @@ const PerformanceChartHorizontal = (
                 showDot={showDot}
               />
             )}
-            {showDot && <ClearButton onClick={() => handleResetFilters()} />}
+            {(showDot || filters.hasOwnProperty("date") || filters.hasOwnProperty("date_time_range")) && (
+  <ClearButton onClick={() => handleResetFilters()} />
+)}
+
             <ExportButton onClick={() => setExportData(true)} />
           </div>
         </div>

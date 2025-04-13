@@ -151,9 +151,9 @@ function MainContent({
       )}
 
       {/* Sign In Button */}
-      <div className="mt-6 cursor-pointer" tabIndex={4} onClick={handleSubmit}>
+      <button className="mt-6 cursor-pointer" tabIndex={4} onClick={handleSubmit} style={{backgroundColor:'unset', margin:'none', padding:'unset'}}>
         <SignInButton />
-      </div>
+      </button>
     </>
   );
 }

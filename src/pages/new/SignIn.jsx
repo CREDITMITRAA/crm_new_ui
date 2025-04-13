@@ -78,13 +78,13 @@ function SignIn() {
               <img src={company_logo} alt="Company Logo" />
             </div> */}
             {/* Description Text */}
-            <div className="w-full max-w-[564px] text-center text-cyan-900 text-sm font-semibold poppins-thin leading-tight">
+            <div className="w-full max-w-[564px] text-center text-cyan-900 text-sm font-semibold poppins-thin leading-tight" style={{scale:0.9}}>
               <CompanyInfo/>
             </div>
           </div>
 
           {/* Sign In Form */}
-          <div className="mt-10 bg-white/30 backdrop-blur-md rounded-[20px] p-4 w-full max-w-[564px]">
+          <div className="mt-10 bg-white/30 backdrop-blur-md rounded-[20px] p-4 w-full max-w-[564px]" style={{scale:0.8}}>
             <SignInForm />
           </div>
         </div>
