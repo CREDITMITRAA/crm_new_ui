@@ -50,27 +50,27 @@ function NotAssignedLeadsTable({
           </div>
 
           {/* lead id */}
-          <div className="w-[15%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none">
+          <div className="w-[15%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight">
             Lead ID
           </div>
 
           {/* name */}
-          <div className="w-[20%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none">
+          <div className="w-[20%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight">
             Name
           </div>
 
           {/* Phone */}
-          <div className="w-[25%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none">
+          <div className="w-[25%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight">
             Phone
           </div>
 
           {/* Source */}
-          <div className="w-[20%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none">
+          <div className="w-[20%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight">
             Source
           </div>
 
           {/* Imported On */}
-          <div className="w-[15%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none rounded-tr-2xl">
+          <div className="w-[15%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight rounded-tr-2xl">
             Imported On
           </div>
         </div>
@@ -111,7 +111,7 @@ function NotAssignedLeadsTable({
 
             {/* Lead ID */}
             <div
-              className="w-[15%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden"
+              className="w-[15%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
               onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
             >
               <span className="truncate px-1 w-full text-center flex justify-left">
@@ -121,7 +121,7 @@ function NotAssignedLeadsTable({
 
             {/* Name */}
             <div
-              className="w-[20%] px-1 flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden"
+              className="w-[20%] px-1 flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
               onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
             >
               <span className="truncate w-full text-center flex justify-left">
@@ -131,7 +131,7 @@ function NotAssignedLeadsTable({
 
             {/* Phone */}
             <div
-              className="w-[25%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden"
+              className="w-[25%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
               onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
             >
               <span className="truncate w-full text-center flex justify-left">
@@ -141,7 +141,7 @@ function NotAssignedLeadsTable({
 
             {/* Source */}
             <div
-              className="w-[20%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden"
+              className="w-[20%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
               onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
             >
               <span className="truncate w-full text-center flex justify-left">
@@ -153,7 +153,7 @@ function NotAssignedLeadsTable({
 
             {/* Imported On */}
             <div
-              className="w-[15%] flex flex-col justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none rounded-br-lg rounded-tr-lg overflow-hidden"
+              className="w-[15%] flex flex-col justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight rounded-br-lg rounded-tr-lg overflow-hidden"
               onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
             >
               <span className="truncate w-full text-center flex justify-left">

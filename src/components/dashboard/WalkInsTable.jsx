@@ -356,50 +356,51 @@ function WalkInsTable() {
           ) : (
             <div className="w-full h-max flex flex-col mt-1.5">
               {/* table header */}
-              <div className="w-full h-9 justify-start flex rounded-tl-[10px] rounded-tr-[10px] rounded-bl-[10px] rounded-br-[10px] mb-2 px-[20px]"
+              <div
+                className="w-full h-9 justify-start flex rounded-tl-[10px] rounded-tr-[10px] rounded-bl-[10px] rounded-br-[10px] mb-2 px-[20px]"
                 style={{
-                  boxShadow:`
+                  boxShadow: `
                     8px 5px 20px 0px rgba(0, 0, 0, 0.05) inset,
                     31px 18px 36px 0px rgba(0, 0, 0, 0.04) inset,
                     70px 41px 49px 0px rgba(0, 0, 0, 0.03) inset,
                     124px 73px 58px 0px rgba(0, 0, 0, 0.01) inset,
                     193px 115px 63px 0px rgba(0, 0, 0, 0) inset
                   `,
-                  backgroundColor:'rgba(189, 209, 237, 1)'
+                  backgroundColor: "rgba(189, 209, 237, 1)",
                 }}
               >
                 {/* lead id */}
-                <div className="w-[8%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none rounded-tl-2xl px-1">
+                <div className="w-[8%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight rounded-tl-2xl px-1">
                   Lead ID
                 </div>
 
                 {/* name */}
-                <div className="w-[12.5%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none px-1 ">
+                <div className="w-[12.5%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight px-1 ">
                   Name
                 </div>
 
                 {/* Phone */}
-                <div className="w-[10%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none px-1 ">
+                <div className="w-[10%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight px-1 ">
                   Phone
                 </div>
 
                 {/* Emp Name */}
-                <div className="w-[10.5%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none px-1 ">
+                <div className="w-[10.5%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight px-1 ">
                   Emp Name
                 </div>
 
                 {/* Walk-in/Call Date Time */}
-                <div className="w-[15%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none px-1 ">
+                <div className="w-[15%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight px-1 ">
                   Appointment D&T
                 </div>
 
                 {/* Rescheduled Date Time */}
-                <div className="w-[15%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none px-1 ">
+                <div className="w-[15%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight px-1 ">
                   Rescheduled D&T
                 </div>
 
                 {/* Status */}
-                <div className="w-[13%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none px-1 ">
+                <div className="w-[13%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight px-1 ">
                   Status
                 </div>
 
@@ -431,36 +432,40 @@ function WalkInsTable() {
                     }}
                   >
                     {/* Lead ID */}
-                    <div className="w-[8%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none rounded-tl-[10px] rounded-bl-[10px] overflow-hidden">
+                    <div className="w-[8%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight rounded-tl-[10px] rounded-bl-[10px] overflow-hidden">
                       <span className="truncate w-full text-center px-1 flex justify-left">
                         {truncateWithEllipsis(walkIn.lead_id, 8)}
                       </span>
                     </div>
 
                     {/* Name */}
-                    <div className="w-[12.5%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden">
+                    <div className="w-[12.5%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden">
                       <span className="truncate w-full text-center px-1 flex justify-left">
-                        {truncateWithEllipsis(formatName(walkIn.lead.name), 15) || ""}
+                        {truncateWithEllipsis(
+                          formatName(walkIn.lead.name),
+                          15
+                        ) || ""}
                       </span>
                     </div>
 
                     {/* Phone */}
-                    <div className="w-[10%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden">
+                    <div className="w-[10%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden">
                       <span className="truncate w-full text-center px-1 flex justify-left">
                         {getLast10Digits(walkIn?.lead?.phone) || ""}
                       </span>
                     </div>
 
                     {/* Assigned To */}
-                    <div className="w-[10.5%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden">
+                    <div className="w-[10.5%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden">
                       <span className="truncate w-full text-center px-1 flex justify-left">
-                        {formatName(walkIn.lead?.LeadAssignments?.[0]?.AssignedTo?.name) ||
-                          ""}
+                        {formatName(
+                          walkIn.lead?.LeadAssignments?.[0]?.AssignedTo?.name
+                        ) || ""}
                       </span>
                     </div>
 
                     {/* Walk-in/Call Date Time */}
-                    <div className="w-[15%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden">
+                    <div className="w-[15%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden">
                       <span className="truncate w-full text-center px-1 flex justify-left">
                         {moment(walkIn.walk_in_date_time)
                           .utcOffset(330)
@@ -469,7 +474,7 @@ function WalkInsTable() {
                     </div>
 
                     {/* Rescheduled Date Time */}
-                    <div className="w-[15%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden">
+                    <div className="w-[15%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden">
                       <span className="truncate w-full text-center px-1 flex justify-left">
                         {walkIn.is_rescheduled
                           ? moment(walkIn.rescheduled_date_time)
@@ -480,10 +485,10 @@ function WalkInsTable() {
                     </div>
 
                     {/* Status */}
-                    <div className="w-[13%] flex justify-left items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden">
+                    <div className="w-[13%] flex justify-left items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden">
                       {user.user.role === ROLE_EMPLOYEE ? (
                         <select
-                          className="w-full px-1 py-1 text-xs font-normal inter-inter leading-none bg-transparent border-none outline-none appearance-none cursor-pointer focus:outline-none focus:ring-0 focus:border-transparent pr-6 truncate"
+                          className="w-full px-1 py-1 text-xs font-normal inter-inter leading-tight bg-transparent border-none outline-none appearance-none cursor-pointer focus:outline-none focus:ring-0 focus:border-transparent pr-6 truncate"
                           value={walkIn.walk_in_status || "Upcoming"}
                           onChange={(e) =>
                             handleStatusChange(
@@ -560,20 +565,43 @@ function WalkInsTable() {
                           </option>
                         </select>
                       ) : (
-                        <span
-                          className="truncate w-full text-center px-1 flex justify-left"
-                          style={style}
-                        >
-                          {/* {status} */}
-                          Completed
-                        </span>
+                        <>
+                          <span
+                            className="truncate w-full text-center px-1 flex justify-left"
+                            style={{
+                              ...style,
+                              color:
+                                status === "Pending" ? "#D18C31" : "inherit",
+                              fontWeight: status === "Pending" && "bold",
+                              animation:
+                                status === "Pending"
+                                  ? "blink 1.5s ease-in-out infinite"
+                                  : "none",
+                            }}
+                          >
+                            {status}
+                          </span>
+
+                          {status === "Pending" && (
+                            <style>
+                              {`
+      @keyframes blink {
+        50% { opacity: 0; }
+      }
+    `}
+                            </style>
+                          )}
+                        </>
                       )}
                     </div>
 
                     {/* Notes */}
-                    <div className="w-[16%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none rounded-tr-[10px] rounded-br-[10px] overflow-hidden">
+                    <div className="w-[16%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight rounded-tr-[10px] rounded-br-[10px] overflow-hidden">
                       <span className="truncate w-full text-center px-1 flex justify-left">
-                        {truncateWithEllipsis(formatSentence(walkIn.note), 25) || ""}
+                        {truncateWithEllipsis(
+                          formatSentence(walkIn.note),
+                          25
+                        ) || ""}
                       </span>
                     </div>
                   </div>

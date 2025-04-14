@@ -112,6 +112,26 @@ button:focus-visible {
   }
 }
 
+button {
+  outline: none;
+  box-shadow: none;
+  border: none;
+}
+
+/* Remove border/outline when focused or clicked */
+button:focus,
+button:active {
+  outline: none !important;
+  box-shadow: none !important;
+  border: 1px solid #646cff; /* Tailwind blue-600 */
+  border-radius: 9px; /* Optional: match your design */
+}
+
+/* Blue border on hover only */
+button:hover {
+  border: 1px solid #646cff; /* Tailwind blue-600 */
+  border-radius: 9px; /* Optional: match your design */
+}
 
 /* .recharts-wrapper {
   position: static !important;

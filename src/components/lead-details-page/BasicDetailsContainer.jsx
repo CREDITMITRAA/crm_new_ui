@@ -53,11 +53,13 @@ function BasicDetailsContainer({ setShowActivityLog, showActivityLog }) {
                   isActive={!showActivityLog}
                   name="Lead Details"
                   onClick={() => setShowActivityLog(false)}
+                  backgroundColor="#C7D4E4"
                 />
                 <PrimaryButton
                   isActive={showActivityLog}
                   name="Activity Log"
                   onClick={() => setShowActivityLog(true)}
+                  backgroundColor="#C7D4E4"
                 />
               </div>
             </div>

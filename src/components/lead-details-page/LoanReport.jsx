@@ -74,7 +74,12 @@ function LoanReport() {
   function addLoanReportHandler() {
     setOpenToast(true);
     dispatch(
-      addLoanReport({ ...payload, lead_id: lead.id, created_by: user.user.id, lead_name:lead.name })
+      addLoanReport({
+        ...payload,
+        lead_id: lead.id,
+        created_by: user.user.id,
+        lead_name: lead.name,
+      })
     ).then(() => {
       dispatch(resetLoanReportUpdaters()); // Reset Redux state after completion
     });
@@ -97,7 +102,7 @@ function LoanReport() {
             </div>
             <AddButton onClick={() => addLoanReportHandler()} />
           </div>
-          <DropDown
+          {/* <DropDown
             key={payload.loan_type} // Force re-render when payload.loan_type changes
             options={loanTypeOptions}
             onChange={(field, value) =>
@@ -109,7 +114,31 @@ function LoanReport() {
               ) || 0
             }
             className="w-full"
-          />
+          /> */}
+
+<select
+  name="loan_type"
+  value={payload.loan_type || ""}
+  onChange={(e) => setPayload(prev => ({ ...prev, loan_type: e.target.value }))}
+  className="
+    w-full h-7 
+    bg-[#D9E4F2] rounded-[5px] 
+    border-[0.50px] border-neutral-300
+    pl-[10px] pr-8 py-[5px]
+    text-cyan-900 text-xs 
+    font-medium font-['Poppins'] leading-tight
+    appearance-none  /* Removes default dropdown arrow */
+    bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOCIgaGVpZ2h0PSI1IiB2aWV3Qm94PSIwIDAgOCA1IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxwYXRoIGQ9Ik0xIDEuNUw0IDQuNUw3IDEuNSIgc3Ryb2tlPSIjMTUzZTVDIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPg==')]
+    bg-no-repeat bg-[right_10px_center]
+    cursor-pointer
+  "
+>
+  {loanTypeOptions.map((option) => (
+    <option key={option.value} value={option.value} className="text-cyan-900">
+      {option.label}
+    </option>
+  ))}
+</select>
 
           {/* Bank Name */}
           <div>

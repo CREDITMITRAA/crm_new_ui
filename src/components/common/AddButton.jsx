@@ -1,6 +1,6 @@
 function AddButton({onClick}) {
     return (
-      <div className="w-[59px] h-5 bg-[#229d00] rounded-md flex items-center justify-center space-x-1 cursor-pointer" onClick={onClick}>
+      <div className="w-[59px] h-5 bg-[#214768] rounded-md flex items-center justify-center space-x-1 cursor-pointer" onClick={onClick}>
         <span className="text-white text-[10px] font-normal poppins-thin leading-tight">
           Add
         </span>

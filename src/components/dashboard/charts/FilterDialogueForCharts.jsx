@@ -13,7 +13,7 @@ function FilterDialogueForCharts({ setFilters, filters, resetFilters }) {
     { label: "Rescheduled", value: "Rescheduled" },
   ];
   const [employees, setEmployees] = useState([
-    { label: "Select Employee", value: "" },
+    { label: "Select employee", value: "" },
   ]);
   const [selectedEmployeeName, setSelectedEmployeeName] = useState(null);
 
@@ -79,8 +79,9 @@ function FilterDialogueForCharts({ setFilters, filters, resetFilters }) {
             resetFilters={resetFilters}
             fieldName="created_by"
             defaultSelectedOptionIndex={!filters.created_by && 0}
-            backgroundColor="#FFFFFF"
-            optionTextColor="text-[#464646]"
+            backgroundColor="#F2F7FE"
+            optionTextColor="#464646"
+            textColor="text-[#214768]"
           />
         </div>
       </div>

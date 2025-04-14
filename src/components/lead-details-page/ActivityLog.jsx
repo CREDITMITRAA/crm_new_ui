@@ -207,6 +207,7 @@ function ActivityLog({ setShowActivityLog, showActivityLog, leadId }) {
                   isActive={!showActivityLog}
                   name="Lead Details"
                   onClick={() => setShowActivityLog(false)}
+                  backgroundColor="#C7D4E4"
                 />
               </div>
               <div className="min-w-max">
@@ -214,18 +215,21 @@ function ActivityLog({ setShowActivityLog, showActivityLog, leadId }) {
                   isActive={showActivityLog}
                   name="Activity Log"
                   onClick={() => setShowActivityLog(true)}
+                  backgroundColor="#C7D4E4"
                 />
               </div>
               <DateButton
                 onClick={() => setIsPickerOpen(!isPickerOpen)}
                 onDateChange={(data) => handleDateChange(data)}
                 showDot={false}
+                buttonBackgroundColor="bg-[#C7D4E4]"
+              showBoxShadow={true}
               />
               <FilterButton
                 onClick={() => setShowFilter(!showFilter)}
                 showDot={showDot}
               />
-              <ClearButton onClick={() => handleResetFilters()} />
+              {showDot && <ClearButton onClick={() => handleResetFilters()} />}
               <ExportButton onClick={() => handleExportLeads()} />
             </div>
           </div>

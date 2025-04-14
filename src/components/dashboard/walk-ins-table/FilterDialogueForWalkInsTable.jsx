@@ -8,14 +8,14 @@ function FilterDialogueForWalkInsTable({ setFilters, filters, resetFilters }) {
   const { role } = useSelector((state) => state.auth);
   const {isConfirmationDialogueOpened} = useSelector((state)=>state.ui)
   const options = [
-    { label: "Filter By Status", value: "" },
+    { label: "Filter by status", value: "" },
     { label: "Pending", value: "Pending" },
     { label: "Upcoming", value: "Upcoming" },
     { label: "Completed", value: "Completed" },
     { label: "Rescheduled", value: "Rescheduled" },
   ];
   const [employees, setEmployees] = useState([
-    { label: "Select Employee", value: "" },
+    { label: "Select employee", value: "" },
   ]);
   const [selectedEmployeeName, setSelectedEmployeeName] = useState(null);
 
@@ -66,7 +66,8 @@ function FilterDialogueForWalkInsTable({ setFilters, filters, resetFilters }) {
               resetFilters={resetFilters}
               fieldName="walk_in_status"
               defaultSelectedOptionIndex={!filters.walk_in_status && 0}
-              backgroundColor="#FFFFFF"
+              backgroundColor="#F2F7FE"
+              textColor="text-[#214768]"
             />
           </div>
         </div>
@@ -88,7 +89,8 @@ function FilterDialogueForWalkInsTable({ setFilters, filters, resetFilters }) {
               resetFilters={resetFilters}
               fieldName="created_by"
               defaultSelectedOptionIndex={!filters.created_by && 0}
-              backgroundColor="#FFFFFF"
+              backgroundColor="#F2F7FE"
+              textColor="text-[#214768]"
             />
           </div>
         </div>

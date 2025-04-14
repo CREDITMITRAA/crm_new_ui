@@ -186,7 +186,7 @@ function Verification1() {
               onClick={() => setShowFilter(!showFilter)}
               showDot={showDot}
             />
-            <ClearButton onClick={() => handleResetFilters()} />
+            {showDot && <ClearButton onClick={() => handleResetFilters()} />}
             <ExportButton onClick={() => handleExportLeads()} />
           </div>
         </div>

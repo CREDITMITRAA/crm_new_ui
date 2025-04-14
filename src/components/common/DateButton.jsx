@@ -158,7 +158,7 @@ function DateButton({
           </svg>
         </div>
 
-        <div className="text-[#464646] text-xs font-medium poppins-thin leading-tight">
+        <div className="text-[#464646] text-xs font-medium inter-inter leading-tight">
           {selectedDate}
         </div>
       </div>

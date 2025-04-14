@@ -13,8 +13,10 @@ function SingleDetailCard({
   const { lead } = useSelector((state) => state.leads);
   const [editField, setEditField] = useState(false);
   const [inputValue, setInputValue] = useState(
-    fieldName === "alternate_phones" 
-      ? (Array.isArray(lead?.[fieldName]) ? lead[fieldName].join(", ") : "")
+    fieldName === "alternate_phones"
+      ? Array.isArray(lead?.[fieldName])
+        ? lead[fieldName].join(", ")
+        : ""
       : lead?.[fieldName] || ""
   );
 
@@ -22,7 +24,9 @@ function SingleDetailCard({
   useEffect(() => {
     setInputValue(
       fieldName === "alternate_phones"
-        ? (Array.isArray(lead?.[fieldName]) ? lead[fieldName].join(", ") : "")
+        ? Array.isArray(lead?.[fieldName])
+          ? lead[fieldName].join(", ")
+          : ""
         : lead?.[fieldName] || ""
     );
   }, [lead, fieldName]);
@@ -50,32 +54,35 @@ function SingleDetailCard({
   const handleSave = () => {
     setEditField(false);
     let valueToSend = inputValue;
-    
+
     if (fieldName === "alternate_phones") {
       // Split by comma and trim whitespace, then filter out empty strings
       const phonesArray = inputValue
         .split(",")
-        .map(phone => phone.trim())
-        .filter(phone => phone !== "");
+        .map((phone) => phone.trim())
+        .filter((phone) => phone !== "");
       valueToSend = [...new Set(phonesArray)]; // Remove duplicates
     }
-    
+
     onChange(fieldName, valueToSend);
   };
 
-  const displayValue = fieldName === "alternate_phones"
-    ? (Array.isArray(lead?.[fieldName]) 
-        ? lead[fieldName].filter(phone => phone).join(", ") || "NA" 
-        : "NA")
-    : fieldName === "company_category_id"
-      ? companyCategoryOptions.find((option) => option.value === Number(inputValue))?.label || "NA"
+  const displayValue =
+    fieldName === "alternate_phones"
+      ? Array.isArray(lead?.[fieldName])
+        ? lead[fieldName].filter((phone) => phone).join(", ") || "NA"
+        : "NA"
+      : fieldName === "company_category_id"
+      ? companyCategoryOptions.find(
+          (option) => option.value === Number(inputValue)
+        )?.label || "NA"
       : inputValue || "NA";
 
-      const handleKeyDown = (e) => {
-        if (e.key === "Enter") {
-          handleSave();
-        }
-      };
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSave();
+    }
+  };
 
   return (
     <div className="w-full h-[90px] bg-[#2147682B] rounded-2xl border border-[#214768] p-4 flex flex-col justify-between">
@@ -96,21 +103,38 @@ function SingleDetailCard({
       <div className="text-[#464646] text-xs font-medium poppins-thin leading-tight w-full">
         {editField ? (
           ["gender", "company_category_id"].includes(fieldName) ? (
-            <select
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onBlur={handleSave}
-              onKeyDown={handleKeyDown}
-              autoFocus
-              className="w-full h-full bg-white rounded-md pl-3 text-[#464646] text-[10px] font-normal inter-inter focus:outline-none"
-            >
-              <option value="">Select {name}</option>
-              {getOptions().map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+            <div className="relative w-full h-8">
+              <select
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onBlur={handleSave}
+                onKeyDown={handleKeyDown}
+                autoFocus
+                className="w-full h-full bg-[#D9E4F2] rounded-md pl-3 pr-6 text-[#464646] text-[10px] font-normal inter-inter focus:outline-none border border-gray-300 appearance-none leading-none"
+              >
+                <option value="">Select {name}</option>
+                {getOptions().map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              {/* <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                <svg
+                  className="h-4 w-4 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div> */}
+            </div>
           ) : (
             <input
               type={fieldName === "alternate_phones" ? "text" : "text"}
@@ -120,8 +144,10 @@ function SingleDetailCard({
               onBlur={handleSave}
               onKeyDown={handleKeyDown}
               autoFocus
-              className="w-full h-full bg-white rounded-md pl-3 text-[#464646] text-[10px] font-normal inter-inter placeholder-opacity-50 placeholder-[#32086d] focus:outline-none"
-              placeholder={fieldName === "alternate_phones" ? "Comma separated numbers" : name}
+              className="w-full h-8 bg-[#D9E4F2] rounded-md px-3 text-[#464646] text-[10px] font-normal inter-inter placeholder-opacity-50 placeholder-[#32086d] focus:outline-none border border-gray-300 leading-[32px]"
+              placeholder={
+                fieldName === "alternate_phones" ? "Enter number" : name
+              }
             />
           )
         ) : (

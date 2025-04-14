@@ -27,15 +27,15 @@ function RootLayout({ children }) {
     <div className="flex h-screen w-screen text-black">
       
       {/* Sidebar (Fixed) */}
-      <div className="w-[6%] h-full fixed left-0 top-0 p-2 pt-4 overflow-visible">
+      <div className="w-[4.75rem] h-full fixed left-0 top-0 p-2 pt-4 overflow-visible">
         <Sidebar/>
       </div>
 
       {/* Main Content Area */}
-      <div className="flex flex-col w-[94%] ml-auto h-screen">
+      <div className="flex flex-col w-[calc(100%-4.75rem)] ml-auto h-screen">
         
         {/* Navbar (Fixed) */}
-        <div id="navbar" className="h-max flex items-center p-2 pt-4 fixed w-[94%]" style={{zIndex:isConfirmationDialogueOpened ? -1 : 1}}>
+        <div id="navbar" className="h-max flex items-center p-2 pt-4 fixed w-[calc(100%-4.75rem)]" style={{zIndex:isConfirmationDialogueOpened ? -1 : 1}}>
           <Navbar/>
         </div>
 

@@ -18,13 +18,13 @@ function FilterDialogueForRecentTasksTable({
   const { role } = useSelector((state) => state.auth);
   const {isConfirmationDialogueOpened} = useSelector((state)=>state.ui)
   const taskStatusOptions = [
-    { label: "Filter By Task Status", value: "" },
+    { label: "Filter by task status", value: "" },
     { label: "Pending", value: "Pending" },
     { label: "Upcoming", value: "Upcoming" },
     { label: "Completed", value: "Completed" },
   ];
   const taskTypeOptions = [
-    { label: "Filter By Task Type", value: "" },
+    { label: "Filter by task type", value: "" },
     { label: terminologiesMap.get(FOLLOW_UP), value: FOLLOW_UP },
     { label: terminologiesMap.get(CALL_BACK), value: CALL_BACK },
     {
@@ -33,7 +33,7 @@ function FilterDialogueForRecentTasksTable({
     },
   ];
   const [employees, setEmployees] = useState([
-    { label: "Filter By Employee", value: "" },
+    { label: "Filter by employee", value: "" },
   ]);
   const [selectedEmployeeName, setSelectedEmployeeName] = useState(null);
   useEffect(() => {
@@ -73,7 +73,8 @@ function FilterDialogueForRecentTasksTable({
               selectedOption={filters?.task_type}
               resetFilters={resetFilters}
               fieldName="task_type"
-              backgroundColor="#FFFFFF"
+              backgroundColor="#F2F7FE"
+              textColor="text-[#214768]"
             />
           </div>
         </div>
@@ -99,7 +100,8 @@ function FilterDialogueForRecentTasksTable({
               selectedOption={filters?.task_status}
               resetFilters={resetFilters}
               fieldName="task_status"
-              backgroundColor="#FFFFFF"
+              backgroundColor="#F2F7FE"
+              textColor="text-[#214768]"
             />
           </div>
         </div>
@@ -120,7 +122,8 @@ function FilterDialogueForRecentTasksTable({
               selectedOption={selectedEmployeeName}
               resetFilters={resetFilters}
               fieldName="created_by"
-              backgroundColor="#FFFFFF"
+              backgroundColor="#F2F7FE"
+              textColor="text-[#214768]"
             />
           </div>
         </div>

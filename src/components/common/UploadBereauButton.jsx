@@ -23,7 +23,7 @@ function UploadBureauButton({ onFileSelect }) {
   };
 
   return (
-    <div>
+    <div className="w-full">
       {/* Hidden File Input */}
       <input
         type="file"
@@ -36,12 +36,12 @@ function UploadBureauButton({ onFileSelect }) {
 
       {/* Button UI */}
       <div
-        className={`w-full h-10 rounded-[0.563rem] border border-[#344BFD] flex justify-center items-center p-[0.625rem] ${
+        className={`w-full h-10 rounded-[0.563rem] border border-[#626AA2] flex justify-center items-center p-[0.625rem] px-[0.3rem] ${
           isDisabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
         }`}
         onClick={isDisabled ? undefined : handleClick}
       >
-        <div className="text-[#344BFD] text-xs font-semibold poppins-thin leading-tight">
+        <div className="text-[#626AA2] text-xs font-semibold poppins-thin leading-tight">
           {uploading ? "Uploading..." : `Upload Bureau ${bureaus?.length || 0}/3`}
         </div>
       </div>

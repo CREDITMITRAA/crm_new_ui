@@ -4,18 +4,20 @@ function EditButton({ onClick }) {
   const { isConfirmationDialogueOpened, isProfileDialogueOpened } = useSelector(
     (state) => state.ui
   );
+
   return (
     <div
-      className={`w-10 h-10 cursor-pointer hover:border border-[#646CFF] rounded-[9px] ${
+      className={`w-10 h-10 flex items-center justify-center cursor-pointer hover:border border-[#646CFF] rounded-[9px] ${
         !isConfirmationDialogueOpened && "relative group"
       }`}
-      onClick={onClick}
       style={{
         zIndex: isConfirmationDialogueOpened || isProfileDialogueOpened ? 0 : 5,
       }}
     >
-      <div className="w-10 h-10 left-0 top-0 absolute rounded-[9px]" />
-      <div data-svg-wrapper className="left-[10px] top-[10px] absolute">
+      <div 
+        onClick={onClick}
+        className="w-full h-full flex items-center justify-center"
+      >
         <svg
           width="20"
           height="20"
@@ -24,8 +26,8 @@ function EditButton({ onClick }) {
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
+            fillRule="evenodd"
+            clipRule="evenodd"
             d="M17.8786 4.51327C17.9578 4.63344 17.993 4.77726 17.9785 4.92043C17.9639 5.0636 17.9004 5.19735 17.7986 5.29911L10.1378 12.9591C10.0594 13.0374 9.9616 13.0935 9.85442 13.1216L6.66359 13.9549C6.55812 13.9824 6.44728 13.9819 6.34208 13.9533C6.23689 13.9248 6.14099 13.8692 6.06392 13.7921C5.98684 13.715 5.93126 13.6191 5.9027 13.5139C5.87414 13.4087 5.87358 13.2979 5.90109 13.1924L6.73442 10.0024C6.75934 9.90691 6.80517 9.8181 6.86859 9.74244L14.5578 2.05827C14.6749 1.94123 14.8338 1.87549 14.9994 1.87549C15.165 1.87549 15.3239 1.94123 15.4411 2.05827L17.7986 4.41494C17.8277 4.44564 17.8545 4.47851 17.8786 4.51327ZM16.4728 4.85661L14.9994 3.3841L7.90109 10.4824L7.38026 12.4766L9.37442 11.9558L16.4728 4.85661Z"
             fill="#464646"
           />
@@ -34,10 +36,12 @@ function EditButton({ onClick }) {
             fill="#464646"
           />
         </svg>
-        <div className="absolute top-full left-1/4 transform -translate-x-[35%] mt-4 px-2 py-1 bg-[#EBEBEB] text-[#214768] text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50">
-          {"Edit"}
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-0 border-b-4 border-solid border-l-transparent border-r-transparent border-b-[#EBEBEB]" />
-        </div>
+      </div>
+      
+      {/* Tooltip positioned outside the clickable area but controlled by group hover */}
+      <div className="absolute top-full left-1/4 transform -translate-x-[35%] mt-2 px-2 py-1 bg-[#EBEBEB] text-[#214768] text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 pointer-events-none">
+        {"Edit"}
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-0 border-b-4 border-solid border-l-transparent border-r-transparent border-b-[#EBEBEB]" />
       </div>
     </div>
   );

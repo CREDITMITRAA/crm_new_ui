@@ -4,9 +4,9 @@ import CheckedCircleIcon from "../icons/CheckedCircleIcon";
 
 function EmployeeCard({ employee, onClick, selectedEmployee }) {
   return (
-    <div className={`w-full bg-[#E9F3FF] relative rounded-2xl shadow-md ${selectedEmployee?.id === employee.id && ' border-2 border-[#464646]'} py-[1.188rem] px-[1.5rem] flex flex-col gap-4 poppins-thin`}>
+    <div className={`w-full bg-[#E9F3FF] relative rounded-2xl shadow-md ${selectedEmployee?.id === employee.id && ' border-2 border-[#464646]'} py-[1.188rem] px-[1.5rem] flex flex-col gap-4 poppins-thin h-full cursor-pointer`} onClick={()=>onClick(employee)}>
       {/* Toggle circle */}
-      <div className="w-5 h-5 absolute top-2 right-2 flex justify-center items-center cursor-pointer" onClick={()=>onClick(employee)}>
+      <div className="w-5 h-5 absolute top-2 right-2 flex justify-center items-center cursor-pointer">
         {
           selectedEmployee?.id === employee.id ? <CheckedCircleIcon /> : <div className="w-5 h-5 bg-[#E9F3FF]/30 rounded-full border border-[#464646]" /> 
         }

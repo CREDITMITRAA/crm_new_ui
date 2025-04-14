@@ -256,37 +256,37 @@ function WalkInsTable({ leads }) {
             }}
           >
             {/* lead id */}
-            <div className="w-[8%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none rounded-tl-[10px]">
+            <div className="w-[8%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight rounded-tl-[10px]">
               Lead ID
             </div>
 
             {/* name */}
-            <div className="w-[11%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none">
+            <div className="w-[11%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight">
               Name
             </div>
 
             {/* Phone */}
-            <div className="w-[9%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none">
+            <div className="w-[9%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight">
               Phone
             </div>
 
             {/* Emp Name */}
-            <div className="w-[12%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none">
+            <div className="w-[12%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight">
               Emp Name
             </div>
 
             {/* Source */}
-            <div className="w-[10%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none">
+            <div className="w-[10%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight">
               Source
             </div>
 
             {/* Walk-In Call Date Time */}
-            <div className="w-[16%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none">
+            <div className="w-[16%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight">
               Appointment D&T
             </div>
 
             {/* Status */}
-            <div className="w-[16%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none">
+            <div className="w-[16%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight">
               Status
             </div>
 
@@ -306,7 +306,6 @@ function WalkInsTable({ leads }) {
             <div
               className="w-full h-9 justify-start flex cursor-pointer mb-1 rounded-tl-lg rounded-bl-lg rounded-tr-lg rounded-br-lg px-[20px]"
               key={index}
-              onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
               style={{
                 boxShadow: `7px 2px 16px 0px rgba(0, 0, 0, 0.05) inset, 
         27px 7px 28px 0px rgba(0, 0, 0, 0.05) inset, 
@@ -317,56 +316,68 @@ function WalkInsTable({ leads }) {
               }}
             >
               {/* Lead ID */}
-              <div className="w-[8%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none rounded-tl-[10px] rounded-bl-[10px] overflow-hidden">
+              <div
+                className="w-[8%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight rounded-tl-[10px] rounded-bl-[10px] overflow-hidden"
+                onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
+              >
                 <span className="truncate w-full text-center flex justify-left">
-                  {/* {truncateWithEllipsis(lead?.id, 8)} */}
-                  {truncateWithEllipsis("00000000", 8)}
+                  {truncateWithEllipsis(lead?.id, 8)}
                 </span>
               </div>
 
               {/* Name */}
-              <div className="w-[11%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden">
+              <div
+                className="w-[11%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
+                onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
+              >
                 <span className="truncate w-full text-center flex justify-left">
-                  {/* {truncateWithEllipsis(formatName(lead.name), 15)} */}
-                  {truncateWithEllipsis(formatName("Rushikesh Goli Goli"), 15)}
+                  {truncateWithEllipsis(formatName(lead.name), 15)}
                 </span>
               </div>
 
               {/* Phone */}
-              <div className="w-[9%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden">
+              <div
+                className="w-[9%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
+                onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
+              >
                 <span className="truncate w-full text-center flex justify-left">
                   {getLast10Digits(lead?.phone)}
                 </span>
               </div>
 
               {/* Employee Name */}
-              <div className="w-[12%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden">
+              <div
+                className="w-[12%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
+                onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
+              >
                 <span className="truncate w-full text-center flex justify-left">
-                  {/* {(lead?.LeadAssignments || []).length > 0
-                    ? truncateWithEllipsis(formatName(lead?.LeadAssignments[0]?.AssignedTo?.name, 15))
-                    : ""} */}
                   {(lead?.LeadAssignments || []).length > 0
                     ? truncateWithEllipsis(
-                        formatName("Rushikesh Goli Goli"),
-                        15
+                        formatName(
+                          lead?.LeadAssignments[0]?.AssignedTo?.name,
+                          15
+                        )
                       )
                     : ""}
                 </span>
               </div>
 
               {/* Source */}
-              <div className="w-[10%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden">
+              <div
+                className="w-[10%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
+                onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
+              >
                 <span className="truncate w-full text-center flex justify-left">
-                  {/* {truncateWithEllipsis(formatName(lead.lead_source), 10) || truncateWithEllipsis("Not Available", 10)} */}
-                  {truncateWithEllipsis(
-                    formatName("aswiofhoawias;oiugh "),
-                    10
-                  ) || truncateWithEllipsis("Not Available", 10)}
+                  {truncateWithEllipsis(formatName(lead.lead_source), 10) ||
+                    truncateWithEllipsis("Not Available", 10)}
                 </span>
               </div>
 
               {/* Walk-In Call Date Time */}
-              <div className="w-[16%] flex justify-left items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden">
+              <div
+                className="w-[16%] flex justify-left items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
+                onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
+              >
                 {lead?.walkIns?.length > 0 && (
                   <div className="flex items-center w-full truncate flex justify-left">
                     <span className="truncate">
@@ -388,7 +399,7 @@ function WalkInsTable({ leads }) {
               </div>
 
               {/* Status */}
-              <div className="w-[16%] flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden pr-4">
+              <div className="w-[16%] flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden pr-4">
                 {/* Dot */}
                 <div className="flex-shrink-0 mr-2">
                   <svg width="6" height="6" viewBox="0 0 8 8" fill="none">
@@ -411,7 +422,7 @@ function WalkInsTable({ leads }) {
 
                 {/* Select */}
                 <select
-                  className="w-full px-1 py-1 pl-0 text-xs font-normal inter-inter leading-none bg-transparent border border-none outline-none appearance-none cursor-pointer focus:outline-none focus:ring-0 focus:border-transparent pr-6 truncate"
+                  className="w-full px-1 py-1 pl-0 text-xs font-normal inter-inter leading-tight bg-transparent border border-none outline-none appearance-none cursor-pointer focus:outline-none focus:ring-0 focus:border-transparent pr-6 truncate"
                   value={
                     lead?.lead_status ||
                     (lead?.last_updated_status === "Others"
@@ -431,24 +442,24 @@ function WalkInsTable({ leads }) {
                     //           : (lead?.Activities || [])[0]?.activity_status ||
                     //             ""))
                     //   )?.optionColor || "#32086d",
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23${(
-                      optionColors.find(
-                        (option) =>
-                          option.optionName ===
-                          (lead?.lead_status ||
-                            (lead?.last_updated_status === "Others"
-                              ? lead.last_updated_status
-                              : (lead?.Activities || [])[0]?.activity_status ||
-                                ""))
-                      )?.optionColor || "#32086d"
-                    ).replace(
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23${// optionColors.find(
+                    //   (option) =>
+                    //     option.optionName ===
+                    //     (lead?.lead_status ||
+                    //       (lead?.last_updated_status === "Others"
+                    //         ? lead.last_updated_status
+                    //         : (lead?.Activities || [])[0]?.activity_status ||
+                    //           ""))
+                    // )?.optionColor || "#32086d"
+                    "464646".replace(
                       "#",
                       ""
                     )}'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E")`,
                     backgroundPosition: "right 8px center",
                     backgroundRepeat: "no-repeat",
                     backgroundSize: "14px",
-                    zIndex: isConfirmationDialogueOpened && -1
+                    zIndex: isConfirmationDialogueOpened && -1,
+                    paddingLeft:'5px'
                   }}
                 >
                   {leadStatusOptionsForWalkInsPageTable.map((option, index) => (
@@ -485,7 +496,7 @@ function WalkInsTable({ leads }) {
               </div>
 
               {/* Application Status */}
-              <div className="w-[13%] flex justify-left items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden">
+              <div className="w-[13%] flex justify-left items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden">
                 {/* Colored Dot */}
                 <div
                   className="w-[6px] h-[6px] rounded-full mr-1.5"
@@ -500,7 +511,7 @@ function WalkInsTable({ leads }) {
 
                 {user.user.role !== ROLE_EMPLOYEE ? (
                   <select
-                    className="w-full px-1 pl-0 py-1 text-xs font-normal inter-inter leading-none bg-transparent border border-none outline-none appearance-none cursor-pointer focus:outline-none focus:ring-0 focus:border-transparent pr-6 truncate"
+                    className="w-full px-1 pl-0 py-1 text-xs font-normal inter-inter leading-tight bg-transparent border border-none outline-none appearance-none cursor-pointer focus:outline-none focus:ring-0 focus:border-transparent pr-6 truncate"
                     value={lead?.application_status}
                     style={{
                       // color:
@@ -510,18 +521,20 @@ function WalkInsTable({ leads }) {
                       //       (lead?.application_status || "")
                       //   )?.optionColor || "#32086d",
                       backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23${
-                        optionColors
-                          .find(
-                            (option) =>
-                              option.optionName ===
-                              (lead?.application_status || "")
-                          )
-                          ?.optionColor?.replace("#", "") || "32086d"
+                        // optionColors
+                        //   .find(
+                        //     (option) =>
+                        //       option.optionName ===
+                        //       (lead?.application_status || "")
+                        //   )
+                        //   ?.optionColor?.replace("#", "") || "32086d"
+                        "464646"
                       }'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E")`,
                       backgroundPosition: "right 8px center",
                       backgroundRepeat: "no-repeat",
                       backgroundSize: "14px",
-                      zIndex: isConfirmationDialogueOpened && -1
+                      zIndex: isConfirmationDialogueOpened && -1,
+                      paddingLeft:'5px'
                     }}
                     onChange={(e) => handleApplicationStatusChange(e, lead)}
                     disabled={
@@ -560,7 +573,7 @@ function WalkInsTable({ leads }) {
               </div>
 
               {/* View Icon */}
-              <div className="w-[5%] flex justify-center items-center text-[#32086d] text-xs font-normal inter-inter leading-none rounded-br-[10px] rounded-tr-[10px] overflow-hidden pl-8">
+              <div className="w-[5%] flex justify-center items-center text-[#32086d] text-xs font-normal inter-inter leading-tight rounded-br-[10px] rounded-tr-[10px] overflow-hidden pl-8">
                 <ViewIcon onClick={() => handleClickOnView(lead.id)} />
               </div>
             </div>

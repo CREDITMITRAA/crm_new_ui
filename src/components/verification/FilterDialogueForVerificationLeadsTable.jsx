@@ -14,7 +14,7 @@ function FilterDialogueForVerificationLeadsTable({
 }) {
   const dispatch = useDispatch();
   const [employees, setEmployees] = useState([
-    { label: "Select Employee Name", value: "" },
+    { label: "Select employee name", value: "" },
   ]);
   const [selectedEmployeeName, setSelectedEmployeeName] = useState(null);
   const { users, userOptions } = useSelector((state) => state.users);
@@ -23,7 +23,7 @@ function FilterDialogueForVerificationLeadsTable({
   const [optionsForVerificationStatus, setOptionsForVerificationStatus] =
     useState(verificationStatusOptions);
   const [leadSourceOptions, setLeadSourceOptions] = useState([
-    { label: "Select Lead Source", value: "" },
+    { label: "Select lead source", value: "" },
   ]);
 
   useEffect(() => {
@@ -78,7 +78,7 @@ function FilterDialogueForVerificationLeadsTable({
     <div className="w-full h-max bg-[#E6F4FF] mt-4 p-4 grid grid-cols-12 gap-2 rounded-xl">
       {/* lead id */}
       <div className="col-span-3 w-full h-12">
-        <div className="w-full h-max bg-[#FFFFFF] rounded-xl border border-[#214768] flex items-center justify-start pl-0">
+        <div className="w-full h-max bg-[#F2F7FE] rounded-xl border border-[#214768] flex items-center justify-start pl-0">
           <input
             type="text"
             name="leadId"
@@ -86,7 +86,7 @@ function FilterDialogueForVerificationLeadsTable({
             onChange={(e) =>
               setFilters((prev) => ({ ...prev, leadId: e.target.value }))
             }
-            placeholder="Filter By ID"
+            placeholder="Filter by id"
             className="text-[#214768] text-sm font-normal inter-inter w-full h-full bg-transparent focus:outline-none focus:border-[#214768] focus:ring-0 border-none placeholder:text-[#32086d]/50"
           />
         </div>
@@ -94,7 +94,7 @@ function FilterDialogueForVerificationLeadsTable({
 
       {/* phone no */}
       <div className="col-span-3 w-full h-12">
-        <div className="w-full h-max bg-[#FFFFFF] rounded-xl border border-[#214768] flex items-center justify-start pl-0">
+        <div className="w-full h-max bg-[#F2F7FE] rounded-xl border border-[#214768] flex items-center justify-start pl-0">
           <input
             type="text"
             name="phone"
@@ -102,7 +102,7 @@ function FilterDialogueForVerificationLeadsTable({
             onChange={(e) =>
               setFilters((prev) => ({ ...prev, phone: e.target.value }))
             }
-            placeholder="Filter By Phone"
+            placeholder="Filter by phone"
             className="text-[#214768] text-sm font-normal inter-inter w-full h-full bg-transparent focus:outline-none focus:border-[#214768] focus:ring-0 border-none placeholder:text-[#32086d]/50"
           />
         </div>
@@ -110,7 +110,7 @@ function FilterDialogueForVerificationLeadsTable({
 
       {/* lead name */}
       <div className="col-span-3 w-full h-12">
-        <div className="w-full h-max bg-[#FFFFFF] rounded-xl border border-[#214768] flex items-center justify-start pl-0">
+        <div className="w-full h-max bg-[#F2F7FE] rounded-xl border border-[#214768] flex items-center justify-start pl-0">
           <input
             type="text"
             name="name"
@@ -118,7 +118,7 @@ function FilterDialogueForVerificationLeadsTable({
             onChange={(e) =>
               setFilters((prev) => ({ ...prev, name: e.target.value }))
             }
-            placeholder="Filter By Lead Name"
+            placeholder="Filter by lead name"
             className="text-[#21044b] text-sm font-normal inter-inter w-full h-full bg-transparent focus:outline-none focus:border-[#214768] focus:ring-0 border-none placeholder:text-[#32086d]/50"
           />
         </div>
@@ -137,7 +137,8 @@ function FilterDialogueForVerificationLeadsTable({
             resetFilters={resetFilters}
             fieldName="lead_source"
             autoSuggestOptions={true}
-            backgroundColor="#FFFFFF"
+            backgroundColor="#F2F7FE"
+            textColor="text-[#214768]"
           />
         </div>
       </div>
@@ -155,7 +156,8 @@ function FilterDialogueForVerificationLeadsTable({
               selectedOption={selectedEmployeeName}
               resetFilters={resetFilters}
               fieldName="assigned_to"
-              backgroundColor="#FFFFFF"
+              backgroundColor="#F2F7FE"
+              textColor="text-[#214768]"
             />
           </div>
         </div>
@@ -173,7 +175,8 @@ function FilterDialogueForVerificationLeadsTable({
             selectedOption={selectedEmployeeName}
             resetFilters={resetFilters}
             fieldName="verification_status"
-            backgroundColor="#FFFFFF"
+            backgroundColor="#F2F7FE"
+            textColor="text-[#214768]"
           />
         </div>
       </div>

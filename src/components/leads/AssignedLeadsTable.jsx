@@ -128,7 +128,7 @@ function AssignedLeadsTable({
 
             {/* lead id */}
             <div
-              className={`w-[8%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none px-1 ${
+              className={`w-[8%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight px-1 ${
                 role === ROLE_EMPLOYEE && "rounded-tl-[10px] pl-[20px]"
               }`}
             >
@@ -136,52 +136,54 @@ function AssignedLeadsTable({
             </div>
 
             {/* name */}
-            <div className="w-[11%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none px-1">
+            <div className="w-[11%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight px-1">
               Name
             </div>
 
             {/* Phone */}
-            <div className="w-[10%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none px-1 ">
+            <div className="w-[10%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight px-1 ">
               Phone
             </div>
 
             {/* Status */}
-            <div className="w-[13%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none px-1 ">
+            <div className="w-[13%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight px-1 ">
               Status
             </div>
 
             {/* Source */}
-            <div className="w-[10%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none px-1 ">
+            <div className="w-[10%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight px-1 ">
               Source
             </div>
 
             {/* Imported On */}
-            <div className="w-[12%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none px-1 ">
+            <div className="w-[12%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight px-1 ">
               Imported On
             </div>
 
             {/* Updated At */}
-            <div className="w-[13%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none px-1 ">
+            <div className="w-[13%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight px-1 ">
               Updated At
             </div>
 
             {/* Assigned */}
             {role !== ROLE_EMPLOYEE && (
-              <div className="w-[10%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none px-1 ">
+              <div className="w-[10%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight px-1 ">
                 Assigned
               </div>
             )}
 
             {/* Assigned Date */}
-            <div className="w-[13%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none px-1 ">
+            <div className="w-[13%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight px-1 ">
               Assigned Date
             </div>
 
             {/* View */}
             <div
-              className={`w-[${
-                role === ROLE_EMPLOYEE ? 10 : 5
-              }%] flex ${role === ROLE_EMPLOYEE ? 'justify-center' : 'justify-left'} items-center text-[#214768] text-xs font-bold poppins-thin leading-none px-1 rounded-tr-[10px] ${role === ROLE_EMPLOYEE && "pl-[40px]"}`}
+              className={`w-[${role === ROLE_EMPLOYEE ? 10 : 5}%] flex ${
+                role === ROLE_EMPLOYEE ? "justify-center" : "justify-left"
+              } items-center text-[#214768] text-xs font-bold poppins-thin leading-tight px-1 rounded-tr-[10px] ${
+                role === ROLE_EMPLOYEE && "pl-[40px]"
+              }`}
             >
               {role === ROLE_EMPLOYEE ? "Action" : "View"}
             </div>
@@ -223,18 +225,19 @@ function AssignedLeadsTable({
 
               {/* Lead ID */}
               <div
-                className={`w-[8%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none  overflow-hidden px-1 ${role === ROLE_EMPLOYEE && "pl-[20px]"}`}
+                className={`w-[8%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight  overflow-hidden px-1 ${
+                  role === ROLE_EMPLOYEE && "pl-[20px]"
+                }`}
                 onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
               >
                 <span className="truncate px-1 w-full text-center flex justify-left">
-                  {/* {truncateWithEllipsis(lead.id, 8)} */}
-                  00000000
+                  {truncateWithEllipsis(lead.id, 8)}
                 </span>
               </div>
 
               {/* Lead Name */}
               <div
-                className="w-[11%] poppins-thin px-1 flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden"
+                className="w-[11%] poppins-thin px-1 flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
                 onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
               >
                 <span className="truncate w-full text-center flex justify-left">
@@ -244,7 +247,7 @@ function AssignedLeadsTable({
 
               {/* Phone */}
               <div
-                className="w-[10%] inter-inter flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden px-1"
+                className="w-[10%] inter-inter flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden px-1"
                 onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
               >
                 <span className="truncate w-full text-center flex justify-left">
@@ -254,7 +257,7 @@ function AssignedLeadsTable({
 
               {/* Status */}
               <div
-                className="w-[13%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden px-1"
+                className="w-[13%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden px-1"
                 onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
               >
                 <span className="truncate w-full text-center flex justify-left">
@@ -274,7 +277,7 @@ function AssignedLeadsTable({
 
               {/* Source */}
               <div
-                className="w-[10%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden px-1"
+                className="w-[10%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden px-1"
                 onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
               >
                 <span className="truncate w-full text-center flex justify-left">
@@ -288,7 +291,7 @@ function AssignedLeadsTable({
 
               {/* Imported On */}
               <div
-                className="w-[12%] flex flex-col justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden"
+                className="w-[12%] flex flex-col justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
                 onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
               >
                 <span className="truncate w-full text-center flex justify-left">
@@ -303,7 +306,7 @@ function AssignedLeadsTable({
 
               {/* Updated At */}
               <div
-                className="w-[13%] flex flex-col justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden"
+                className="w-[13%] flex flex-col justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
                 onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
               >
                 <span className="truncate w-full text-center flex justify-left">
@@ -319,7 +322,7 @@ function AssignedLeadsTable({
               {/* Assigned */}
               {role !== ROLE_EMPLOYEE && (
                 <div
-                  className="w-[10%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden"
+                  className="w-[10%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
                   onDoubleClick={() =>
                     navigate(`/lead-details-page/${lead.id}`)
                   }
@@ -337,7 +340,7 @@ function AssignedLeadsTable({
 
               {/* Assigned Date */}
               <div
-                className="w-[13%] flex flex-col justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden"
+                className="w-[13%] flex flex-col justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
                 onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
               >
                 <span className="truncate w-full text-center flex justify-left">
@@ -368,8 +371,12 @@ function AssignedLeadsTable({
               <div
                 className={`${
                   role === ROLE_EMPLOYEE ? "w-[10%]" : "w-[5%]"
-                } flex ${role === ROLE_EMPLOYEE ? 'justify-center pl-8' : 'justify-left pl-2'} items-center text-[#000000] text-xs font-normal inter-inter leading-none rounded-tr-lg rounded-br-lg`}
-                style={{paddingRight: role === ROLE_EMPLOYEE && '10px'}}
+                } flex ${
+                  role === ROLE_EMPLOYEE
+                    ? "justify-center pl-8"
+                    : "justify-left pl-2"
+                } items-center text-[#000000] text-xs font-normal inter-inter leading-tight rounded-tr-lg rounded-br-lg`}
+                style={{ paddingRight: role === ROLE_EMPLOYEE && "10px" }}
               >
                 {role === ROLE_EMPLOYEE && (
                   <CallIcon

@@ -28,6 +28,8 @@ import ViewIcon from "../icons/ViewIcon";
 import CommonDialogue from "../common/dialogues/CommonDialogue";
 import ScheduleWalkInOrCallDialogue from "../common/dialogues/ScheduleWalkInOrCallDialogue";
 import {
+  formatName,
+  getLast10Digits,
   getStatusDetails,
   truncateWithEllipsis,
 } from "../../utilities/utility-functions";
@@ -242,7 +244,7 @@ function NormalLoginTable({ leads }) {
         <div className="w-full h-max flex flex-col">
           {/* table header */}
           <div
-            className="w-full h-9 justify-start flex rounded-[10px] mb-2 pl-2"
+            className="w-full h-9 justify-start flex rounded-[10px] mb-2 px-[20px]"
             style={{
               boxShadow: `
                 8px 5px 20px 0px rgba(0, 0, 0, 0.05) inset,
@@ -255,27 +257,27 @@ function NormalLoginTable({ leads }) {
             }}
           >
             {/* lead id */}
-            <div className="w-[6%] flex justify-left items-center text-[#214768] text-xs font-bold inter-inter leading-none rounded-tl-[10px]">
+            <div className="w-[10%] flex justify-left items-center text-[#214768] text-xs font-bold inter-inter leading-none rounded-tl-[10px]">
               Lead ID
             </div>
 
             {/* name */}
-            <div className="w-[22%] flex justify-left items-center text-[#214768] text-xs font-bold inter-inter leading-none">
+            <div className="w-[14%] flex justify-left items-center text-[#214768] text-xs font-bold inter-inter leading-none">
               Name
             </div>
 
             {/* Phone */}
-            <div className="w-[9%] flex justify-left items-center text-[#214768] text-xs font-bold inter-inter leading-none">
+            <div className="w-[10%] flex justify-left items-center text-[#214768] text-xs font-bold inter-inter leading-none">
               Phone
             </div>
 
             {/* Emp Name */}
-            <div className="w-[19%] flex justify-left items-center text-[#214768] text-xs font-bold inter-inter leading-none">
+            <div className="w-[13%] flex justify-left items-center text-[#214768] text-xs font-bold inter-inter leading-none">
               Emp Name
             </div>
 
             {/* Source */}
-            <div className="w-[8%] flex justify-left items-center text-[#214768] text-xs font-bold inter-inter leading-none">
+            <div className="w-[10%] flex justify-left items-center text-[#214768] text-xs font-bold inter-inter leading-none">
               Source
             </div>
 
@@ -285,17 +287,17 @@ function NormalLoginTable({ leads }) {
             </div> */}
 
             {/* Status */}
-            <div className="w-[17%] flex justify-left items-center text-[#214768] text-xs font-bold inter-inter leading-none">
+            <div className="w-[21%] flex justify-left items-center text-[#214768] text-xs font-bold inter-inter leading-none">
               Status
             </div>
 
             {/* Application Status */}
-            <div className="w-[14%] flex justify-left items-center text-[#214768] text-xs font-bold inter-inter">
+            <div className="w-[17%] flex justify-left items-center text-[#214768] text-xs font-bold inter-inter">
               Application Status
             </div>
 
             {/* View */}
-            <div className="w-[5%] flex justify-left items-center text-[#214768] text-xs font-bold inter-inter rounded-tr-[10px]">
+            <div className="w-[5%] flex justify-center items-center text-[#214768] text-xs font-bold inter-inter rounded-tr-[10px]">
               View
             </div>
           </div>
@@ -303,7 +305,7 @@ function NormalLoginTable({ leads }) {
           {/* table row */}
           {leads.map((lead, index) => (
             <div
-              className="w-full h-9 justify-start flex cursor-pointer mb-1 rounded-tl-lg rounded-bl-lg rounded-tr-lg rounded-br-lg px-2"
+              className="w-full h-9 justify-start flex cursor-pointer mb-1 rounded-tl-lg rounded-bl-lg rounded-tr-lg rounded-br-lg px-[20px]"
               key={index}
               onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
               style={{
@@ -317,9 +319,10 @@ function NormalLoginTable({ leads }) {
             >
               {/* lead id */}
               <div
-                className={`w-[6%] flex justify-left items-center text-[#2B323B] text-xs font-normal inter-inter leading-none rounded-tl-[10px] rounded-bl-[10px]`}
+                className={`w-[10%] flex justify-left items-center text-[#2B323B] text-xs font-normal inter-inter leading-none rounded-tl-[10px] rounded-bl-[10px]`}
               >
-                {lead?.id}
+                {/* {truncateWithEllipsis(lead?.id,8)} */}
+                00000000
               </div>
 
               {/* name */}
@@ -327,27 +330,27 @@ function NormalLoginTable({ leads }) {
                 {truncateWithEllipsis(lead.name, 20)}
               </div> */}
 
-              <div className="w-[22%] px-4 pl-0 flex justify-left items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden text-ellipsis whitespace-nowrap">
-                {lead.name}
+              <div className="w-[14%] px-4 pl-0 flex justify-left items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden text-ellipsis whitespace-nowrap">
+                {truncateWithEllipsis(formatName(lead.name), 15)}
               </div>
 
               {/* Phone */}
-              <div className="w-[9%] flex justify-left items-center text-[#2B323B] text-xs font-normal inter-inter leading-none">
-                {lead?.phone}
+              <div className="w-[10%] flex justify-left items-center text-[#2B323B] text-xs font-normal inter-inter leading-none">
+                {truncateWithEllipsis(getLast10Digits(lead?.phone), 10)}
               </div>
 
               {/* emp name */}
-              <div className="w-[19%] flex justify-left items-center text-[#2B323B] text-xs font-semibold inter-inter leading-none">
+              <div className="w-[13%] flex justify-left items-center text-[#2B323B] text-xs font-normal inter-inter leading-none">
                 {(lead?.LeadAssignments || []).length > 0 &&
                   truncateWithEllipsis(
-                    lead?.LeadAssignments[0]?.AssignedTo?.name,
-                    30
+                    formatName(lead?.LeadAssignments[0]?.AssignedTo?.name),
+                    15
                   )}
               </div>
 
               {/* Source */}
-              <div className="w-[8%] flex justify-left items-center text-[#2B323B] text-xs font-normal inter-inter leading-none pl-1">
-                {lead.lead_source}
+              <div className="w-[10%] flex justify-left items-center text-[#2B323B] text-xs font-normal inter-inter leading-none pl-1">
+                {truncateWithEllipsis(formatName(lead.lead_source), 10)}
               </div>
 
               {/* Walk-In Call Date Time */}
@@ -369,13 +372,12 @@ function NormalLoginTable({ leads }) {
               </div> */}
 
               {/* Status */}
-              <div className="w-[17%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none pl-1">
-                {/* {lead?.lead_status} */}
-                <select
-                  className="w-full px-1 py-1 pl-0 text-xs font-semibold inter-inter leading-none bg-transparent border border-none outline-none appearance-none cursor-pointer focus:outline-none focus:ring-0 focus:border-transparent pr-6"
-                  value={lead?.lead_status || lead?.last_updated_status}
+              <div className="w-[21%] flex justify-left items-center text-[#2B323B] text-xs font-normal inter-inter leading-none pl-1 overflow-hidden pr-6">
+                {/* Colored Dot */}
+                <div
+                  className="w-[6px] h-[6px] rounded-full mr-1.5"
                   style={{
-                    color:
+                    backgroundColor:
                       optionColors.find(
                         (option) =>
                           option.optionName ===
@@ -384,21 +386,18 @@ function NormalLoginTable({ leads }) {
                             : (lead?.Activities || [])[0]?.activity_status ||
                               "")
                       )?.optionColor || "#32086d",
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23${
-                      optionColors
-                        .find(
-                          (option) =>
-                            option.optionName ===
-                            (lead?.last_updated_status === "Others"
-                              ? lead.last_updated_status
-                              : (lead?.Activities || [])[0]?.activity_status ||
-                                "")
-                        )
-                        ?.optionColor?.replace("#", "") || "32086d"
-                    }'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E")`,
+                  }}
+                ></div>
+
+                <select
+                  className="w-full px-1 py-1 pl-0 text-xs font-normal inter-inter leading-tight bg-transparent border border-none outline-none appearance-none cursor-pointer focus:outline-none focus:ring-0 focus:border-transparent pr-6 truncate"
+                  value={lead?.lead_status || lead?.last_updated_status}
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23464646'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E")`,
                     backgroundPosition: "right 8px center",
                     backgroundRepeat: "no-repeat",
                     backgroundSize: "14px",
+                    paddingLeft: "5px",
                   }}
                   onChange={(e) => handleLeadStatusChange(e, lead)}
                   disabled={lead?.application_status === REJECTED}
@@ -406,18 +405,16 @@ function NormalLoginTable({ leads }) {
                   {leadStatusOptionsForWalkInsPageTable.map((option, index) => (
                     <option
                       key={index}
-                      value={option.value} // Original value maintained
-                      className="text-xs p-2"
+                      value={option.value}
+                      className="text-xs p-2 truncate"
                       style={{ ...option.style }}
                     >
-                      {/* Display mapped terminology */}
                       {terminologiesMap.get(option.value) || option.label}
                     </option>
                   ))}
 
                   {lead.lead_status === "Scheduled For Walk-In" && (
                     <option value="Scheduled For Walk-In" disabled>
-                      {/* Display mapped terminology */}
                       {terminologiesMap.get("Scheduled For Walk-In") ||
                         "Scheduled For Walk-In"}
                     </option>
@@ -425,7 +422,6 @@ function NormalLoginTable({ leads }) {
 
                   {lead.lead_status === "Scheduled Call With Manager" && (
                     <option value="Scheduled Call With Manager" disabled>
-                      {/* Display mapped terminology */}
                       {terminologiesMap.get("Scheduled Call With Manager") ||
                         "Scheduled Call With Manager"}
                     </option>
@@ -434,18 +430,24 @@ function NormalLoginTable({ leads }) {
               </div>
 
               {/* Application Status */}
-              <div className="w-[14%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none pl-1">
+              <div className="w-[17%] flex justify-left items-center text-[#2B323B] text-xs font-normal inter-inter leading-none pl-1 overflow-hidden pr-8">
+                {/* Colored Dot */}
+                <div
+                  className="w-[6px] h-[6px] rounded-full mr-1.5"
+                  style={{
+                    backgroundColor:
+                      optionColors.find(
+                        (option) =>
+                          option.optionName === (lead?.application_status || "")
+                      )?.optionColor || "#2B323B",
+                  }}
+                ></div>
+
                 {user.user.role !== ROLE_EMPLOYEE ? (
                   <select
-                    className="w-full px-1 py-1 pl-0 text-xs font-semibold inter-inter leading-none bg-transparent border border-none outline-none appearance-none cursor-pointer focus:outline-none focus:ring-0 focus:border-transparent pr-6"
+                    className="w-full px-1 py-1 pl-0 text-xs font-normal inter-inter leading-none bg-transparent border border-none outline-none appearance-none cursor-pointer focus:outline-none focus:ring-0 focus:border-transparent pr-6 truncate"
                     value={lead?.application_status}
                     style={{
-                      color:
-                        optionColors.find(
-                          (option) =>
-                            option.optionName ===
-                            (lead?.application_status || "")
-                        )?.optionColor || "#2B323B",
                       backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23${
                         optionColors
                           .find(
@@ -458,6 +460,7 @@ function NormalLoginTable({ leads }) {
                       backgroundPosition: "right 8px center",
                       backgroundRepeat: "no-repeat",
                       backgroundSize: "14px",
+                      paddingLeft: "5px",
                     }}
                     onChange={(e) => handleApplicationStatusChange(e, lead)}
                     disabled={
@@ -470,7 +473,7 @@ function NormalLoginTable({ leads }) {
                         <option
                           key={index}
                           value={option.value}
-                          className="text-xs p-2"
+                          className="text-xs p-2 truncate"
                           style={{ ...option.style }}
                         >
                           {terminologiesMap.get(option.value) || option.label}
@@ -479,11 +482,19 @@ function NormalLoginTable({ leads }) {
                     )}
                   </select>
                 ) : (
-                  <>
+                  <span
+                    className="truncate w-full text-left px-1"
+                    style={{
+                      color:
+                        optionColors.find(
+                          (item) => item.optionName === lead?.application_status
+                        )?.optionColor || "#2B323B",
+                    }}
+                  >
                     {terminologiesMap.get(lead?.application_status) ||
                       lead?.application_status ||
                       "Select Application Status"}
-                  </>
+                  </span>
                 )}
               </div>
 

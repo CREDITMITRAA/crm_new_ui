@@ -1,6 +1,9 @@
-function DownloadDocumentButton({onClick}) {
+function DownloadDocumentButton({ onClick }) {
   return (
-    <div className="w-[136px] h-10 px-[30px] py-2.5 bg-[#214768] rounded-[10px] justify-center items-center gap-2.5 inline-flex cursor-pointer" onClick={onClick}>
+    <div
+      className="w-[136px] h-10 px-[30px] py-2.5 bg-[#214768] rounded-[10px] justify-center items-center gap-2.5 inline-flex cursor-pointer ml-2"
+      onClick={onClick}
+    >
       <div data-svg-wrapper className="relative">
         <svg
           width="16"

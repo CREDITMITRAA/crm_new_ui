@@ -84,10 +84,7 @@ function RecentTasksTable() {
     const filteredFilters = Object.keys(filters)?.reduce((acc, key) => {
       if (
         role === ROLE_EMPLOYEE
-          ? ![
-              "pageSize",
-               "created_by"
-            ].includes(key)
+          ? !["pageSize", "created_by"].includes(key)
           : !["pageSize"].includes(key)
       ) {
         acc[key] = filters[key];
@@ -329,37 +326,37 @@ function RecentTasksTable() {
                 }}
               >
                 {/* lead id */}
-                <div className="w-[8%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none px-1">
+                <div className="w-[8%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight px-1">
                   Lead ID
                 </div>
 
                 {/* name */}
-                <div className="w-[10.5%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none px-1 ">
+                <div className="w-[10.5%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight px-1 ">
                   Name
                 </div>
 
                 {/* Phone */}
-                <div className="w-[10%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none px-1 ">
+                <div className="w-[10%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight px-1 ">
                   Phone
                 </div>
 
                 {/* Emp Name */}
-                <div className="w-[12.5%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none px-1 ">
+                <div className="w-[12.5%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight px-1 ">
                   Emp Name
                 </div>
 
                 {/* Task */}
-                <div className="w-[17%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none px-1 ">
+                <div className="w-[17%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight px-1 ">
                   Task
                 </div>
 
                 {/* Note */}
-                <div className="w-[19%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none px-1 ">
+                <div className="w-[19%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight px-1 ">
                   Note
                 </div>
 
                 {/* Task Date */}
-                <div className="w-[15%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none px-1">
+                <div className="w-[15%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight px-1">
                   Task Date
                 </div>
 
@@ -374,30 +371,30 @@ function RecentTasksTable() {
                 const { status, style } = getStatusDetails(task.task_status);
                 return (
                   <div
-                    className="w-full h-9 justify-start flex cursor-pointer mb-1 rounded-tl-lg rounded-bl-lg rounded-tr-lg rounded-br-lg px-[20px]"
+                    className="w-full h-10 flex cursor-pointer mb-1 rounded-lg px-[20px] items-center"
                     key={index}
                     onDoubleClick={() =>
                       navigate(`/lead-details-page/${task.lead_id}`)
                     }
                     style={{
                       boxShadow: `7px 2px 16px 0px rgba(0, 0, 0, 0.05) inset, 
-        27px 7px 28px 0px rgba(0, 0, 0, 0.05) inset, 
-        62px 16px 38px 0px rgba(0, 0, 0, 0.03) inset, 
-        110px 29px 45px 0px rgba(0, 0, 0, 0.04) inset, 
-        172px 46px 50px 0px rgba(0, 0, 0, 0.05) inset`,
+                    27px 7px 28px 0px rgba(0, 0, 0, 0.05) inset, 
+                    62px 16px 38px 0px rgba(0, 0, 0, 0.03) inset, 
+                    110px 29px 45px 0px rgba(0, 0, 0, 0.04) inset, 
+                    172px 46px 50px 0px rgba(0, 0, 0, 0.05) inset`,
                       backgroundColor: "rgba(216, 232, 255, 1)",
                     }}
                   >
                     {/* Lead ID */}
-                    <div className="w-[8%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none rounded-tl-[10px] rounded-bl-[10px] overflow-hidden">
-                      <span className="truncate w-full text-center px-1 flex justify-left">
+                    <div className="w-[8%] h-full flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight">
+                      <span className="truncate w-full px-1 py-0.5">
                         {truncateWithEllipsis(task.lead_id, 8)}
                       </span>
                     </div>
 
                     {/* Name */}
-                    <div className="w-[10.5%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden">
-                      <span className="truncate w-full text-center px-1 flex justify-left">
+                    <div className="w-[10.5%] h-full flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight">
+                      <span className="truncate w-full px-1 py-0.5">
                         {truncateWithEllipsis(
                           formatName(task.Lead?.name),
                           15
@@ -406,32 +403,36 @@ function RecentTasksTable() {
                     </div>
 
                     {/* Phone */}
-                    <div className="w-[10%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden">
-                      <span className="truncate w-full text-center px-1 flex justify-left">
+                    <div className="w-[10%] h-full flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight">
+                      <span className="truncate w-full px-1 py-0.5">
                         {getLast10Digits(task.Lead?.phone) || ""}
                       </span>
                     </div>
 
                     {/* Assigned To */}
-                    <div className="w-[12.5%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden">
-                      <span className="truncate w-full text-center px-1 flex justify-left">
-                        {truncateWithEllipsis(formatName(
-                          task.Lead?.LeadAssignments?.[0]?.AssignedTo?.name, 15
-                        ), 15) || ""}
+                    <div className="w-[12.5%] h-full flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight">
+                      <span className="truncate w-full px-1 py-0.5">
+                        {truncateWithEllipsis(
+                          formatName(
+                            task.Lead?.LeadAssignments?.[0]?.AssignedTo?.name,
+                            15
+                          ),
+                          15
+                        ) || ""}
                       </span>
                     </div>
 
                     {/* Task Type */}
-                    <div className="w-[17%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden">
-                      <span className="truncate w-full text-center px-1 flex justify-left">
-                        {/* {truncateWithEllipsis(terminologiesMap.get(task.activity_status), 20) || ""} */}
-                        {truncateWithEllipsis("Executive Consultation", 24) || ""}
+                    <div className="w-[17%] h-full flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight">
+                      <span className="truncate w-full px-1 py-0.5">
+                        {truncateWithEllipsis("Executive Consultation", 24) ||
+                          ""}
                       </span>
                     </div>
 
                     {/* Note */}
-                    <div className="w-[19%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden">
-                      <span className="truncate w-full text-center px-1 flex justify-left">
+                    <div className="w-[19%] h-full flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight">
+                      <span className="truncate w-full px-1 py-0.5">
                         {truncateWithEllipsis(
                           formatSentence(task.description),
                           30
@@ -440,8 +441,8 @@ function RecentTasksTable() {
                     </div>
 
                     {/* Task Date */}
-                    <div className="w-[15%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden">
-                      <span className="truncate w-full text-center px-1 flex justify-left">
+                    <div className="w-[15%] h-full flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight">
+                      <span className="truncate w-full px-1 py-0.5">
                         {task.follow_up
                           ? moment(task.follow_up)
                               .utcOffset(330)
@@ -451,10 +452,10 @@ function RecentTasksTable() {
                     </div>
 
                     {/* Task Status */}
-                    <div className="w-[8%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none rounded-tr-[10px] rounded-br-[10px] overflow-hidden">
+                    <div className="w-[8%] h-full flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight">
                       {user.user.role === ROLE_EMPLOYEE ? (
                         <select
-                          className="w-full px-1 py-1 text-xs font-normal inter-inter leading-none bg-transparent border-none outline-none appearance-none cursor-pointer focus:outline-none focus:ring-0 focus:border-transparent pr-6 truncate"
+                          className="w-full px-1 py-0.5 text-xs font-normal inter-inter leading-tight bg-transparent border-none outline-none appearance-none cursor-pointer truncate"
                           value={task.task_status}
                           onChange={(e) =>
                             handleStatusChange(
@@ -470,7 +471,6 @@ function RecentTasksTable() {
                             border: "none",
                             backgroundColor: "transparent",
                             outline: "none",
-                            // fontWeight: "bold",
                             fontSize: "inherit",
                             cursor: "pointer",
                           }}
@@ -500,12 +500,33 @@ function RecentTasksTable() {
                           </option>
                         </select>
                       ) : (
-                        <span
-                          className="truncate w-full text-center px-1 flex justify-left"
-                          style={style}
-                        >
-                          {status}
-                        </span>
+                        <>
+                          <span
+                            className="truncate w-full px-1 py-0.5"
+                            style={{
+                              ...style,
+                              color:
+                                status === "Pending" ? "#D18C31" : "inherit",
+                              fontWeight: status === "Pending" && "bold",
+                              animation:
+                                status === "Pending"
+                                  ? "blink 1.5s ease-in-out infinite"
+                                  : "none",
+                            }}
+                          >
+                            {status}
+                          </span>
+
+                          {status === "Pending" && (
+                            <style>
+                              {`
+                  @keyframes blink {
+                    50% { opacity: 0; }
+                  }
+                `}
+                            </style>
+                          )}
+                        </>
                       )}
                     </div>
                   </div>

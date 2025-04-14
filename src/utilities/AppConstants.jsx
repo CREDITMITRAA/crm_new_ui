@@ -94,7 +94,7 @@ export const terminologiesMap = new Map([
 ])
 
 export const verificationStatusOptions = [
-  { label: "Select Verification Status", value: "" },
+  { label: "Select verification status", value: "" },
   { label: terminologiesMap.get(UNDER_REVIEW), value: UNDER_REVIEW },
   { label: terminologiesMap.get(ON_HOLD), value: ON_HOLD },
   { label: terminologiesMap.get(MANAGER_1_APPROVED), value: MANAGER_1_APPROVED },
@@ -105,7 +105,7 @@ export const verificationStatusOptions = [
 ];
 
 export const applicationStatusOptionsForWalkInsPageFilters = [
-  { label: "Select Application Status", value: "" },
+  { label: "Select application status", value: "" },
   { label: terminologiesMap.get(MANAGER_1_APPROVED), value: MANAGER_1_APPROVED },
   { label: terminologiesMap.get(MANAGER_2_APPROVED), value: MANAGER_2_APPROVED },
   { label: terminologiesMap.get(REJECTED), value: REJECTED },
@@ -115,7 +115,7 @@ export const applicationStatusOptionsForWalkInsPageFilters = [
 ];
 
 export const leadStatusOptionsForWalkInsPageFilters = [
-  { label: "Select Lead Status", value: "" },
+  { label: "Select lead status", value: "" },
   { label: terminologiesMap.get(SCHEDULED_FOR_WALK_IN), value: SCHEDULED_FOR_WALK_IN },
   { label: terminologiesMap.get(SCHEDULED_CALL_WITH_MANAGER), value: SCHEDULED_CALL_WITH_MANAGER },
   { label: terminologiesMap.get(OKAY_FOR_POLICY), value: OKAY_FOR_POLICY },

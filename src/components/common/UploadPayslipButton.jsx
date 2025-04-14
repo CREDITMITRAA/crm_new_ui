@@ -23,7 +23,7 @@ function UploadPayslipButton({ onFileSelect }) {
   };
 
   return (
-    <div>
+    <div className="w-full">
       {/* Hidden File Input */}
       <input
         type="file"
@@ -36,12 +36,12 @@ function UploadPayslipButton({ onFileSelect }) {
 
       {/* Button UI */}
       <div
-        className={`w-full h-10 rounded-[0.563rem] border border-[#229D00] flex justify-center items-center p-[0.625rem] ${
+        className={`w-full h-10 rounded-[0.563rem] border border-[#249FA5] flex justify-center items-center p-[0.625rem] px-[0.3rem] ${
           isDisabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
         }`}
         onClick={isDisabled ? undefined : handleClick}
       >
-        <div className="text-[#229D00] text-xs font-semibold poppins-thin leading-tight">
+        <div className="text-[#249FA5] text-xs font-semibold poppins-thin leading-tight">
           {uploading ? "Uploading..." : `Upload payslip ${payslips?.length || 0}/3`}
         </div>
       </div>

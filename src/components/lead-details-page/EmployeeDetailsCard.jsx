@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import DropDown from "../common/dropdowns/DropDown";
 import AddActivityDialogue from "../common/dialogues/AddActivityDialogue";
 import { getRecentActivityNotesByLeadId } from "../../features/leads/leadsThunks";
+import { formatName } from "../../utilities/utility-functions";
 
 function EmployeeDetailsCard() {
   const dispatch = useDispatch();
@@ -158,7 +159,7 @@ function EmployeeDetailsCard() {
 
         {/* lead name */}
         <div className="text-[#214768] text-base font-semibold poppins-thin leading-tight mt-[0.625rem]">
-          {lead.name}
+          {formatName(lead.name)}
         </div>
 
         {/* lead email */}
@@ -168,7 +169,7 @@ function EmployeeDetailsCard() {
 
         {/* lead status */}
         <div className="flex justify-center mt-2 min-w-40">
-          <DropDown
+          {/* <DropDown
             options={[
               ...activityOptions,
               ...(lead?.Activities?.[0]?.docs_collected
@@ -190,7 +191,35 @@ function EmployeeDetailsCard() {
                   )
                 : 0
             }
-          />
+          /> */}
+
+          <select
+            className="w-full bg-[#D9E4F2] h-full flex items-center justify-between border px-3 py-2 rounded-md text-[#464646] cursor-pointer"
+            value={recentActivity?.activity_status || ""}
+            onChange={(e) =>
+              handleSelectActivity("activity_status", e.target.value)
+            }
+          >
+            {[
+              ...activityOptions,
+              ...(lead?.Activities?.[0]?.docs_collected
+                ? [
+                    {
+                      label: terminologiesMap.get(VERIFICATION_1),
+                      value: VERIFICATION_1,
+                    },
+                  ]
+                : []),
+            ].map((option) => (
+              <option
+                key={option.value}
+                value={option.value}
+                selected={recentActivity?.activity_status === option.value}
+              >
+                {option.label}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* notes container */}

@@ -162,12 +162,20 @@ function Leads() {
                 "userId",
                 "exclude_verification",
               ].includes(key)
-            : !["page", "pageSize", "totalPages", "total"].includes(key)
+            : ![
+                "page",
+                "pageSize",
+                "totalPages",
+                "total",
+                "assigned_to",
+              ].includes(key)
         ) {
           acc[key] = filters[key];
         }
         return acc;
       }, {});
+      console.log("filtered filters = ", filteredFilters);
+
       setShowDot(Object.keys(filteredFilters).length > 0);
     }
   }, [filters, pageSize, fetchLeads]);
@@ -836,16 +844,19 @@ function Leads() {
             </span>
           </div>
           <div className="flex grid-cols-8 gap-2">
-            <PrimaryButton
-              isActive={tableType === ASSIGNED_TABLE}
-              name="Assigned"
-              onClick={() => {
-                handleResetFilters();
-                setShowNotAssignedTable(false);
-                setTableType(ASSIGNED_TABLE);
-                setShowFilter(false);
-              }}
-            />
+            {user.user.role !== ROLE_EMPLOYEE && (
+              <PrimaryButton
+                isActive={tableType === ASSIGNED_TABLE}
+                name="Assigned"
+                onClick={() => {
+                  handleResetFilters();
+                  setShowNotAssignedTable(false);
+                  setTableType(ASSIGNED_TABLE);
+                  setShowFilter(false);
+                }}
+                backgroundColor="#C7D4E4"
+              />
+            )}
             {user.user.role !== ROLE_EMPLOYEE && (
               <PrimaryButton
                 name="Not Assigned"
@@ -860,6 +871,7 @@ function Leads() {
                   }));
                   setShowFilter(false);
                 }}
+                backgroundColor="#C7D4E4"
               />
             )}
             {selectedLeadIds?.length > 0 &&

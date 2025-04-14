@@ -45,32 +45,32 @@ function InvalidLeadsTable({
           </div>
 
           {/* lead id */}
-          <div className="w-[10%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none">
+          <div className="w-[10%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight">
             Lead ID
           </div>
 
           {/* name */}
-          <div className="w-[16%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none">
+          <div className="w-[16%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight">
             Name
           </div>
 
           {/* Phone */}
-          <div className="w-[16%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none">
+          <div className="w-[16%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight">
             Phone
           </div>
 
           {/* Status */}
-          <div className="w-[28%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none">
+          <div className="w-[28%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight">
             Reason
           </div>
 
           {/* Source */}
-          <div className="w-[13%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none">
+          <div className="w-[13%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight">
             Source
           </div>
 
           {/* Imported On */}
-          <div className="w-[13%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-none">
+          <div className="w-[13%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight">
             Imported On
           </div>
         </div>
@@ -111,7 +111,7 @@ function InvalidLeadsTable({
 
             {/* Lead ID */}
             <div
-              className="w-[10%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden"
+              className="w-[10%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
               onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
             >
               <span className="truncate px-1 w-full text-center flex justify-left">
@@ -121,7 +121,7 @@ function InvalidLeadsTable({
 
             {/* Name */}
             <div
-              className="w-[16%] flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden"
+              className="w-[16%] flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
               onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
             >
               <span className="truncate w-full flex justify-left">
@@ -131,7 +131,7 @@ function InvalidLeadsTable({
 
             {/* Phone */}
             <div
-              className="w-[16%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden"
+              className="w-[16%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
               onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
             >
               <span className="truncate w-full text-center flex justify-left">
@@ -141,7 +141,7 @@ function InvalidLeadsTable({
 
             {/* Status */}
             <div
-              className="w-[28%] flex justify-center items-center text-[#2B323B] text-xs font-semibold inter-inter leading-none overflow-hidden"
+              className="w-[28%] flex justify-center items-center text-[#2B323B] text-xs font-semibold inter-inter leading-tight overflow-hidden"
               onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
             >
               <span className="truncate w-full text-center flex justify-left">
@@ -151,7 +151,7 @@ function InvalidLeadsTable({
 
             {/* Source */}
             <div
-              className="w-[13%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none overflow-hidden"
+              className="w-[13%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
               onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
             >
               <span className="truncate w-full text-center flex justify-left">
@@ -163,7 +163,7 @@ function InvalidLeadsTable({
 
             {/* Imported On */}
             <div
-              className="w-[13%] flex flex-col justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none rounded-br-lg rounded-tr-lg overflow-hidden"
+              className="w-[13%] flex flex-col justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight rounded-br-lg rounded-tr-lg overflow-hidden"
               onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
             >
               <span className="truncate w-full text-center flex justify-left">

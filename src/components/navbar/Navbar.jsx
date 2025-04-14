@@ -175,9 +175,8 @@ function Navbar() {
         {/* Profile Button */}
         <div
           className="rounded-full flex items-center justify-center w-[2.25rem] h-[2.25rem] cursor-pointer hover:border border-[#646CFF] mx-2"
-          onClick={() => setShowProfile(!showProfile)}
         >
-          <ProfileIcon className="text-[#4300A0]" />
+          <ProfileIcon className="text-[#4300A0]" onClick={() => setShowProfile(!showProfile)}/>
         </div>
 
         {/* Profile Component */}

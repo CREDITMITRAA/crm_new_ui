@@ -25,15 +25,15 @@ import {
 function FilterDialogue({ resetFilters, setFilters, filters }) {
   const dispatch = useDispatch();
   const [employees, setEmployees] = useState([
-    { label: "Filter By Employee Name", value: "" },
+    { label: "Filter by employee name", value: "" },
   ]);
   const [selectedEmployeeName, setSelectedEmployeeName] = useState(null);
   const { users, userOptions } = useSelector((state) => state.users);
   const { leadSources } = useSelector((state) => state.leads);
   const { role } = useSelector((state) => state.auth);
-  const {isConfirmationDialogueOpened} = useSelector((state)=>state.ui)
+  const { isConfirmationDialogueOpened } = useSelector((state) => state.ui);
   const [leadStatusOptions, setLeadStatusOptions] = useState([
-    { label: "Filter By Status", value: "" },
+    { label: "Filter by status", value: "" },
     { label: terminologiesMap.get(NOT_CONTACTED), value: NOT_CONTACTED },
     { label: terminologiesMap.get(INTERESTED), value: INTERESTED },
     { label: terminologiesMap.get(FOLLOW_UP), value: FOLLOW_UP },
@@ -61,7 +61,7 @@ function FilterDialogue({ resetFilters, setFilters, filters }) {
     },
   ]);
   const [leadSourceOptions, setLeadSourceOptions] = useState([
-    { label: "Select Lead Source", value: "" },
+    { label: "Select lead source", value: "" },
   ]);
 
   useEffect(() => {
@@ -108,10 +108,13 @@ function FilterDialogue({ resetFilters, setFilters, filters }) {
   }
 
   return (
-    <div className="w-full h-max bg-[#E6F4FF] mt-4 p-4 grid grid-cols-12 gap-2 rounded-xl" style={{zIndex: isConfirmationDialogueOpened && -1}}>
+    <div
+      className="w-full h-max bg-[#E6F4FF] mt-4 p-4 grid grid-cols-12 gap-2 rounded-xl"
+      style={{ zIndex: isConfirmationDialogueOpened && -1 }}
+    >
       {/* lead id */}
       <div className="col-span-3 w-full h-12">
-        <div className="w-full h-max bg-[#FFFFFF] rounded-xl border border-[#214768] flex items-center justify-start pl-0">
+        <div className="w-full h-max bg-[#F2F7FE] rounded-xl border border-[#214768] flex items-center justify-start pl-0">
           <input
             type="text"
             name="leadId"
@@ -119,7 +122,7 @@ function FilterDialogue({ resetFilters, setFilters, filters }) {
             onChange={(e) =>
               setFilters((prev) => ({ ...prev, leadId: e.target.value }))
             }
-            placeholder="Filter By ID"
+            placeholder="Filter by id"
             className="text-[#214768] text-sm font-normal inter-inter w-full h-full bg-transparent focus:outline-none focus:border-[#4200a0] focus:ring-0 border-none placeholder:text-[#32086d]/50"
           />
         </div>
@@ -127,7 +130,7 @@ function FilterDialogue({ resetFilters, setFilters, filters }) {
 
       {/* phone no */}
       <div className="col-span-3 w-full h-12">
-        <div className="w-full h-max bg-[#FFFFFF] rounded-xl border border-[#214768] flex items-center justify-start pl-0">
+        <div className="w-full h-max bg-[#F2F7FE] rounded-xl border border-[#214768] flex items-center justify-start pl-0">
           <input
             type="text"
             name="phone"
@@ -135,7 +138,7 @@ function FilterDialogue({ resetFilters, setFilters, filters }) {
             onChange={(e) =>
               setFilters((prev) => ({ ...prev, phone: e.target.value }))
             }
-            placeholder="Filter By Phone"
+            placeholder="Filter by phone"
             className="text-[#214768] text-sm font-normal inter-inter w-full h-full bg-transparent focus:outline-none focus:border-[#4200a0] focus:ring-0 border-none placeholder:text-[#32086d]/50"
           />
         </div>
@@ -143,7 +146,7 @@ function FilterDialogue({ resetFilters, setFilters, filters }) {
 
       {/* lead name */}
       <div className="col-span-3 w-full h-12">
-        <div className="w-full h-max bg-[#FFFFFF] rounded-xl border border-[#214768] flex items-center justify-start pl-0">
+        <div className="w-full h-max bg-[#F2F7FE] rounded-xl border border-[#214768] flex items-center justify-start pl-0">
           <input
             type="text"
             name="name"
@@ -151,7 +154,7 @@ function FilterDialogue({ resetFilters, setFilters, filters }) {
             onChange={(e) =>
               setFilters((prev) => ({ ...prev, name: e.target.value }))
             }
-            placeholder="Filter By Lead Name"
+            placeholder="Filter by lead name"
             className="text-[#214768] text-sm font-normal inter-inter w-full h-full bg-transparent focus:outline-none focus:border-[#4200a0] focus:ring-0 border-none placeholder:text-[#32086d]/50"
           />
         </div>
@@ -159,7 +162,7 @@ function FilterDialogue({ resetFilters, setFilters, filters }) {
 
       {/* lead source */}
       <div className="col-span-3 w-full h-12">
-        <div className="w-full h-max bg-[#FFFFFF] rounded-xl border border-[#214768] flex items-center justify-start pl-0">
+        <div className="w-full h-max bg-[#F2F7FE] rounded-xl border border-[#214768] flex items-center justify-start pl-0">
           <DropDown
             options={leadSourceOptions}
             onChange={(name, value) => handleSelect(name, value)}
@@ -170,14 +173,15 @@ function FilterDialogue({ resetFilters, setFilters, filters }) {
             resetFilters={resetFilters}
             fieldName="lead_source"
             autoSuggestOptions={true}
-            backgroundColor="#FFFFFF"
+            backgroundColor="#F2F7FE"
+            textColor="text-[#214768]"
           />
         </div>
       </div>
 
       {/* Employee name */}
-      {role !== ROLE_EMPLOYEE ? (
-        <div className="col-span-6 w-full h-max">
+      {role !== ROLE_EMPLOYEE && (
+        <div className="col-span-3 w-full h-max mt-5">
           <div className="w-full h-max bg-[#FFFFFF] rounded-xl border border-[#214768] flex items-center">
             <DropDown
               options={employees}
@@ -188,16 +192,15 @@ function FilterDialogue({ resetFilters, setFilters, filters }) {
               selectedOption={selectedEmployeeName}
               resetFilters={resetFilters}
               fieldName="assigned_to"
-              backgroundColor="#FFFFFF"
+              backgroundColor="#F2F7FE"
+              textColor="text-[#214768]"
             />
           </div>
         </div>
-      ) : (
-        <div className="col-span-6"></div>
       )}
 
       {/* lead status */}
-      <div className="col-span-6 w-full h-max">
+      <div className="col-span-3 w-full h-max mt-5">
         <div className="w-full h-max bg-[#FFFFFF] rounded-xl border border-[#214768] flex items-center">
           <DropDown
             options={leadStatusOptions}
@@ -208,19 +211,20 @@ function FilterDialogue({ resetFilters, setFilters, filters }) {
             selectedOption={selectedEmployeeName}
             resetFilters={resetFilters}
             fieldName="lead_status"
-            backgroundColor="#FFFFFF"
+            backgroundColor="#F2F7FE"
+            textColor="text-[#214768]"
           />
         </div>
       </div>
 
       {/* assigned on */}
-      <div className="col-span-4 flex flex-col">
+      <div className="col-span-3 flex flex-col">
         <div className="text-[#214768] text-xs font-normal poppins-thin leading-none tracking-tight">
           Assigned on
         </div>
         <div className="w-full h-10 bg-[#FFFFFF] rounded-2xl border border-[#214768] justify-center items-center gap-2.5 inline-flex mt-[0.325rem]">
           <DateButton
-            buttonBackgroundColor="[#FFFFFF]"
+            buttonBackgroundColor="[#F2F7FE]"
             onDateChange={(fieldName, value) =>
               handleDateChange(fieldName, value)
             }
@@ -248,13 +252,13 @@ function FilterDialogue({ resetFilters, setFilters, filters }) {
       </div> */}
 
       {/* last updated on */}
-      <div className="col-span-4 flex flex-col">
+      <div className="col-span-3 flex flex-col">
         <div className="text-[#214768] text-xs font-normal poppins-thin leading-none tracking-tight">
           last updated on
         </div>
         <div className="w-full h-10 bg-[#FFFFFF] rounded-2xl border border-[#214768] justify-center items-center gap-2.5 inline-flex mt-[0.325rem]">
           <DateButton
-            buttonBackgroundColor="[#FFFFFF]"
+            buttonBackgroundColor="[#F2F7FE]"
             onDateChange={(fieldName, value) =>
               handleDateChange(fieldName, value)
             }

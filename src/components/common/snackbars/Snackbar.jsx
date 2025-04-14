@@ -17,7 +17,7 @@ function Snackbar({ isOpen, onClose, status, message, statusType, shouldCloseOnC
   useEffect(() => {
     if (!isOpen) return;
     
-    // Auto-close after 3 seconds
+    // Auto-close after 3 seconds 
     // const timer = setTimeout(() => onClose(), 3000);
 
     // Close on outside click

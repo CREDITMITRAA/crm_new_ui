@@ -1,10 +1,15 @@
 import { useState } from "react";
+import { useSelector } from "react-redux";
 
 function ToggleCheckbox({ checked, onClick }) {
+  const { isConfirmationDialogueOpened, isProfileDialogueOpened } = useSelector(
+      (state) => state.ui
+    );
   return (
     <label
       className="relative w-[1.25rem] h-[1.25rem] rounded-[5px] flex justify-center items-center"
       onClick={onClick}
+      style={{zIndex: isConfirmationDialogueOpened && -1}}
     >
       <input
         type="checkbox"
@@ -13,7 +18,7 @@ function ToggleCheckbox({ checked, onClick }) {
         onChange={() => {}}
       />
       {checked ? (
-        <div className="w-full h-full bg-[#2B323B] flex justify-center items-center rounded-[5px] cursor-pointer">
+        <div className="w-full h-full bg-[#73B7FB] flex justify-center items-center rounded-[5px] cursor-pointer">
           <svg
             width="12"
             height="12"
@@ -28,7 +33,7 @@ function ToggleCheckbox({ checked, onClick }) {
           </svg>
         </div>
       ) : (
-        <div className="w-full h-full bg-[#21476830] rounded-[5px] cursor-pointer" />
+        <div className="w-full h-full bg-[#73B7FB4D] rounded-[5px] cursor-pointer" />
       )}
     </label>
   );

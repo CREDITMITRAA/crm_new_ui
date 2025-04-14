@@ -13,7 +13,7 @@ function DropDown({
   backgroundColor = 'bg-white',
   textColor = 'text-[#32086d]/50',
   buttonClassName = '',
-  optionTextColor = 'text-indigo-700',
+  optionTextColor = 'text-[#464646]',
   optionHoverColor = 'bg-blue-100',
   dropdownClassName = '',
   cursor = 'cursor-pointer',
@@ -75,7 +75,7 @@ function DropDown({
   }, [isOpen]);
 
   return (
-    <div className={`${!isConfirmationDialogueOpened && 'relative'} inline-block w-full ${className}`}>
+    <div className={`${!isConfirmationDialogueOpened && 'relative'} inter-inter inline-block w-full ${className}`}>
       {/* Dropdown Button */}
       <div
         ref={buttonRef}
@@ -111,7 +111,7 @@ function DropDown({
               onClick={(event) => handleSelect(item, event)}
               className={`
                 px-3 py-1.5 text-xs font-medium transition-colors 
-                border-b border-gray-300 last:border-none ${optionTextColor} 
+                border-b border-gray-300 last:border-none ${item?.value === "" ? 'text-[#ABAAB9]' : `${optionTextColor}`} 
                 hover:${optionHoverColor} ${cursor}
               `}
             >

@@ -282,12 +282,7 @@ const PerformanceChartHorizontal = (
   useEffect(() => {
     dispatch(getChartDataByChartType({ ...filters }));
     const filteredFilters = Object.keys(filters)?.reduce((acc, key) => {
-      if (
-![
-              "date",
-              "date_time_range",
-            ].includes(key)
-      ) {
+      if (!["date", "date_time_range"].includes(key)) {
         acc[key] = filters[key];
       }
       return acc;
@@ -429,9 +424,11 @@ const PerformanceChartHorizontal = (
                 showDot={showDot}
               />
             )}
-            {(showDot || filters.hasOwnProperty("date") || filters.hasOwnProperty("date_time_range")) && (
-  <ClearButton onClick={() => handleResetFilters()} />
-)}
+            {(showDot ||
+              filters.hasOwnProperty("date") ||
+              filters.hasOwnProperty("date_time_range")) && (
+              <ClearButton onClick={() => handleResetFilters()} />
+            )}
 
             <ExportButton onClick={() => setExportData(true)} />
           </div>

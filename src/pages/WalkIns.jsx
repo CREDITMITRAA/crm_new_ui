@@ -268,6 +268,7 @@ function WalkIns() {
                 setTableType("");
                 setShowFilter(false);
               }}
+              backgroundColor="#C7D4E4"
             />
             <PrimaryButton
               name="Normal Login"
@@ -278,12 +279,13 @@ function WalkIns() {
                 setTableType(NORMAL_LOGIN);
                 setShowFilter(false);
               }}
+              backgroundColor="#C7D4E4"
             />
             <FilterButton
               onClick={() => setShowFilter(!showFilter)}
               showDot={showDot}
             />
-            <ClearButton onClick={() => handleResetFilters()} />
+            {showDot && <ClearButton onClick={() => handleResetFilters()} />}
             <ExportButton onClick={() => handleExportLeads()} />
             {/* <DeleteButton /> */}
           </div>
