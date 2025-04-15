@@ -1,55 +1,120 @@
-function InteractiveNotification({
-  videoSrc = "",
-  show = false,
-  onClose,
-  autoPlay = true,
-  loop = false,
-  message = ""
-}) {
+import { useEffect, useRef, useState } from "react";
+import robot_image from "../../assets/images/robot_image.png";
+import cloud from "../../assets/images/cloud.png";
+
+function InteractiveNotification({ show = false, onClose, message = "This is a sample message for testing how the cloud adjusts dynamically based on the number of words." }) {
+  const [showCloud, setShowCloud] = useState(false);
+  const messageRef = useRef(null);
+  const robotRef = useRef(null);
+  const [cloudSize, setCloudSize] = useState({ width: 200, height: 100 });
+
+  useEffect(() => {
+    if (show) {
+      const timer = setTimeout(() => setShowCloud(true), 600);
+      return () => clearTimeout(timer);
+    } else {
+      setShowCloud(false);
+    }
+  }, [show]);
+
+  useEffect(() => {
+    if (messageRef.current) {
+      const rect = messageRef.current.getBoundingClientRect();
+      setCloudSize({
+        width: rect.width + 40, // padding
+        height: rect.height + 40, // padding
+      });
+    }
+  }, [message, showCloud]);
+
+  const formatMessage = (message) => {
+    // Split the message into an array of words
+    const words = message.split(' ');
+    const lines = [];
+    let currentLine = [];
+    
+    // Distribute words across lines in an increasing manner (first line with fewer words)
+    for (let i = 0; i < words.length; i++) {
+      currentLine.push(words[i]);
+      // Start a new line if the current line has more words than previous ones
+      if (currentLine.length > lines.length) {
+        lines.push(currentLine.join(' '));
+        currentLine = [];
+      }
+    }
+    // If there are remaining words, add them to the last line
+    if (currentLine.length) lines.push(currentLine.join(' '));
+
+    return lines;
+  };
+
+  const formattedMessage = formatMessage(message);
+
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4 overflow-hidden flex justify-center items-center flex-col py-4">
-        {/* Close button positioned absolutely at top-right */}
-        <div
-          onClick={onClose}
-          className="absolute top-3 right-3 text-blue-300 hover:text-blue-400 cursor-pointer z-10"
-        >
-          <span className="sr-only">Close</span>
-          <svg
-            className="h-8 w-8"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </div>
+    <div className="fixed inset-0 z-50 flex items-end justify-end bg-black/50 backdrop-blur-sm">
+      <style>
+        {`
+          @keyframes robot-slide {
+            0% { transform: translateX(100%); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+          }
+          @keyframes cloud-fade {
+            0% { opacity: 0; transform: translateY(-10px); }
+            100% { opacity: 1; transform: translateY(0); }
+          }
+          .animate-robot-slide {
+            animation: robot-slide 0.6s ease-out forwards;
+          }
+          .animate-cloud-fade {
+            animation: cloud-fade 0.5s ease-out forwards;
+          }
+        `}
+      </style>
 
-        {/* Video container */}
-        <div className="w-full">
-          <video
-            src={videoSrc}
-            autoPlay={autoPlay}
-            loop={loop}
-            controls={false}
-            className="w-full h-auto"
-            playsInline
-            muted
+      <div className="relative">
+        {/* Cloud Positioned Top-Left of Robot */}
+        {showCloud && (
+          <div
+            className="absolute animate-cloud-fade"
+            style={{
+              top: message ? `-${cloudSize.width-10}px` : "0",
+              right: message ?`${cloudSize.height/2}px` : "0",
+              transform: "translate(-100%, -80%)", // offset cloud relative to robot top-left
+              width: `${cloudSize.width}px`,
+              height: `${cloudSize.height}px`,
+              backgroundImage: `url(${cloud})`,
+              backgroundSize: "100% 100%",
+              backgroundRepeat: "no-repeat",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "20px",
+              zIndex: 20,
+            }}
           >
-            Your browser does not support the video tag.
-          </video>
-        </div>
+            <div
+              ref={messageRef}
+              className="text-violet-950 text-sm font-medium text-center leading-snug whitespace-pre-wrap"
+            >
+              {/* Display the formatted message with each line simulating cloud shape */}
+              {formattedMessage.map((line, index) => (
+                <div key={index} style={{ marginBottom: "5px" }}>
+                  {line}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
-        <div className="w-80 text-center justify-center text-violet-950 text-base font-medium poppins-thin leading-none tracking-tight">
-          {message}
-        </div>
+        {/* Robot */}
+        <img
+          ref={robotRef}
+          src={robot_image}
+          alt="Robot"
+          className="w-32 animate-robot-slide relative z-10"
+        />
       </div>
     </div>
   );
