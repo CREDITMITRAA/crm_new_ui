@@ -18,13 +18,13 @@ function ToggleCheckbox({ checked, onClick }) {
         onChange={() => {}}
       />
       {checked ? (
-        <div className="w-full h-full bg-[#73B7FB] flex justify-center items-center rounded-[5px] cursor-pointer">
+        <div className="w-full h-full bg-[#C2D2E7] flex justify-center items-center rounded-[5px] cursor-pointer shadow-[0px_0px_1px_0px_rgba(0,0,0,0.05)] shadow-[2px_3px_2px_0px_rgba(0,0,0,0.05)] shadow-[5px_8px_3px_0px_rgba(0,0,0,0.00)]">
           <svg
             width="12"
             height="12"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="white"
+            stroke="#214768"
             strokeWidth="3"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -33,7 +33,7 @@ function ToggleCheckbox({ checked, onClick }) {
           </svg>
         </div>
       ) : (
-        <div className="w-full h-full bg-[#73B7FB4D] rounded-[5px] cursor-pointer" />
+        <div className="w-full h-full bg-[#C2D2E7] rounded-[5px] cursor-pointer" />
       )}
     </label>
   );
