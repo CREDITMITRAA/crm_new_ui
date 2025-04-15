@@ -572,7 +572,7 @@ function WalkInsTable() {
                               ...style,
                               color:
                                 status === "Pending" ? "#D18C31" : "inherit",
-                              fontWeight: status === "Pending" && "bold",
+                              // fontWeight: status === "Pending" && "bold",
                               animation:
                                 status === "Pending"
                                   ? "blink 1.5s ease-in-out infinite"

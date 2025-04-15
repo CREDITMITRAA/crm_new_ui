@@ -21,10 +21,11 @@ import Snackbar from "../common/snackbars/Snackbar";
 import ActivityLogsContainer from "./ActivityLogsContainer";
 import Loader from "../common/loaders/Loader";
 import EmptyDataMessageIcon from "../icons/EmptyDataMessageIcon";
+import ActivityLogsContainerEmployeeWise from "./ActivityLogsContainerEmployeeWise";
 
 function ActivityLog() {
   const dispatch = useDispatch();
-  const { activityLogs, pagination, loading } = useSelector(
+  const { activityLogsEmployeeWise, pagination, loading } = useSelector(
     (state) => state.activityLogs
   );
   const { users } = useSelector((state) => state.users);
@@ -51,8 +52,8 @@ function ActivityLog() {
   }, [dispatch]);
 
   useEffect(() => {
-    console.log("logs = ", activityLogs, users);
-  }, [activityLogs]);
+    console.log("logs = ", activityLogsEmployeeWise, users);
+  }, [activityLogsEmployeeWise]);
 
   useEffect(() => {
     // Fetch activity logs with the current filters
@@ -235,22 +236,22 @@ function ActivityLog() {
         </>
       ) : (
         <>
-          {!isEmpty(activityLogs) ? (
+          {!isEmpty(activityLogsEmployeeWise) ? (
             <>
               <div className="w-full h-[20rem] bg-white flex justify-center items-center">
                 <EmptyDataMessageIcon size={100} />
               </div>
             </>
           ) : (
-            <ActivityLogsContainer
-              activityLogs={activityLogs}
+            <ActivityLogsContainerEmployeeWise
+              activityLogs={activityLogsEmployeeWise}
               userMap={userMap}
             />
           )}
         </>
       )}
 
-      {!loading && isEmpty(activityLogs) && (
+      {!loading && isEmpty(activityLogsEmployeeWise) && (
         <div className="mt-4 px-2">
           <Pagination
             total={pagination?.total}
