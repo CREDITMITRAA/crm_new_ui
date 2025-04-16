@@ -37,10 +37,10 @@ function UpdateVerificationStatusDialogue({
 
   useEffect(() => {
     console.log("payload = ", payload);
-    dispatch(setIsConfirmationDialogueOpened(true))
+    dispatch(setIsConfirmationDialogueOpened(true));
     return () => {
       onStatusUpdate();
-      dispatch(setIsConfirmationDialogueOpened(false))
+      dispatch(setIsConfirmationDialogueOpened(false));
     };
   }, []);
 
@@ -110,7 +110,7 @@ function UpdateVerificationStatusDialogue({
 
   function handleRejectionReasonChange(e) {
     setRejectionReason(e.target.value);
-    setRejectionReasonError("")
+    setRejectionReasonError("");
   }
 
   return (
@@ -158,7 +158,9 @@ function UpdateVerificationStatusDialogue({
           </div>
 
           <div className="w-full flex justify-center my-2 text-[#888888]">
-            <span>{`You are about to change verification status to ${terminologiesMap.get(payload?.verification_status)}`}</span>
+            <span>{`You are about to change verification status to ${terminologiesMap.get(
+              payload?.verification_status
+            )}`}</span>
           </div>
 
           {payload?.verification_status === REJECTED ? (
@@ -167,7 +169,7 @@ function UpdateVerificationStatusDialogue({
               <div className="relative w-full h-max mt-[1.375rem]">
                 {/* Note Label */}
                 <div
-                  className={`absolute -top-2 left-4 bg-[#F4EBFE] px-2 ${
+                  className={`absolute -top-2 left-4 bg-[#F4EBFE] px-2 rounded-[5px] ${
                     rejectionReasonError ? "text-[#FF0000]" : "text-[#32086D]"
                   } text-sm font-medium`}
                 >
@@ -177,11 +179,14 @@ function UpdateVerificationStatusDialogue({
                 {/* Multiline Input (Textarea) */}
                 <textarea
                   className={`border ${
-                    rejectionReasonError ? "border-red-500" : "border-[#4300A0]"
-                  } rounded-2xl p-4 bg-white min-h-[10rem] w-full resize-none outline-none text-[#32086D] text-sm`}
+                    rejectionReasonError
+                      ? "border-red-500 focus:border-red-500"
+                      : "border-[#4300A0] focus:border-[#4300A0]"
+                  } rounded-2xl p-4 bg-white min-h-[10rem] w-full resize-none outline-none focus:outline-none focus:ring-0 text-[#214768] text-sm placeholder:text-[#888888]`}
                   placeholder="Provide a rejection reason"
                   onChange={(e) => handleRejectionReasonChange(e)}
                 />
+
                 {/* Validation Error Message */}
                 {rejectionReasonError && (
                   <p className="text-red-500 text-sm mt-1">
@@ -193,28 +198,38 @@ function UpdateVerificationStatusDialogue({
           ) : (
             <>
               <div className="relative w-full h-max mt-[1.375rem]">
-                {/* Note Label */}
-                <div
-                  className={`absolute -top-2 left-4 bg-[#E6F4FF] px-2 ${
-                    rejectionReasonError ? "text-[#FF0000]" : "text-[#214768]"
-                  } text-sm font-medium`}
-                >
-                  Note
-                </div>
+  {/* Note Label */}
+  <div
+    className={`absolute -top-2 left-4 bg-[#E6F4FF] px-2 rounded-[5px] ${
+      rejectionReasonError ? "text-[#FF0000]" : "text-[#214768]"
+    } text-sm font-medium`}
+  >
+    Note
+  </div>
 
-                {/* Multiline Input (Textarea) */}
-                <textarea
-                  className={`border ${"border-[#214768]"} rounded-2xl p-4 bg-[#21476815] min-h-[10rem] w-full resize-none outline-none text-[#32086D] text-sm`}
-                  placeholder="Write your note here..."
-                  onChange={(e) => handleChange(e)}
-                />
-              </div>
+  {/* Multiline Input (Textarea) */}
+  <textarea
+    className={`border ${
+      rejectionReasonError
+        ? "border-red-500 focus:border-red-500"
+        : "border-[#214768] focus:border-[#214768]"
+    } rounded-2xl p-4 bg-[#21476815] min-h-[10rem] w-full resize-none outline-none focus:outline-none focus:ring-0 text-[#32086D] text-sm placeholder:text-[#888888]`}
+    placeholder="Write your note here..."
+    onChange={(e) => handleChange(e)}
+  />
+</div>
+
             </>
           )}
 
           <div className="w-full flex justify-between mt-[1.25rem]">
             <div className="w-max">
-              <PopupButton name="Close" onClick={onClose} borderColor="#214768" textColor="#214768"/>
+              <PopupButton
+                name="Close"
+                onClick={onClose}
+                borderColor="#214768"
+                textColor="#214768"
+              />
             </div>
             <div className="w-max">
               <PopupButton

@@ -14,16 +14,19 @@ import { useDispatch, useSelector } from "react-redux";
 import { addActivity } from "../../../features/activities/activitiesThunks";
 import Snackbar from "../snackbars/Snackbar";
 import { formatDateTime } from "../../../utilities/utility-functions";
-import { setIsAddActivityDialogueOpened, setIsConfirmationDialogueOpened } from "../../../features/ui/uiSlice";
+import {
+  setIsAddActivityDialogueOpened,
+  setIsConfirmationDialogueOpened,
+} from "../../../features/ui/uiSlice";
 
 function AddActivityDialogue({
   onClose,
   selectedActivityStatus = null,
   onActivityAdded,
   fromTable = false,
-  selectedLead={},
+  selectedLead = {},
   setOpenToast,
-  openToast
+  openToast,
 }) {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
@@ -53,15 +56,25 @@ function AddActivityDialogue({
   const [hour, setHour] = useState(12);
   const [minute, setMinute] = useState("00");
   const [period, setPeriod] = useState("AM");
-  const baseOptions = activityOptions
+  const baseOptions = activityOptions;
 
   useEffect(() => {
-    console.log("selected activity status = ", selectedActivityStatus, selectedLead);
-    if(selectedLead?.activities?.[0]?.docsCollected || selectedLead?.Activities?.[0].docs_collected){
-      baseOptions.push({ label: terminologiesMap.get(VERIFICATION_1), value: VERIFICATION_1 });
+    console.log(
+      "selected activity status = ",
+      selectedActivityStatus,
+      selectedLead
+    );
+    if (
+      selectedLead?.activities?.[0]?.docsCollected ||
+      selectedLead?.Activities?.[0].docs_collected
+    ) {
+      baseOptions.push({
+        label: terminologiesMap.get(VERIFICATION_1),
+        value: VERIFICATION_1,
+      });
     }
-    dispatch(setIsConfirmationDialogueOpened(true))
-    dispatch(setIsAddActivityDialogueOpened(true))
+    dispatch(setIsConfirmationDialogueOpened(true));
+    dispatch(setIsAddActivityDialogueOpened(true));
     if (selectedActivityStatus) {
       setSelectedStatus(selectedActivityStatus);
       // setSelectedOptionIndex(
@@ -71,9 +84,9 @@ function AddActivityDialogue({
       // );
     }
     return () => {
-      dispatch(setIsConfirmationDialogueOpened(false))
-      dispatch(setIsAddActivityDialogueOpened(false))
-    }
+      dispatch(setIsConfirmationDialogueOpened(false));
+      dispatch(setIsAddActivityDialogueOpened(false));
+    };
   }, []);
 
   useEffect(() => {
@@ -81,9 +94,9 @@ function AddActivityDialogue({
 
     function handleClickOutside(e) {
       if (dialogueRef.current && !dialogueRef.current.contains(e.target)) {
-        if(openToast){
+        if (openToast) {
           setOpenToast(false);
-        }else{
+        } else {
           onClose();
         }
       }
@@ -91,9 +104,9 @@ function AddActivityDialogue({
 
     function handleEscapeKey(e) {
       if (e.key === "Escape") {
-        if(openToast){
-          setOpenToast(false)
-        }else{
+        if (openToast) {
+          setOpenToast(false);
+        } else {
           onClose();
         }
       }
@@ -142,11 +155,11 @@ function AddActivityDialogue({
       payload.leadId = selectedLead.id;
       payload.lead_name = selectedLead.name;
       payload.activity_status = selectedStatus;
-      if(taskForStatuses.includes(selectedStatus)){
-        console.log(taskDate,hour,minute,period);
-        
-        let followUpDate = formatDateTime(taskDate,hour,minute,period)
-        payload.followUp = followUpDate
+      if (taskForStatuses.includes(selectedStatus)) {
+        console.log(taskDate, hour, minute, period);
+
+        let followUpDate = formatDateTime(taskDate, hour, minute, period);
+        payload.followUp = followUpDate;
       }
     } else {
       payload.userId = user.user.id;
@@ -154,13 +167,13 @@ function AddActivityDialogue({
       payload.lead_name = lead.name;
       payload.activity_status = selectedStatus;
     }
-  
+
     if (description) {
       payload.description = description;
     }
-  
+
     setOpenToast(true);
-  
+
     try {
       const result = await dispatch(addActivity(payload));
       if (addActivity.fulfilled.match(result)) {
@@ -174,22 +187,22 @@ function AddActivityDialogue({
     }
   }
 
-  function handleDateChange(date){
-    console.log('date = ', date);
-    
-    setTaskDate(date)
+  function handleDateChange(date) {
+    console.log("date = ", date);
+
+    setTaskDate(date);
   }
 
-  function handleDateTimeChange(fieldName,value){
-    switch(fieldName){
-      case 'hours':
-        setHour(value)
+  function handleDateTimeChange(fieldName, value) {
+    switch (fieldName) {
+      case "hours":
+        setHour(value);
         break;
-      case 'minutes':
+      case "minutes":
         setMinute(value);
         break;
-      case 'periods':
-        setPeriod(value)
+      case "periods":
+        setPeriod(value);
         break;
     }
   }
@@ -219,14 +232,14 @@ function AddActivityDialogue({
           transform: isOpen ? "scale(1)" : "scale(0.9)",
           opacity: isOpen ? 1 : 0,
           transition: "transform 0.3s ease-in-out, opacity 0.3s ease-in-out",
-          minWidth:'40rem',
+          minWidth: "40rem",
           width: "max-content",
           height: "max-content",
         }}
         onClick={(e) => e.stopPropagation()}
       >
         <>
-          <span className="text-[#32086D] font-semibold leading-5 poppins-thin">
+          <span className="text-[#214768] font-semibold leading-5 poppins-thin">
             Add Activity
           </span>
 
@@ -234,17 +247,17 @@ function AddActivityDialogue({
           <div className="flex justify-start gap-x-2 mt-[1.25rem]">
             {/* status section */}
             <div className="flex flex-col">
-              <span className="text-[#32086D] text-sm font-medium leading-5 mb-[0.625rem]">
+              <span className="text-[#214768] text-sm font-medium leading-5 mb-[0.625rem]">
                 Status
               </span>
               <DropDown
                 // options={[
-                //   ...activityOptions, 
+                //   ...activityOptions,
                 //   ...(selectedLead?.activities?.[0]?.docsCollected || selectedLead?.Activities?.[0]?.docs_collected
-                //       ? [{ label: terminologiesMap.get(VERIFICATION_1), value: VERIFICATION_1 }] 
+                //       ? [{ label: terminologiesMap.get(VERIFICATION_1), value: VERIFICATION_1 }]
                 //       : [])
-                // ]}     
-                options={baseOptions}           
+                // ]}
+                options={baseOptions}
                 className="min-w-[13rem]"
                 onChange={(name, value) => handleSelect(name, value)}
                 fieldName="activity_status"
@@ -256,6 +269,12 @@ function AddActivityDialogue({
                       ) || 0
                 }
                 backgroundColor="bg-[#F2F7FE]"
+                buttonWidth="max-content"
+                buttonMinWidth="13rem"
+                buttonBorder="1px solid #214768"
+                buttonBorderRadius="0.8rem"
+                buttonHeight="100%"
+                optionsTextColor="#464646"
               />
             </div>
 
@@ -263,33 +282,72 @@ function AddActivityDialogue({
               <>
                 {/* Date section */}
                 <div className="flex flex-col w-max">
-                  <span className="text-[#32086D] text-sm font-medium leading-5 mb-[0.625rem]">
+                  <span className="text-[#214768] text-sm font-medium leading-5 mb-[0.625rem]">
                     Date
                   </span>
                   <DateButton
                     showDot={false}
                     showTimeFilterToggleButton={false}
                     showSingleCalender={true}
-                    onDateChange={(date)=>handleDateChange(date)}
+                    onDateChange={(date) => handleDateChange(date)}
+                    buttonBackgroundColor="[#D9E4F2]"
+                    showBoxShadow={true}
+                    borderColor="[#214768]"
                   />
                 </div>
 
                 {/* Time section */}
                 <div className="flex flex-col">
-                  <span className="text-[#32086D] text-sm font-medium leading-5 mb-[0.625rem]">
+                  <span className="text-[#214768] text-sm font-medium leading-5 mb-[0.625rem]">
                     Time
                   </span>
                   <div className="flex gap-x-4">
                     <DropDown
                       options={hours}
                       defaultSelectedOptionIndex={[hours.length - 1]}
-                      onChange={(fieldName,value)=>handleDateTimeChange(fieldName,value)}
+                      onChange={(fieldName, value) =>
+                        handleDateTimeChange(fieldName, value)
+                      }
                       fieldName="hours"
                       backgroundColor="bg-[#FFFFFF]"
                       textColor="text-[#000000]"
+                      buttonWidth="max-content"
+                      buttonMinWidth="4rem"
+                      buttonBorder="1px solid #214768"
+                      buttonBorderRadius="0.8rem"
+                      buttonHeight="100%"
+                      optionsTextColor="#464646"
                     />
-                    <DropDown options={minutes} onChange={(fieldName,value)=>handleDateTimeChange(fieldName,value)} fieldName="minutes" backgroundColor="bg-[#FFFFFF]" textColor="text-[#000000]"/>
-                    <DropDown options={periods} onChange={(fieldName,value)=>handleDateTimeChange(fieldName,value)} fieldName="periods" backgroundColor="bg-[#FFFFFF]" textColor="text-[#000000]"/>
+                    <DropDown
+                      options={minutes}
+                      onChange={(fieldName, value) =>
+                        handleDateTimeChange(fieldName, value)
+                      }
+                      fieldName="minutes"
+                      backgroundColor="bg-[#FFFFFF]"
+                      textColor="text-[#000000]"
+                      buttonWidth="max-content"
+                      buttonMinWidth="4rem"
+                      buttonBorder="1px solid #214768"
+                      buttonBorderRadius="0.8rem"
+                      buttonHeight="100%"
+                      optionsTextColor="#464646"
+                    />
+                    <DropDown
+                      options={periods}
+                      onChange={(fieldName, value) =>
+                        handleDateTimeChange(fieldName, value)
+                      }
+                      fieldName="periods"
+                      backgroundColor="bg-[#F2F7FE]"
+                      textColor="text-[#000000]"
+                      buttonWidth="max-content"
+                      buttonMinWidth="4rem"
+                      buttonBorder="1px solid #214768"
+                      buttonBorderRadius="0.8rem"
+                      buttonHeight="100%"
+                      optionsTextColor="#464646"
+                    />
                   </div>
                 </div>
               </>
@@ -298,13 +356,13 @@ function AddActivityDialogue({
 
           <div className="relative w-full h-max mt-[1.375rem]">
             {/* Note Label */}
-            <div className="absolute -top-2 left-4 bg-[#E6F4FF] px-2 text-[#32086D] text-sm font-medium">
+            <div className="absolute -top-2 left-4 bg-[#E6F4FF] px-2 text-[#214768] text-sm font-medium rounded-[5px]">
               Note
             </div>
 
             {/* Multiline Input (Textarea) */}
             <textarea
-              className="border border-[#214768] rounded-2xl p-4 bg-[#21476815] min-h-[10rem] w-full resize-none outline-none text-[#888888] text-sm"
+              className="border border-[#214768] rounded-2xl p-4 bg-[#21476815] min-h-[10rem] w-full resize-none outline-none focus:outline-none focus:ring-0 focus:border-[#214768] text-[#214768] text-sm"
               placeholder="Write your note here..."
               onChange={(e) => setDescription(e.target.value)}
             />
@@ -312,7 +370,13 @@ function AddActivityDialogue({
 
           <div className="w-full flex justify-between mt-[1.25rem]">
             <div className="w-max">
-              <PopupButton name="Close" onClick={onClose} className="border-solid border-[#214768]" borderColor="#214768" textColor="#214768"/>
+              <PopupButton
+                name="Close"
+                onClick={onClose}
+                className="border-solid border-[#214768]"
+                borderColor="#214768"
+                textColor="#214768"
+              />
             </div>
             <div className="w-max">
               <PopupButton

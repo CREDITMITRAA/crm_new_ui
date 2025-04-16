@@ -14,7 +14,8 @@ function DateButton({
   date = null,
   fromTable = false,
   showBoxShadow = false,
-  fromFilter=false
+  fromFilter=false,
+  borderColor="none"
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [openUpward, setOpenUpward] = useState(false);
@@ -147,7 +148,7 @@ function DateButton({
       {/* Date Button */}
       <div
         ref={buttonRef}
-        className={`w-full h-full px-[10px] py-2.5 bg-${buttonBackgroundColor} rounded-2xl shadow-lg flex items-center gap-2.5 px-8 py-0 cursor-pointer`}
+        className={`w-full h-full px-[10px] py-2.5 bg-${buttonBackgroundColor} rounded-2xl shadow-lg flex items-center gap-2.5 px-8 py-0 cursor-pointer border border-${borderColor}`}
         onClick={togglePicker}
       >
         {showDot && (

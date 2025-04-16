@@ -21,7 +21,7 @@ function UpdateLeadStatusDialogue({
   setOpenToast,
   openToast,
   payload = null,
-  onStatusUpdate
+  onStatusUpdate,
 }) {
   const dispatch = useDispatch();
   const dialogueRef = useRef(null);
@@ -30,11 +30,11 @@ function UpdateLeadStatusDialogue({
   const [notError, setNoteError] = useState("");
 
   useEffect(() => {
-    dispatch(setIsConfirmationDialogueOpened(true))
-    return ()=>{
-      onStatusUpdate()
-      dispatch(setIsConfirmationDialogueOpened(false))
-    }
+    dispatch(setIsConfirmationDialogueOpened(true));
+    return () => {
+      onStatusUpdate();
+      dispatch(setIsConfirmationDialogueOpened(false));
+    };
   }, []);
 
   useEffect(() => {
@@ -72,18 +72,20 @@ function UpdateLeadStatusDialogue({
     if (payload.lead_status === OTHERS && !description.trim()) {
       setNoteError("Note cannot be empty !");
     } else {
-      setOpenToast(true)
+      setOpenToast(true);
       try {
-        const result = await dispatch(updateLeadStatus({...payload, others_note: description}));
+        const result = await dispatch(
+          updateLeadStatus({ ...payload, others_note: description })
+        );
       } catch (error) {
         console.log(error.message);
       }
     }
   }
 
-  function handleChange(e){
-    setDescription(e.target.value)
-    setNoteError("")
+  function handleChange(e) {
+    setDescription(e.target.value);
+    setNoteError("");
   }
 
   return (
@@ -137,7 +139,7 @@ function UpdateLeadStatusDialogue({
           <div className="relative w-full h-max mt-[1.375rem]">
             {/* Note Label */}
             <div
-              className={`absolute -top-2 left-4 bg-[#E6F4FF] px-2 ${
+              className={`absolute -top-2 left-4 bg-[#E6F4FF] px-2 rounded-[5px] ${
                 notError ? "text-[#FF0000]" : "text-[#214768]"
               } text-sm font-medium`}
             >
@@ -147,11 +149,14 @@ function UpdateLeadStatusDialogue({
             {/* Multiline Input (Textarea) */}
             <textarea
               className={`border ${
-                notError ? "border-red-500" : "border-[#214768]"
-              } rounded-2xl p-4 bg-[#21476815] min-h-[10rem] w-full resize-none outline-none text-[#32086D] text-sm`}
+                notError
+                  ? "border-red-500 focus:border-red-500"
+                  : "border-[#214768] focus:border-[#214768]"
+              } rounded-2xl p-4 bg-[#21476815] min-h-[10rem] w-full resize-none outline-none focus:outline-none focus:ring-0 text-[#214768] text-sm placeholder:text-[#888888]`}
               placeholder="Write your note here..."
               onChange={(e) => handleChange(e)}
             />
+
             {/* Validation Error Message */}
             {notError && (
               <p className="text-red-500 text-sm mt-1">{notError}</p>
@@ -160,7 +165,12 @@ function UpdateLeadStatusDialogue({
 
           <div className="w-full flex justify-between mt-[1.25rem]">
             <div className="w-max">
-              <PopupButton name="Close" onClick={onClose} borderColor="#214768" textColor="#214768"/>
+              <PopupButton
+                name="Close"
+                onClick={onClose}
+                borderColor="#214768"
+                textColor="#214768"
+              />
             </div>
             <div className="w-max">
               <PopupButton

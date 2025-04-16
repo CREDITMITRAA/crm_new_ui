@@ -13,14 +13,18 @@ import PopupButton from "../PopupButton";
 import { useDispatch, useSelector } from "react-redux";
 import { addActivity } from "../../../features/activities/activitiesThunks";
 import Snackbar from "../snackbars/Snackbar";
-import { extractDate, formatDatePayload, formatDateTime } from "../../../utilities/utility-functions";
+import {
+  extractDate,
+  formatDatePayload,
+  formatDateTime,
+} from "../../../utilities/utility-functions";
 import { scheduleWalkIn } from "../../../features/verification/verificationThunks";
 import { setIsConfirmationDialogueOpened } from "../../../features/ui/uiSlice";
 
 const options = [
-  {label:SCHEDULE_FOR_WALK_IN, value:SCHEDULE_FOR_WALK_IN},
-  {label:SCHEDULE_CALL_WITH_MANAGER, value:SCHEDULE_CALL_WITH_MANAGER}
-]
+  { label: SCHEDULE_FOR_WALK_IN, value: SCHEDULE_FOR_WALK_IN },
+  { label: SCHEDULE_CALL_WITH_MANAGER, value: SCHEDULE_CALL_WITH_MANAGER },
+];
 
 function ScheduleWalkInOrCallDialogue({
   onClose,
@@ -30,9 +34,9 @@ function ScheduleWalkInOrCallDialogue({
   selectedLead = {},
   setOpenToast,
   openToast,
-  isCall=false,
-  isReschedule=false,
-  setIsCall
+  isCall = false,
+  isReschedule = false,
+  setIsCall,
 }) {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
@@ -65,7 +69,7 @@ function ScheduleWalkInOrCallDialogue({
 
   useEffect(() => {
     console.log("selected activity status = ", selectedLeadStatus);
-    dispatch(setIsConfirmationDialogueOpened(true))
+    dispatch(setIsConfirmationDialogueOpened(true));
     if (selectedLeadStatus) {
       setSelectedStatus(selectedLeadStatus);
       // setSelectedOptionIndex(
@@ -74,10 +78,10 @@ function ScheduleWalkInOrCallDialogue({
       //   )
       // );
     }
-    return ()=>{
-      dispatch(setIsConfirmationDialogueOpened(false))
-      setIsCall(false)
-    }
+    return () => {
+      dispatch(setIsConfirmationDialogueOpened(false));
+      setIsCall(false);
+    };
   }, []);
 
   useEffect(() => {
@@ -116,19 +120,24 @@ function ScheduleWalkInOrCallDialogue({
     setSelectedStatus(value);
   }
 
-  async function handleSubmit(){
-    let payload = {}
-    payload["is_call"]=isCall
-    payload["created_by"] = user.user.id
-    payload["lead_id"] = selectedLead.id
-    payload["lead_name"] = selectedLead.name
-    payload["walk_in_date_time"] = formatDateTime(taskDate,hour,minute,period)
-    payload["note"] = description
-    setOpenToast(true)
+  async function handleSubmit() {
+    let payload = {};
+    payload["is_call"] = isCall;
+    payload["created_by"] = user.user.id;
+    payload["lead_id"] = selectedLead.id;
+    payload["lead_name"] = selectedLead.name;
+    payload["walk_in_date_time"] = formatDateTime(
+      taskDate,
+      hour,
+      minute,
+      period
+    );
+    payload["note"] = description;
+    setOpenToast(true);
     try {
-      const result = await dispatch(scheduleWalkIn(payload))
+      const result = await dispatch(scheduleWalkIn(payload));
       if (scheduleWalkIn.fulfilled.match(result)) {
-        onScheduleWalkInOrCall()
+        onScheduleWalkInOrCall();
       } else if (scheduleWalkIn.rejected.match(result)) {
         console.error("Error scheduling :", result.error);
       }
@@ -188,7 +197,7 @@ function ScheduleWalkInOrCallDialogue({
       >
         <>
           <span className="text-[#214768] font-semibold leading-5 poppins-thin">
-            {isCall ? SCHEDULE_CALL_WITH_MANAGER : SCHEDULE_FOR_WALK_IN }
+            {isCall ? SCHEDULE_CALL_WITH_MANAGER : SCHEDULE_FOR_WALK_IN}
           </span>
 
           {/* status and date time container */}
@@ -211,6 +220,13 @@ function ScheduleWalkInOrCallDialogue({
                       ) || 0
                 }
                 disabled={true}
+                backgroundColor="bg-[#F2F7FE]"
+                buttonWidth="max-content"
+                buttonMinWidth="13rem"
+                buttonBorder="1px solid #214768"
+                buttonBorderRadius="0.8rem"
+                buttonHeight="100%"
+                optionsTextColor="#464646"
               />
             </div>
 
@@ -223,9 +239,12 @@ function ScheduleWalkInOrCallDialogue({
                 showDot={false}
                 showTimeFilterToggleButton={false}
                 showSingleCalender={true}
-                onDateChange={(_,date) => handleDateChange(date)}
+                onDateChange={(_, date) => handleDateChange(date)}
                 date={taskDate && extractDate(taskDate)}
                 fromTable={true}
+                buttonBackgroundColor="[#D9E4F2]"
+                    showBoxShadow={true}
+                    borderColor="[#214768]"
               />
             </div>
 
@@ -243,6 +262,12 @@ function ScheduleWalkInOrCallDialogue({
                   }
                   fieldName="hours"
                   textColor="text-[#000000]"
+                  buttonWidth="max-content"
+                      buttonMinWidth="4rem"
+                      buttonBorder="1px solid #214768"
+                      buttonBorderRadius="0.8rem"
+                      buttonHeight="100%"
+                      optionsTextColor="#464646"
                 />
                 <DropDown
                   options={minutes}
@@ -251,6 +276,12 @@ function ScheduleWalkInOrCallDialogue({
                   }
                   fieldName="minutes"
                   textColor="text-[#000000]"
+                  buttonWidth="max-content"
+                      buttonMinWidth="4rem"
+                      buttonBorder="1px solid #214768"
+                      buttonBorderRadius="0.8rem"
+                      buttonHeight="100%"
+                      optionsTextColor="#464646"
                 />
                 <DropDown
                   options={periods}
@@ -259,6 +290,12 @@ function ScheduleWalkInOrCallDialogue({
                   }
                   fieldName="periods"
                   textColor="text-[#000000]"
+                  buttonWidth="max-content"
+                      buttonMinWidth="4rem"
+                      buttonBorder="1px solid #214768"
+                      buttonBorderRadius="0.8rem"
+                      buttonHeight="100%"
+                      optionsTextColor="#464646"
                 />
               </div>
             </div>
@@ -266,13 +303,13 @@ function ScheduleWalkInOrCallDialogue({
 
           <div className="relative w-full h-max mt-[1.375rem]">
             {/* Note Label */}
-            <div className="absolute -top-2 left-4 bg-[#E6F4FF] px-2 text-[#214768] text-sm font-medium">
+            <div className="absolute -top-2 left-4 bg-[#E6F4FF] px-2 text-[#214768] text-sm font-medium rounded-[5px]">
               Note
             </div>
 
             {/* Multiline Input (Textarea) */}
             <textarea
-              className="border border-[#214768] rounded-2xl p-4 bg-[#21476815] min-h-[10rem] w-full resize-none outline-none text-[#32086D] text-sm"
+              className="border border-[#214768] rounded-2xl p-4 bg-[#21476815] min-h-[10rem] w-full resize-none outline-none focus:outline-none focus:ring-0 focus:border-[#214768] text-[#214768] text-sm placeholder:text-[#214768]"
               placeholder="Write your note here..."
               onChange={(e) => setDescription(e.target.value)}
             />
@@ -280,7 +317,12 @@ function ScheduleWalkInOrCallDialogue({
 
           <div className="w-full flex justify-between mt-[1.25rem]">
             <div className="w-max">
-              <PopupButton name="Close" onClick={onClose} borderColor="#214768" textColor="#214768"/>
+              <PopupButton
+                name="Close"
+                onClick={onClose}
+                borderColor="#214768"
+                textColor="#214768"
+              />
             </div>
             <div className="w-max">
               <PopupButton

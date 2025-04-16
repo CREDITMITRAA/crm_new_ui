@@ -36,11 +36,11 @@ function UpdateApplicationStatusDialogue({
   const [rejectionReasonError, setRejectionReasonError] = useState("");
 
   useEffect(() => {
-    console.log("payload = ", payload); 
-    dispatch(setIsConfirmationDialogueOpened(true))
+    console.log("payload = ", payload);
+    dispatch(setIsConfirmationDialogueOpened(true));
     return () => {
       onStatusUpdate();
-      dispatch(setIsConfirmationDialogueOpened(false))
+      dispatch(setIsConfirmationDialogueOpened(false));
     };
   }, []);
 
@@ -85,7 +85,7 @@ function UpdateApplicationStatusDialogue({
             ...payload,
             rejection_reason: rejectionReason,
           };
-          setOpenToast(true)
+          setOpenToast(true);
           dispatch(updateApplicationStatus(apiPayload));
         } catch (error) {
           console.log(error.message);
@@ -111,7 +111,7 @@ function UpdateApplicationStatusDialogue({
 
   function handleRejectionReasonChange(e) {
     setRejectionReason(e.target.value);
-    setRejectionReasonError("")
+    setRejectionReasonError("");
   }
 
   return (
@@ -168,7 +168,7 @@ function UpdateApplicationStatusDialogue({
               <div className="relative w-full h-max mt-[1.375rem]">
                 {/* Note Label */}
                 <div
-                  className={`absolute -top-2 left-4 bg-[#F4EBFE] px-2 ${
+                  className={`absolute -top-2 left-4 bg-[#E6F4FF] px-2 rounded-[5px] ${
                     rejectionReasonError ? "text-[#FF0000]" : "text-[#214768]"
                   } text-sm font-medium`}
                 >
@@ -178,11 +178,14 @@ function UpdateApplicationStatusDialogue({
                 {/* Multiline Input (Textarea) */}
                 <textarea
                   className={`border ${
-                    rejectionReasonError ? "border-red-500" : "border-[#214768]"
-                  } rounded-2xl p-4 bg-[#21476815] min-h-[10rem] w-full resize-none outline-none text-[#32086D] text-sm`}
+                    rejectionReasonError
+                      ? "border-red-500 focus:border-red-500"
+                      : "border-[#214768] focus:border-[#214768]"
+                  } rounded-2xl p-4 bg-[#21476815] min-h-[10rem] w-full resize-none outline-none focus:outline-none focus:ring-0 text-[#214768] text-sm placeholder:text-[#888888]`}
                   placeholder="Provide a rejection reason"
                   onChange={(e) => handleRejectionReasonChange(e)}
                 />
+
                 {/* Validation Error Message */}
                 {rejectionReasonError && (
                   <p className="text-red-500 text-sm mt-1">
@@ -215,7 +218,12 @@ function UpdateApplicationStatusDialogue({
 
           <div className="w-full flex justify-between mt-[1.25rem]">
             <div className="w-max">
-              <PopupButton name="Close" onClick={onClose} borderColor="#214768" textColor="#214768"/>
+              <PopupButton
+                name="Close"
+                onClick={onClose}
+                borderColor="#214768"
+                textColor="#214768"
+              />
             </div>
             <div className="w-max">
               <PopupButton
