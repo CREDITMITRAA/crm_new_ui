@@ -173,7 +173,7 @@ function DateButton({
           </svg>
         </div>
 
-        <div className={`${selectedDate === "dd-mm-yyyy" ? fromFilter ? "text-[#21476880]" : "text-[#214768]" : "text-[#214768]" }  text-xs font-medium inter-inter leading-tight`}>
+        <div className={`${selectedDate === "dd-mm-yyyy" ? fromFilter ? "text-[#21476880]" : "text-[#464646]" : "text-[#214768]" }  text-xs font-medium inter-inter leading-tight`}>
           {selectedDate}
         </div>
       </div>

@@ -280,15 +280,19 @@ const PerformanceChartHorizontal = (
   }, []);
 
   useEffect(() => {
-    dispatch(getChartDataByChartType({ ...filters }));
-    const filteredFilters = Object.keys(filters)?.reduce((acc, key) => {
-      if (!["date", "date_time_range"].includes(key)) {
-        acc[key] = filters[key];
-      }
-      return acc;
-    }, {});
-    setShowDot(Object.keys(filteredFilters).length > 0);
-  }, [filters]);
+    const timeout = setTimeout(() => {
+      dispatch(getChartDataByChartType({ ...filters }));
+      const filteredFilters = Object.keys(filters)?.reduce((acc, key) => {
+        if (!["date", "date_time_range"].includes(key)) {
+          acc[key] = filters[key];
+        }
+        return acc;
+      }, {});
+      setShowDot(Object.keys(filteredFilters).length > 0);
+    }, 500);
+  
+    return () => clearTimeout(timeout);
+  }, [filters]); 
 
   const handleBadgeClick = (badgeType) => {
     console.log("clicked on badge");
@@ -311,7 +315,7 @@ const PerformanceChartHorizontal = (
     setResetFilters(true);
     setTimeout(() => {
       setResetFilters(false);
-    }, 1000);
+    }, 500);
   }
 
   const usersMap = useMemo(() => {
