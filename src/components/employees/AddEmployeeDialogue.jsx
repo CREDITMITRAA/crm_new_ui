@@ -243,9 +243,19 @@ function AddEmployeeDialogue({ onClose, employee }) {
                         (userRole) => userRole.id === formData.role_id
                       )
                 }
-                buttonBackgroundColor="#daeaff"
+                buttonBackgroundColor="#21476810"
                 className="w-full h-full rounded-md"
                 fieldName="role_name"
+                backgroundColor="#F2F7FE"
+                textColor="text-[#214768]"
+                buttonBorder="none"
+                buttonBorderRadius="0.4rem"
+                buttonHeight="100%"
+                optionsTextColor="#464646"
+                buttonBoxShadow="none"
+                buttonFontSize="10px"
+                buttonPadding="0rem 0.5rem"
+                optionsBackgroundColor="#F2F7FE"
               />
             </div>
           </div>
@@ -344,7 +354,12 @@ function AddEmployeeDialogue({ onClose, employee }) {
 
           <div className="col-span-12 flex justify-between items-center mt-[0.325rem]">
             <div>
-              <PopupButton name={"Cancel"} onClick={onClose} borderColor="#214768" textColor="#214768"/>
+              <PopupButton
+                name={"Cancel"}
+                onClick={onClose}
+                borderColor="#214768"
+                textColor="#214768"
+              />
             </div>
 
             <div>

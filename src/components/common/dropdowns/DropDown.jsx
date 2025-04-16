@@ -110,6 +110,7 @@ function DropDown({
             border: optionsBorder,
             borderRadius: optionsBorderRadius,
           }}
+          className="inter-inter"
         >
           {item.label}
         </option>

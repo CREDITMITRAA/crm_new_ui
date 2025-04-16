@@ -234,7 +234,7 @@ function FilterDialogue({ resetFilters, setFilters, filters }) {
         <div className="text-[#214768] text-xs font-normal poppins-thin leading-none tracking-tight">
           Assigned on
         </div>
-        <div className="w-full h-10 bg-[#FFFFFF] rounded-2xl border border-[#214768] justify-center items-center gap-2.5 inline-flex mt-[0.325rem]">
+        <div className="w-full h-10 rounded-2xl border border-[#214768] justify-center items-center gap-2.5 inline-flex mt-[0.325rem]">
           <DateButton
             buttonBackgroundColor="[#F2F7FE]"
             onDateChange={(fieldName, value) =>
@@ -242,6 +242,7 @@ function FilterDialogue({ resetFilters, setFilters, filters }) {
             }
             fieldName="assigned_on"
             resetFilters={resetFilters}
+            fromFilter={true}
           />
         </div>
       </div>
@@ -276,6 +277,7 @@ function FilterDialogue({ resetFilters, setFilters, filters }) {
             }
             fieldName="last_updated"
             resetFilters={resetFilters}
+            fromFilter={true}
           />
         </div>
       </div>

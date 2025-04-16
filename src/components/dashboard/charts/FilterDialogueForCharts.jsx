@@ -67,13 +67,13 @@ function FilterDialogueForCharts({ setFilters, filters, resetFilters }) {
       </div> */}
 
       {/* Employee Name */}
-      <div className={`col-span-3 w-full h-max relative`} style={{zIndex: isConfirmationDialogueOpened && -1}}>
-        <div className="w-full h-max bg-[#FFFFFF] rounded-xl border border-[#214768] flex items-center">
+      <div className={`col-span-3 w-full h-10 relative`} style={{zIndex: isConfirmationDialogueOpened && -1}}>
+        <div className="w-full h-full rounded-xl flex items-center">
           <DropDown
             options={employees}
             onChange={(name, value) => handleFilterChange('created_by', value)}
             optionsBackgroundColor="bg-[#F2F7FE]"
-            buttonBackgroundColor="#F4EBFF"
+            buttonBackgroundColor="#F2F7FE"
             className={"min-w-full"}
             selectedOption={selectedEmployeeName || ""}
             resetFilters={resetFilters}
@@ -82,6 +82,10 @@ function FilterDialogueForCharts({ setFilters, filters, resetFilters }) {
             backgroundColor="#F2F7FE"
             optionTextColor="#464646"
             textColor="text-[#214768]"
+            buttonBorder="1px solid #214768"
+            buttonBorderRadius="0.8rem"
+            buttonHeight="100%"
+            optionsTextColor="#464646"
           />
         </div>
       </div>

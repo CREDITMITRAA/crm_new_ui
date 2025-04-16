@@ -35,7 +35,7 @@ import ExportButton from "../../common/ExportButton";
 const DEFAULT_DATE_RANGE = {
   date_time_range: `${new Date(new Date().setDate(new Date().getDate() - 6))
     .toISOString()
-    .split('T')[0]}+00:00,${new Date().toISOString().split('T')[0]}+23:59`
+    .split('T')[0]} 00:00,${new Date().toISOString().split('T')[0]} 23:59`
 };
 
 const CustomYAxisTick = ({ x, y, payload }) => (
@@ -292,15 +292,17 @@ const PerformanceChart = () => {
         <div className="col-span-12 flex justify-between py-2 rounded-md mt-3 gap-2">
           <div className="text-black text-base font-semibold poppins-thin leading-tight flex items-center"></div>
           <div className="flex gap-x-2">
-            <DateButton
-              onClick={() => setIsPickerOpen(!isPickerOpen)}
+          <DateButton
               onDateChange={(fieldName, data) =>
                 handleDateChange(fieldName, data)
               }
-              showDot={filters.hasOwnProperty("date") ||
-                filters.hasOwnProperty("date_time_range")}
+              showDot={
+                filters.hasOwnProperty("date") ||
+                filters.hasOwnProperty("date_time_range")
+              }
               resetFilters={resetFilters}
-              date={filters?.date_time_range || filters.date}
+              fieldName="date" // Uncomment this
+              date={filters?.date_time_range || filters?.date} // Uncomment this
               buttonBackgroundColor="bg-[#C7D4E4]"
               showBoxShadow={true}
             />
@@ -310,7 +312,11 @@ const PerformanceChart = () => {
                 showDot={showDot}
               />
             )}
-            {showDot && <ClearButton onClick={handleResetFilters} />}
+            {(showDot ||
+              filters.hasOwnProperty("date") ||
+              filters.hasOwnProperty("date_time_range")) && (
+              <ClearButton onClick={() => handleResetFilters()} />
+            )}
             <ExportButton onClick={() => setExportData(true)} />
           </div>
         </div>

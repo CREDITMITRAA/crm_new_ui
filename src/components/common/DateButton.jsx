@@ -14,6 +14,7 @@ function DateButton({
   date = null,
   fromTable = false,
   showBoxShadow = false,
+  fromFilter=false
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [openUpward, setOpenUpward] = useState(false);
@@ -46,7 +47,19 @@ function DateButton({
 
   useEffect(() => {
     if (date) {
-      setSelectedDate(date);
+      // Check if date is a comma-separated string
+      if (typeof date === 'string' && date.includes(',')) {
+        const [startDateTime, endDateTime] = date.split(',');
+        formatDateRange({ startDateTime, endDateTime });
+      } 
+      // Check if date is already an object
+      else if (typeof date === 'object') {
+        formatDateRange(date);
+      }
+      // Handle single date string
+      else {
+        formatDateRange({ startDateTime: date });
+      }
     } else {
       setSelectedDate("dd-mm-yyyy");
     }
@@ -84,27 +97,29 @@ function DateButton({
   }
 
   function formatDateRange(dateObj) {
-    console.log("date object to show data in Date Button = ", dateObj);
-
-    if (!dateObj || !dateObj.startDateTime) {
-        setSelectedDate("yyyy-mm-dd");
-        return;
+    if (!dateObj) {
+      setSelectedDate("dd-mm-yyyy");
+      return;
     }
 
-    const { startDateTime, endDateTime } = dateObj;
+    console.log('date object = ', dateObj);
     
-    // Extract just the date part (YYYY-MM-DD) in case time is included
-    const startDate = startDateTime.split(" ")[0];
-    const endDate = endDateTime ? endDateTime.split(" ")[0] : null;
-    
+  
+    // Handle both object format {startDateTime, endDateTime} and string format
+    if (typeof dateObj === 'string') {
+      setSelectedDate(dateObj);
+      return;
+    }
+  
+    const startDate = dateObj.startDateTime?.split(" ")[0] || "";
+    const endDate = dateObj.endDateTime?.split(" ")[0] || "";
+  
     if (!endDate || startDate === endDate) {
-        // Case 1: Same start and end date (or no end date) - show single date
-        setSelectedDate(startDate);
+      setSelectedDate(startDate || "dd-mm-yyyy");
     } else {
-        // Case 2: Different dates - show range
-        setSelectedDate(`${startDate} to ${endDate}`);
+      setSelectedDate(`${startDate} to ${endDate}`);
     }
-}
+  }
 
   return (
     <div
@@ -150,7 +165,7 @@ function DateButton({
           <svg width="15" height="16" viewBox="0 0 15 16" fill="none">
             <path
               d="M5 4.875V2.375M10 4.875V2.375M4.375 7.375H10.625M3.125 13.625H11.875C12.565 13.625 13.125 13.065 13.125 12.375V4.875C13.125 4.185 12.565 3.625 11.875 3.625H3.125C2.435 3.625 1.875 4.185 1.875 4.875V12.375C1.875 13.065 2.435 13.625 3.125 13.625Z"
-              stroke="#464646"
+              stroke="#214768"
               strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -158,7 +173,7 @@ function DateButton({
           </svg>
         </div>
 
-        <div className="text-[#464646] text-xs font-medium inter-inter leading-tight">
+        <div className={`${selectedDate === "dd-mm-yyyy" ? fromFilter ? "text-[#21476880]" : "text-[#214768]" : "text-[#214768]" }  text-xs font-medium inter-inter leading-tight`}>
           {selectedDate}
         </div>
       </div>

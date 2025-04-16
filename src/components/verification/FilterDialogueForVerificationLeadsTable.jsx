@@ -77,8 +77,8 @@ function FilterDialogueForVerificationLeadsTable({
   return (
     <div className="w-full h-max bg-[#E6F4FF] mt-4 p-4 grid grid-cols-12 gap-2 rounded-xl">
       {/* lead id */}
-      <div className="col-span-3 w-full h-12">
-        <div className="w-full h-max bg-[#F2F7FE] rounded-xl border border-[#214768] flex items-center justify-start pl-0">
+      <div className="col-span-3 w-full h-10">
+        <div className="w-full h-full bg-[#F2F7FE] rounded-xl border border-[#214768] flex items-center justify-start pl-0">
           <input
             type="text"
             name="leadId"
@@ -87,14 +87,14 @@ function FilterDialogueForVerificationLeadsTable({
               setFilters((prev) => ({ ...prev, leadId: e.target.value }))
             }
             placeholder="Filter by id"
-            className="text-[#214768] text-sm font-normal inter-inter w-full h-full bg-transparent focus:outline-none focus:border-[#214768] focus:ring-0 border-none placeholder:text-[#32086d]/50"
+            className="text-[#214768] text-sm font-normal inter-inter w-full h-full bg-transparent focus:outline-none focus:border-[#214768] focus:ring-0 border-none placeholder:text-[#214768]/50"
           />
         </div>
       </div>
 
       {/* phone no */}
-      <div className="col-span-3 w-full h-12">
-        <div className="w-full h-max bg-[#F2F7FE] rounded-xl border border-[#214768] flex items-center justify-start pl-0">
+      <div className="col-span-3 w-full h-10">
+        <div className="w-full h-full bg-[#F2F7FE] rounded-xl border border-[#214768] flex items-center justify-start pl-0">
           <input
             type="text"
             name="phone"
@@ -103,14 +103,14 @@ function FilterDialogueForVerificationLeadsTable({
               setFilters((prev) => ({ ...prev, phone: e.target.value }))
             }
             placeholder="Filter by phone"
-            className="text-[#214768] text-sm font-normal inter-inter w-full h-full bg-transparent focus:outline-none focus:border-[#214768] focus:ring-0 border-none placeholder:text-[#32086d]/50"
+            className="text-[#214768] text-sm font-normal inter-inter w-full h-full bg-transparent focus:outline-none focus:border-[#214768] focus:ring-0 border-none placeholder:text-[#214768]/50"
           />
         </div>
       </div>
 
       {/* lead name */}
-      <div className="col-span-3 w-full h-12">
-        <div className="w-full h-max bg-[#F2F7FE] rounded-xl border border-[#214768] flex items-center justify-start pl-0">
+      <div className="col-span-3 w-full h-10">
+        <div className="w-full h-full bg-[#F2F7FE] rounded-xl border border-[#214768] flex items-center justify-start pl-0">
           <input
             type="text"
             name="name"
@@ -119,19 +119,19 @@ function FilterDialogueForVerificationLeadsTable({
               setFilters((prev) => ({ ...prev, name: e.target.value }))
             }
             placeholder="Filter by lead name"
-            className="text-[#21044b] text-sm font-normal inter-inter w-full h-full bg-transparent focus:outline-none focus:border-[#214768] focus:ring-0 border-none placeholder:text-[#32086d]/50"
+            className="text-[#21044b] text-sm font-normal inter-inter w-full h-full bg-transparent focus:outline-none focus:border-[#214768] focus:ring-0 border-none placeholder:text-[#214768]/50"
           />
         </div>
       </div>
 
       {/* lead source */}
-      <div className="col-span-3 w-full h-12">
-        <div className="w-full h-max bg-[#FFFFFF] rounded-xl border border-[#214768] flex items-center justify-start pl-0">
+      <div className="col-span-3 w-full h-10">
+        <div className="w-full h-full bg-[#F2F7FE] rounded-xl flex items-center justify-start pl-0">
           <DropDown
             options={leadSourceOptions}
             onChange={(name, value) => handleSelect(name, value)}
-            optionsBackgroundColor="#F4EBFF"
-            buttonBackgroundColor="#F4EBFF"
+            optionsBackgroundColor="#F2F7FE"
+            buttonBackgroundColor="#F2F7FE"
             className={"min-w-full"}
             selectedOption={selectedEmployeeName}
             resetFilters={resetFilters}
@@ -139,44 +139,56 @@ function FilterDialogueForVerificationLeadsTable({
             autoSuggestOptions={true}
             backgroundColor="#F2F7FE"
             textColor="text-[#214768]"
+            buttonBorder="1px solid #214768"
+            buttonBorderRadius="0.8rem"
+            buttonHeight="100%"
+            optionsTextColor="#464646"
           />
         </div>
       </div>
 
       {/* Employee name */}
       {role !== ROLE_EMPLOYEE && (
-        <div className="col-span-6 w-full h-max">
-          <div className="w-full h-max bg-[#FFFFFF] rounded-xl border border-[#214768] flex items-center">
+        <div className="col-span-3 w-full h-10">
+          <div className="w-full h-full rounded-xl flex items-center">
             <DropDown
               options={employees}
               onChange={(name, value) => handleSelect(name, value)}
-              optionsBackgroundColor="#F4EBFF"
-              buttonBackgroundColor="#F4EBFF"
+              optionsBackgroundColor="#F2F7FE"
+              buttonBackgroundColor="#F2F7FE"
               className={"min-w-full"}
               selectedOption={selectedEmployeeName}
               resetFilters={resetFilters}
               fieldName="assigned_to"
               backgroundColor="#F2F7FE"
               textColor="text-[#214768]"
+              buttonBorder="1px solid #214768"
+              buttonBorderRadius="0.8rem"
+              buttonHeight="100%"
+              optionsTextColor="#464646"
             />
           </div>
         </div>
       )}
 
       {/* lead status */}
-      <div className="col-span-6 w-full h-max">
-        <div className="w-full h-max bg-[#FFFFFF] rounded-xl border border-[#214768] flex items-center">
+      <div className="col-span-3 w-full h-10">
+        <div className="w-full h-full rounded-xl flex items-center">
           <DropDown
             options={optionsForVerificationStatus}
             onChange={(name, value) => handleSelect(name, value)}
-            optionsBackgroundColor="#F4EBFF"
-            buttonBackgroundColor="#F4EBFF"
+            optionsBackgroundColor="#F2F7FE"
+            buttonBackgroundColor="#F2F7FE"
             className={"min-w-full"}
             selectedOption={selectedEmployeeName}
             resetFilters={resetFilters}
             fieldName="verification_status"
             backgroundColor="#F2F7FE"
             textColor="text-[#214768]"
+            buttonBorder="1px solid #214768"
+            buttonBorderRadius="0.8rem"
+            buttonHeight="100%"
+            optionsTextColor="#464646"
           />
         </div>
       </div>

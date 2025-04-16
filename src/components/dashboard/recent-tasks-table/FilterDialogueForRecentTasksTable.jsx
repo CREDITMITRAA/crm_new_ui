@@ -16,7 +16,7 @@ function FilterDialogueForRecentTasksTable({
 }) {
   const { users, userOptions } = useSelector((state) => state.users);
   const { role } = useSelector((state) => state.auth);
-  const {isConfirmationDialogueOpened} = useSelector((state)=>state.ui)
+  const { isConfirmationDialogueOpened } = useSelector((state) => state.ui);
   const taskStatusOptions = [
     { label: "Filter by task status", value: "" },
     { label: "Pending", value: "Pending" },
@@ -54,8 +54,11 @@ function FilterDialogueForRecentTasksTable({
   return (
     <div className="w-full h-max bg-[#E6F4FF] mb-2 p-2 grid grid-cols-12 gap-4 rounded-xl min-w-[36rem]">
       {/* filter by task type */}
-      <div className="col-span-3 w-full h-max relative" style={{zIndex: isConfirmationDialogueOpened && -1}}>
-        <div className="w-full h-max bg-[#FFFFFF] rounded-xl border border-[#214768] flex items-center">
+      <div
+        className="col-span-3 w-full h-10 relative"
+        style={{ zIndex: isConfirmationDialogueOpened && -1 }}
+      >
+        <div className="w-full h-full rounded-xl flex items-center">
           {/* <input
               type="text"
               placeholder="Filter By Walk-In / Call Status"
@@ -67,22 +70,29 @@ function FilterDialogueForRecentTasksTable({
               onChange={(name, value) =>
                 employeeNameFilterNameChange(name, value)
               }
-              optionsBackgroundColor="#F4EBFF"
-              buttonBackgroundColor="#F4EBFF"
+              optionsBackgroundColor="#F2F7FE"
+              buttonBackgroundColor="#F2F7FE"
               className={"min-w-full"}
               selectedOption={filters?.task_type}
               resetFilters={resetFilters}
               fieldName="task_type"
               backgroundColor="#F2F7FE"
               textColor="text-[#214768]"
+              buttonBorder="1px solid #214768"
+              buttonBorderRadius="0.8rem"
+              buttonHeight="100%"
+              optionsTextColor="#464646"
             />
           </div>
         </div>
       </div>
 
       {/* filter by task status */}
-      <div className="col-span-3 w-full h-max relative" style={{zIndex: isConfirmationDialogueOpened && -1}}>
-        <div className="w-full h-max bg-[#FFFFFF] rounded-xl border border-[#214768] flex items-center">
+      <div
+        className="col-span-3 w-full h-10 relative"
+        style={{ zIndex: isConfirmationDialogueOpened && -1 }}
+      >
+        <div className="w-full h-full rounded-xl flex items-center">
           {/* <input
               type="text"
               placeholder="Filter By Walk-In / Call Status"
@@ -94,14 +104,18 @@ function FilterDialogueForRecentTasksTable({
               onChange={(name, value) =>
                 employeeNameFilterNameChange(name, value)
               }
-              optionsBackgroundColor="#F4EBFF"
-              buttonBackgroundColor="#F4EBFF"
+              optionsBackgroundColor="#F2F7FE"
+              buttonBackgroundColor="#F2F7FE"
               className={"min-w-full"}
               selectedOption={filters?.task_status}
               resetFilters={resetFilters}
               fieldName="task_status"
               backgroundColor="#F2F7FE"
               textColor="text-[#214768]"
+              buttonBorder="1px solid #214768"
+              buttonBorderRadius="0.8rem"
+              buttonHeight="100%"
+              optionsTextColor="#464646"
             />
           </div>
         </div>
@@ -109,21 +123,28 @@ function FilterDialogueForRecentTasksTable({
 
       {/* Employee Name */}
       {role !== ROLE_EMPLOYEE && (
-        <div className="col-span-3 w-full h-max relative" style={{zIndex: isConfirmationDialogueOpened && -1}}>
-          <div className="w-full h-max bg-[#FFFFFF] rounded-xl border border-[#214768] flex items-center">
+        <div
+          className="col-span-3 w-full h-10 relative"
+          style={{ zIndex: isConfirmationDialogueOpened && -1 }}
+        >
+          <div className="w-full h-full rounded-xl flex items-center">
             <DropDown
               options={employees}
               onChange={(name, value) =>
                 employeeNameFilterNameChange(name, value)
               }
-              optionsBackgroundColor="#F4EBFF"
-              buttonBackgroundColor="#F4EBFF"
+              optionsBackgroundColor="#F2F7FE"
+              buttonBackgroundColor="#F2F7FE"
               className={"min-w-full"}
               selectedOption={selectedEmployeeName}
               resetFilters={resetFilters}
               fieldName="created_by"
               backgroundColor="#F2F7FE"
               textColor="text-[#214768]"
+              buttonBorder="1px solid #214768"
+              buttonBorderRadius="0.8rem"
+              buttonHeight="100%"
+              optionsTextColor="#464646"
             />
           </div>
         </div>

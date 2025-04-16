@@ -404,7 +404,6 @@ const PerformanceChartHorizontal = (
           <div className="text-black text-base font-semibold poppins-thin leading-tight flex items-center"></div>
           <div className="flex gap-x-2">
             <DateButton
-              onClick={() => setIsPickerOpen(!isPickerOpen)}
               onDateChange={(fieldName, data) =>
                 handleDateChange(fieldName, data)
               }
@@ -413,8 +412,8 @@ const PerformanceChartHorizontal = (
                 filters.hasOwnProperty("date_time_range")
               }
               resetFilters={resetFilters}
-              // fieldName="date"
-              date={filters?.date_time_range || filters.date}
+              fieldName="date" // Uncomment this
+              date={filters?.date_time_range || filters?.date} // Uncomment this
               buttonBackgroundColor="bg-[#C7D4E4]"
               showBoxShadow={true}
             />
