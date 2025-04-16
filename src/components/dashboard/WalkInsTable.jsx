@@ -102,10 +102,21 @@ function WalkInsTable() {
   useEffect(() => {
     console.log("filters = ", filters);
     fetchWalkIns({ ...filters });
-    // Exclude 'pageSize' from the filters count check
-    const filterKeys = Object.keys(filters).filter((key) => key !== "pageSize");
+  
+    let excludedKeys = [];
+
+    if(role === ROLE_EMPLOYEE){
+      excludedKeys = ["pageSize", "date", "date_time_range", "created_by"]
+    }else{
+      excludedKeys = ["pageSize", "date", "date_time_range"]
+    }
+  
+    const filterKeys = Object.keys(filters).filter(
+      (key) => !excludedKeys.includes(key) && filters[key] !== ""
+    );
+  
     setShowDot(filterKeys.length > 0);
-  }, [filters]);
+  }, [filters]);  
 
   useEffect(() => {
     if (statusUpdateLoading) {
@@ -234,6 +245,7 @@ function WalkInsTable() {
     setTimeout(() => {
       setResetFilters(false);
     }, 1000);
+    setShowFilter(false)
   }
 
   function handleStatusChange(
@@ -328,7 +340,7 @@ function WalkInsTable() {
 
       <div
         className={`col-span-12 rounded overflow-hidden transition-all duration-500 ease-in-out overflow-visible ${
-          showFilter ? "max-h-[400px] opacity-100" : "max-h-0 opacity-0"
+          showFilter ? "max-h-[400px] opacity-100 pointer-events-auto visible" : "max-h-0 opacity-0 pointer-events-none invisible"
         }`}
       >
         <FilterDialogueForWalkInsTable

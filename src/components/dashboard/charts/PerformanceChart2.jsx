@@ -316,6 +316,7 @@ const PerformanceChartHorizontal = (
     setTimeout(() => {
       setResetFilters(false);
     }, 500);
+    setShowFilter(false)
   }
 
   const usersMap = useMemo(() => {
@@ -438,7 +439,7 @@ const PerformanceChartHorizontal = (
         </div>
         <div
           className={`col-span-12 rounded overflow-hidden transition-all duration-500 ease-in-out overflow-visible ${
-            showFilter ? "max-h-[400px] opacity-100" : "max-h-0 opacity-0"
+            showFilter ? "max-h-[400px] opacity-100 pointer-events-auto visible" : "max-h-0 opacity-0 pointer-events-none invisible"
           }`}
         >
           <FilterDialogueForCharts

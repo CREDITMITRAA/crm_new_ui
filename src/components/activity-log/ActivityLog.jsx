@@ -62,7 +62,7 @@ function ActivityLog() {
     // Filter out keys with empty values
     const filteredFilters = Object.keys(filters)?.reduce((acc, key) => {
       // Skip keys like "page", "pageSize", "totalPages", and "total"
-      if (!["page", "pageSize", "totalPages", "total"].includes(key)) {
+      if (!["page", "pageSize", "totalPages","createdAt", "total"].includes(key)) {
         // Check if the value is not empty
         const value = filters[key];
         if (
@@ -151,6 +151,7 @@ function ActivityLog() {
     setTimeout(() => {
       setResetFilters(false);
     }, 1000);
+    setShowFilter(false)
   }
 
   async function handleExportLeads() {
@@ -199,7 +200,7 @@ function ActivityLog() {
               onDateChange={(fieldName, value) =>
                 handleDateChange(fieldName, value)
               }
-              showDot={showDot}
+              showDot={filters.hasOwnProperty("createdAt")}
               buttonBackgroundColor="bg-[#C7D4E4]"
               showBoxShadow={true}
             />
@@ -216,8 +217,8 @@ function ActivityLog() {
       <div
         className={`col-span-12 rounded overflow-hidden transition-all duration-500 ease-in-out ${
           showFilter
-            ? "max-h-[400px] opacity-100 overflow-visible"
-            : "max-h-0 opacity-0"
+            ? "max-h-[400px] opacity-100 overflow-visible pointer-events-auto visible"
+            : "max-h-0 opacity-0 pointer-events-none invisible"
         }`}
       >
         <FilterDialogueForActivityLogsTable
