@@ -876,16 +876,34 @@ function Leads() {
             )}
             {selectedLeadIds?.length > 0 &&
               tableType !== INVALID_LEADS_TABLE && (
-                <div className="w-max h-max bg-[#F4EBFF] rounded-xl border border-[#4200a0] flex items-center">
+                <div className="w-max h-max bg-[#F4EBFF] rounded-xl flex items-center">
                   <DropDown
                     options={employees}
                     onChange={(name, value) => handleSelect(name, value)}
-                    optionsBackgroundColor="#F4EBFF"
-                    buttonBackgroundColor="#F4EBFF"
-                    className={"min-w-[10rem]"}
+                    // Button Styling
+                    buttonBackgroundColor="#D9E4F2"
+                    buttonTextColor="#214768"
+                    buttonBorder="1px solid #D1D5DB"
+                    buttonBorderRadius="0.5rem"
+                    buttonPadding="0.5rem 1rem"
+                    buttonHeight="2.5rem"
+                    buttonMinWidth="12rem"
+                    buttonFontSize="0.875rem"
+                    // Options Styling
+                    optionsBackgroundColor="#F2F7FE"
+                    optionsTextColor="#464646"
+                    optionsDisabledTextColor="#ABAAB9"
+                    optionsMaxHeight="15rem"
+                    optionsBorder="1px solid #E5E7EB"
+                    optionsFontWeight="500"
+                    // Arrow Styling
+                    dropdownArrowColor="#214768"
+                    dropdownArrowSize="1rem"
+                    // Other Props
                     selectedOption={selectedEmployeeName}
                     resetFilters={resetFilters}
                     fieldName="created_by"
+                    disabled={false}
                   />
                 </div>
               )}

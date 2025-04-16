@@ -1,126 +1,120 @@
-import { useState, useRef, useEffect } from "react";
-import { createPortal } from "react-dom";
-import DownArrowIcon from "../../icons/DownArrowIcon";
-import { useSelector } from "react-redux";
+import { useState, useEffect } from "react";
 
 function DropDown({
   options = [],
   onChange,
   defaultSelectedOptionIndex = 0,
   className = "",
-  fieldName = '',
+  fieldName = "",
   disabled = false,
-  backgroundColor = 'bg-white',
-  textColor = 'text-[#32086d]/50',
-  buttonClassName = '',
-  optionTextColor = 'text-[#464646]',
-  optionHoverColor = 'bg-blue-100',
-  dropdownClassName = '',
-  cursor = 'cursor-pointer',
-  resetFilters = false, // Add resetFilters prop
-  optionsBackgroundColor="bg-white"
+  // Button Styling
+  buttonBackgroundColor = "#D9E4F2",
+  buttonTextColor = "#214768",
+  buttonBorder = "none",
+  buttonBorderRadius = "0.375rem", // md
+  buttonPadding = "0.5rem 0.75rem", // px-3 py-2
+  buttonHeight = "auto",
+  buttonWidth = "100%",
+  buttonMinWidth = "4rem",
+  buttonFontSize = "0.875rem", // text-sm
+  buttonBoxShadow = "1px 1px 3px 0px #0000001A, 5px 2px 5px 0px #00000017, 10px 5px 7px 0px #0000000D, 18px 10px 8px 0px #00000003, 28px 15px 9px 0px #00000000",
+  // Options Styling
+  optionsBackgroundColor = "#FFFFFF",
+  optionsTextColor = "#214768",
+  optionsDisabledTextColor = "#ABAAB9",
+  optionsFontSize = "0.75rem", // text-xs
+  optionsFontWeight = "500", // font-medium
+  optionsPadding = "0.375rem 0.75rem", // py-1.5 px-3
+  optionsMaxHeight = "10rem", // max-h-40
+  optionsBorder = "none",
+  optionsBorderRadius = "0.375rem", // rounded-md
+  optionsBoxShadow = "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
+  // Dropdown Arrow
+  dropdownArrowColor = "#214768",
+  dropdownArrowSize = "1rem",
+  // Other
+  resetFilters = false,
+  selectedOption,
 }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(
-    options.length > 0 ? options[defaultSelectedOptionIndex] : { label: "Select", value: "" }
+  const [internalSelected, setInternalSelected] = useState(
+    options.length > 0 ? options[defaultSelectedOptionIndex]?.value : ""
   );
-  const {isConfirmationDialogueOpened} = useSelector((state)=>state.ui)
 
-  const buttonRef = useRef(null);
-  const dropdownRef = useRef(null);
+  // Handle both controlled (selectedOption) and uncontrolled (internalSelected) scenarios
+  const currentValue =
+    selectedOption?.value !== undefined
+      ? selectedOption.value
+      : internalSelected;
 
-  // Add useEffect to handle resetFilters
   useEffect(() => {
     if (resetFilters) {
-      setSelectedOption(options.length > 0 ? options[defaultSelectedOptionIndex] : { label: "Select", value: "" });
+      const defaultValue =
+        options.length > 0 ? options[defaultSelectedOptionIndex]?.value : "";
+      setInternalSelected(defaultValue);
     }
   }, [resetFilters, options, defaultSelectedOptionIndex]);
 
-  const toggleDropdown = (event) => {
-    if (disabled) return;
-    event.stopPropagation();
-    setIsOpen((prev) => !prev);
-  };
+  const handleChange = (event) => {
+    const value = event.target.value;
+    const selected = options.find((opt) => opt.value === value) || {
+      label: "Select",
+      value: "",
+    };
 
-  const handleSelect = (option, event) => {
-    event.stopPropagation();
-    setSelectedOption(option);
-    setIsOpen(false);
+    setInternalSelected(value);
     if (typeof onChange === "function") {
-      onChange(fieldName, option.value);
+      onChange(fieldName, value);
     }
   };
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target) &&
-        buttonRef.current &&
-        !buttonRef.current.contains(event.target)
-      ) {
-        setIsOpen(false);
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isOpen]);
 
   return (
-    <div className={`${!isConfirmationDialogueOpened && 'relative'} inter-inter inline-block w-full ${className}`}>
-      {/* Dropdown Button */}
-      <div
-        ref={buttonRef}
-        onClick={toggleDropdown}
-        className={`
-          border px-3 py-2 flex justify-between items-center w-full
-          min-w-[50px] rounded-xl ${backgroundColor} ${textColor} 
-          ${buttonClassName} ${disabled ? 'opacity-50 cursor-not-allowed' : cursor}
-          transition-colors duration-200 hover:${disabled ? '' : 'brightness-95'}
-        `}
-        disabled={disabled}
-        style={{backgroundColor: backgroundColor}}
-      >
-        <span className={`text-sm mr-1 ${textColor}`}>{selectedOption?.label}</span>
-        <div className={`transform transition-transform duration-300 ${isOpen ? "-rotate-180" : "rotate-0"}`} style={{zIndex: isConfirmationDialogueOpened && -1}}>
-          <DownArrowIcon className={textColor} />
-        </div>
-      </div>
-
-      {/* Dropdown Options */}
-      {isOpen && !disabled && (
-        <div
-          ref={dropdownRef}
-          className={`
-            absolute w-max border border-gray-300 rounded-md shadow-lg bg-white 
-            z-50 max-h-40 h-max overflow-y-auto ${dropdownClassName}
-          `}
-          style={{width:"inherit"}}
+    <select
+      className={`${className} ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+      disabled={disabled}
+      value={currentValue}
+      onChange={handleChange}
+      style={{
+        // Button Styles
+        backgroundColor: buttonBackgroundColor,
+        color: currentValue === "" ? "#21476880" : buttonTextColor,
+        border: buttonBorder,
+        borderRadius: buttonBorderRadius,
+        padding: buttonPadding,
+        height: buttonHeight,
+        width: buttonWidth,
+        minWidth: buttonMinWidth,
+        fontSize: buttonFontSize,
+        boxShadow: buttonBoxShadow,
+        // Dropdown Arrow
+        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='${encodeURIComponent(dropdownArrowColor)}' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`,
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: `right 0.5rem center`,
+        backgroundSize: `${dropdownArrowSize}`,
+        // Focus State
+        outline: "none",
+        appearance: "none",
+        transition: "all 0.2s ease",
+      }}
+    >
+      {options.map((item, index) => (
+        <option
+          key={index}
+          value={item.value}
+          disabled={item?.value === ""}
+          style={{
+            backgroundColor: optionsBackgroundColor,
+            color: item?.value === "" ? optionsDisabledTextColor : optionsTextColor,
+            fontSize: optionsFontSize,
+            fontWeight: optionsFontWeight,
+            padding: optionsPadding,
+            border: optionsBorder,
+            borderRadius: optionsBorderRadius,
+          }}
         >
-          {options.map((item, index) => (
-            <div
-              key={index}
-              onClick={(event) => handleSelect(item, event)}
-              className={`
-                px-3 py-1.5 text-xs font-medium transition-colors 
-                border-b border-gray-300 last:border-none ${item?.value === "" ? 'text-[#ABAAB9]' : `${optionTextColor}`} 
-                hover:${optionHoverColor} ${cursor}
-              `}
-            >
-              {item.label}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
+          {item.label}
+        </option>
+      ))}
+    </select>
   );
 }
 
