@@ -8,6 +8,13 @@ function InteractiveNotification({ show = false, onClose, message = "This is a s
   const robotRef = useRef(null);
   const [cloudSize, setCloudSize] = useState({ width: 200, height: 100 });
 
+  useEffect(()=>{
+    window.addEventListener("click", onClose)
+    return ()=>{
+      window.removeEventListener("click", onClose)
+    }
+  },[])
+
   useEffect(() => {
     if (show) {
       const timer = setTimeout(() => setShowCloud(true), 600);

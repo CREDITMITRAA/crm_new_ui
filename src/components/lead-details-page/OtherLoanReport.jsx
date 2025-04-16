@@ -19,6 +19,7 @@ function OtherLoanReport() {
   const dispatch = useDispatch();
   const { lead } = useSelector((state) => state.leads);
   const { loading, error } = useSelector((state) => state.loanReports);
+  const { isConfirmationDialogueOpened } = useSelector((state) => state.ui);
   const { user } = useSelector((state) => state.auth);
   const [payload, setPayload] = useState({
     loan_type: loanTypeOptions[0].value,
@@ -82,9 +83,9 @@ function OtherLoanReport() {
 
   return (
     <>
-      <div className="relative w-full bg-[#2147682B] rounded-2xl border border-[#214768] px-[0.938rem] pt-[1.875rem] pb-[0.625rem]">
+      <div className={`${!isConfirmationDialogueOpened && "relative"} w-full bg-[#2147682B] rounded-2xl border border-[#214768] px-[0.938rem] pt-[1.875rem] pb-[0.625rem]`}>
         {/* Loan Report Text */}
-        <div className="absolute -top-[0.425rem] left-[1.25rem] px-3 bg-[#E9F3FF] rounded-full text-[#214768] text-[10px] font-medium poppins-thin leading-tight">
+        <div className={`${!isConfirmationDialogueOpened && "absolute"} -top-[0.425rem] left-[1.25rem] px-3 bg-[#E9F3FF] rounded-full text-[#214768] text-[10px] font-medium poppins-thin leading-tight`}>
           Other Loan Report
         </div>
 

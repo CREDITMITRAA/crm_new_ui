@@ -72,9 +72,9 @@ function ActivityLogsContainerEmployeeWise({
   );
 
   return (
-    <div className="relative flex flex-col bg-[#E8EFF8] rounded-2xl px-4 py-4">
+    <div className={`${!isConfirmationDialogueOpened && "relative"} flex flex-col bg-[#E8EFF8] rounded-2xl px-4 py-4`}>
       <div
-        className="absolute right-[30px] top-[25px] w-max px-5 py-[3px] bg-neutral-300 rounded-[20px] shadow-[1px_1px_2px_0px_rgba(0,0,0,0.10)] shadow-[3px_3px_4px_0px_rgba(0,0,0,0.09)] shadow-[7px_6px_5px_0px_rgba(0,0,0,0.05)] shadow-[12px_10px_6px_0px_rgba(0,0,0,0.01)] shadow-[19px_16px_7px_0px_rgba(0,0,0,0.00)] inline-flex justify-center items-center gap-2.5 cursor-pointer"
+        className={`${!isConfirmationDialogueOpened && "absolute"} right-[30px] top-[25px] w-max px-5 py-[3px] bg-neutral-300 rounded-[20px] shadow-[1px_1px_2px_0px_rgba(0,0,0,0.10)] shadow-[3px_3px_4px_0px_rgba(0,0,0,0.09)] shadow-[7px_6px_5px_0px_rgba(0,0,0,0.05)] shadow-[12px_10px_6px_0px_rgba(0,0,0,0.01)] shadow-[19px_16px_7px_0px_rgba(0,0,0,0.00)] inline-flex justify-center items-center gap-2.5 cursor-pointer`}
         onClick={toggleAllItems}
       >
         <div className="justify-start text-slate-800 text-xs font-medium font-Poppins">
@@ -102,9 +102,9 @@ function ActivityLogsContainerEmployeeWise({
             return (
               <div key={createdBy} className="ml-4 mb-4">
                 {/* Content section container */}
-                <div className="flex justify-start bg-[#E8EFF8] h-max py-2.5 relative">
+                <div className={`flex justify-start bg-[#E8EFF8] h-max py-2.5 ${!isConfirmationDialogueOpened && "relative"}`}>
                   {/* SVG Divider */}
-                  <div className="absolute left-[72px] top-0 h-full w-[132px] -translate-x-1/2">
+                  <div className={`${!isConfirmationDialogueOpened && "absolute"} left-[72px] top-0 h-full w-[132px] -translate-x-1/2`} style={{zIndex: isConfirmationDialogueOpened && -1}}>
                     <svg
                       width="132"
                       height={contentHeight}

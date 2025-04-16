@@ -51,9 +51,9 @@ function ActivityLogsContainer({
                   return (
                     <div key={createdBy}>
                       {/* Content section container */}
-                      <div className="flex justify-start mx-4 bg-[#E8EFF8] h-max py-2.5 relative">
+                      <div className={`flex justify-start mx-4 bg-[#E8EFF8] h-max py-2.5 ${(!isConfirmationDialogueOpened || fromTable) && "relative"}`}>
                         {/* SVG Divider */}
-                        <div className="absolute left-[72px] top-0 h-full w-[132px] -translate-x-1/2">
+                        <div className={`${(!isConfirmationDialogueOpened || fromTable) && "absolute"} left-[72px] top-0 h-full w-[132px] -translate-x-1/2`} style={{zIndex: fromTable ? 1 : isConfirmationDialogueOpened ? -1 : 1}}>
                           <svg
                             width="132"
                             height={contentHeight}

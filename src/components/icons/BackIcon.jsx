@@ -1,6 +1,9 @@
+import { useSelector } from "react-redux";
+
 function BackIcon() {
+  const { isConfirmationDialogueOpened } = useSelector((state) => state.ui);
     return (
-      <div className="relative">
+      <div className={`${!isConfirmationDialogueOpened && "relative"}`}>
         <svg
           width="20"
           height="20"
