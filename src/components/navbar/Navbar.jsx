@@ -98,14 +98,16 @@ function Navbar() {
               <>
                 {onlineUsersWithDetails.map((user, index) => (
                   <div
-                    key={user.id}
-                    className="relative group"
-                    style={{
-                      position: "absolute",
-                      right: `${index * 20}px`, // Changed from left to right
-                      zIndex: onlineUsersWithDetails.length - index,
-                    }}
-                  >
+                  key={user.id}
+                  className="relative"
+                  style={{
+                    position: "absolute",
+                    right: `${index * 20}px`,
+                    zIndex: onlineUsersWithDetails.length - index,
+                  }}
+                >
+                  {/* Avatar circle with hover group */}
+                  <div className="relative inline-block group">
                     <div className="relative">
                       <div
                         className={`w-[30px] h-[30px] rounded-full flex items-center justify-center text-white font-medium ${getUserColor(
@@ -115,14 +117,15 @@ function Navbar() {
                         {getInitials(user.name)}
                       </div>
                       <div className="w-2.5 h-2.5 absolute bottom-0 left-0 bg-[#19ff00] rounded-full border border-white" />
-
-                      {/* Tooltip at bottom */}
-                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-10">
-                        {user.name}
-                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-0 border-b-4 border-solid border-l-transparent border-r-transparent border-b-gray-800" />
-                      </div>
+                    </div>
+                
+                    {/* Tooltip that only shows when hovering the circle */}
+                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-10 pointer-events-none">
+                      {user.name}
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-0 border-b-4 border-solid border-l-transparent border-r-transparent border-b-gray-800" />
                     </div>
                   </div>
+                </div>
                 ))}
                 {/* If you want to keep the "+X more" indicator, uncomment this and adjust positioning */}
                 {/* {remainingCount > 0 && (
