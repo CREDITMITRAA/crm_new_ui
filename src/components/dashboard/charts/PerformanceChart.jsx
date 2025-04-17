@@ -33,9 +33,11 @@ import ExportButton from "../../common/ExportButton";
 
 // Default date range constant outside component
 const DEFAULT_DATE_RANGE = {
-  date_time_range: `${new Date(new Date().setDate(new Date().getDate() - 6))
-    .toISOString()
-    .split('T')[0]} 00:00,${new Date().toISOString().split('T')[0]} 23:59`
+  date_time_range: `${
+    new Date(new Date().setDate(new Date().getDate() - 6))
+      .toISOString()
+      .split("T")[0]
+  } 00:00,${new Date().toISOString().split("T")[0]} 23:59`,
 };
 
 const CustomYAxisTick = ({ x, y, payload }) => (
@@ -61,7 +63,7 @@ const PerformanceChart = () => {
     (state) => state.ui
   );
   const { role } = useSelector((state) => state.auth);
-  
+
   const [activeBadges, setActiveBadges] = useState({
     approved: true,
     walkinsToday: true,
@@ -72,7 +74,7 @@ const PerformanceChart = () => {
   const [showFilter, setShowFilter] = useState(false);
   const [showDot, setShowDot] = useState(false);
   const [exportData, setExportData] = useState(false);
-  
+
   const prevFiltersRef = useRef();
   const apiCallTimeoutRef = useRef();
 
@@ -86,7 +88,7 @@ const PerformanceChart = () => {
   useEffect(() => {
     if (JSON.stringify(prevFiltersRef.current) !== JSON.stringify(filters)) {
       clearTimeout(apiCallTimeoutRef.current);
-      
+
       apiCallTimeoutRef.current = setTimeout(() => {
         dispatch(getChartDataByChartType2({ ...filters }));
         prevFiltersRef.current = filters;
@@ -124,11 +126,11 @@ const PerformanceChart = () => {
     setFilters(DEFAULT_DATE_RANGE);
     setShowDot(false);
     setResetFilters(true);
-    
+
     setTimeout(() => {
       setResetFilters(false);
     }, 1000);
-    setShowFilter(false)
+    setShowFilter(false);
   }
 
   const usersMap = useMemo(() => {
@@ -287,13 +289,25 @@ const PerformanceChart = () => {
     );
   }
 
+  if (
+    isEmpty(originalData.approved_for_walk_ins) &&
+    isEmpty(originalData.walkins_scheduled_today) &&
+    isEmpty(originalData.walkins_today)
+  ) {
+    return (
+      <div className="w-full h-[20rem] bg-[#F0F6FF] flex justify-center items-center rounded-xl shadow-xl">
+        <EmptyDataMessageIcon size={100} />
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="grid grid-cols-12 px-4">
         <div className="col-span-12 flex justify-between py-2 rounded-md mt-3 gap-2">
           <div className="text-black text-base font-semibold poppins-thin leading-tight flex items-center"></div>
           <div className="flex gap-x-2">
-          <DateButton
+            <DateButton
               onDateChange={(fieldName, data) =>
                 handleDateChange(fieldName, data)
               }
@@ -323,7 +337,9 @@ const PerformanceChart = () => {
         </div>
         <div
           className={`col-span-12 rounded overflow-hidden transition-all duration-500 ease-in-out overflow-visible ${
-            showFilter ? "max-h-[400px] opacity-100 pointer-events-auto visible" : "max-h-0 opacity-0 pointer-events-none invisible"
+            showFilter
+              ? "max-h-[400px] opacity-100 pointer-events-auto visible"
+              : "max-h-0 opacity-0 pointer-events-none invisible"
           }`}
         >
           <FilterDialogueForCharts

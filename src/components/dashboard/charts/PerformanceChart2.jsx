@@ -10,6 +10,7 @@ import {
 } from "recharts";
 import Loader from "../../common/loaders/Loader";
 import {
+  exportActivityDataToExcel,
   formatDatePayload,
   isEmpty,
 } from "../../../utilities/utility-functions";
@@ -24,6 +25,7 @@ import FilterButton from "../../common/FiltersButton";
 import ClearButton from "../../common/ClearButton";
 import ExportButton from "../../common/ExportButton";
 import FilterDialogueForCharts from "./FilterDialogueForCharts";
+import * as XLSX from "xlsx";
 
 const CustomYAxisTick = ({ x, y, payload }) => (
   <text
@@ -290,9 +292,16 @@ const PerformanceChartHorizontal = (
       }, {});
       setShowDot(Object.keys(filteredFilters).length > 0);
     }, 500);
-  
+
     return () => clearTimeout(timeout);
-  }, [filters]); 
+  }, [filters]);
+
+  useEffect(() => {
+    if (exportData) {
+      exportToExcel();
+      setExportData(false);
+    }
+  }, [exportData]);
 
   const handleBadgeClick = (badgeType) => {
     console.log("clicked on badge");
@@ -316,7 +325,7 @@ const PerformanceChartHorizontal = (
     setTimeout(() => {
       setResetFilters(false);
     }, 500);
-    setShowFilter(false)
+    setShowFilter(false);
   }
 
   const usersMap = useMemo(() => {
@@ -382,6 +391,91 @@ const PerformanceChartHorizontal = (
     };
   }, [transformedData.length, activeBadges]);
 
+  const exportToExcel = () => {
+    if (!transformedData.length) return;
+
+    // Prepare more detailed data for export
+    const exportData = transformedData.map((item) => ({
+      "Employee Name": item.name,
+      "Total Calls Done": item.callsDone,
+      "Connected Calls": item.connected,
+      "Interested Leads": item.interested,
+      "Walk-ins Scheduled": item.walkinsScheduled,
+      "Walk-ins Completed": item.walkinsToday,
+      "Conversion Rate (%)": item.callsDone
+        ? ((item.interested / item.callsDone) * 100).toFixed(2)
+        : "0.00",
+    }));
+
+    // Add summary row
+    const summaryRow = {
+      "Employee Name": "TOTAL",
+      "Total Calls Done": transformedData.reduce(
+        (sum, item) => sum + item.callsDone,
+        0
+      ),
+      "Connected Calls": transformedData.reduce(
+        (sum, item) => sum + item.connected,
+        0
+      ),
+      "Interested Leads": transformedData.reduce(
+        (sum, item) => sum + item.interested,
+        0
+      ),
+      "Walk-ins Scheduled": transformedData.reduce(
+        (sum, item) => sum + item.walkinsScheduled,
+        0
+      ),
+      "Walk-ins Completed": transformedData.reduce(
+        (sum, item) => sum + item.walkinsToday,
+        0
+      ),
+      "Conversion Rate (%)": transformedData.reduce(
+        (sum, item) => sum + item.callsDone,
+        0
+      )
+        ? (
+            (transformedData.reduce((sum, item) => sum + item.interested, 0) /
+              transformedData.reduce((sum, item) => sum + item.callsDone, 0)) *
+            100
+          ).toFixed(2)
+        : "0.00",
+    };
+
+    exportData.push(summaryRow);
+
+    // Create worksheet with styles
+    const ws = XLSX.utils.json_to_sheet(exportData);
+
+    // Add header style
+    const headerStyle = {
+      font: { bold: true, color: { rgb: "FFFFFF" } },
+      fill: { fgColor: { rgb: "32086D" } },
+    };
+
+    // Apply header style
+    const range = XLSX.utils.decode_range(ws["!ref"]);
+    for (let C = range.s.c; C <= range.e.c; ++C) {
+      const headerCell = XLSX.utils.encode_cell({ r: range.s.r, c: C });
+      if (!ws[headerCell]) continue;
+      ws[headerCell].s = headerStyle;
+    }
+
+    // Create workbook
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Performance Report");
+
+    // Generate Excel file
+    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const data = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    saveAs(
+      data,
+      `performance_report_${new Date().toISOString().split("T")[0]}.xlsx`
+    );
+  };
+
   if (loading) {
     return (
       <div className="w-full h-[20rem] bg-[#E8EFF8] flex justify-center items-center">
@@ -390,17 +484,17 @@ const PerformanceChartHorizontal = (
     );
   }
 
-  // if (
-  //   isEmpty(originalData.calls_done) &&
-  //   isEmpty(originalData.connected_calls) &&
-  //   isEmpty(originalData.interested)
-  // ) {
-  //   return (
-  //     <div className="w-full h-[20rem] bg-[#F0F6FF] flex justify-center items-center rounded-xl shadow-xl">
-  //       <EmptyDataMessageIcon size={100} />
-  //     </div>
-  //   );
-  // }
+  if (
+    isEmpty(originalData.calls_done) &&
+    isEmpty(originalData.connected_calls) &&
+    isEmpty(originalData.interested)
+  ) {
+    return (
+      <div className="w-full h-[20rem] bg-[#F0F6FF] flex justify-center items-center rounded-xl shadow-xl">
+        <EmptyDataMessageIcon size={100} />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -434,12 +528,25 @@ const PerformanceChartHorizontal = (
               <ClearButton onClick={() => handleResetFilters()} />
             )}
 
-            <ExportButton onClick={() => setExportData(true)} />
+            <ExportButton
+              onClick={() =>
+                // exportActivityDataToExcel(
+                //   users,
+                //   filters.hasOwnProperty("date_time_range")
+                //     ? filters.date_time_range
+                //     : filters.date,
+                //   originalData
+                // )
+                setExportData(true)
+              }
+            />
           </div>
         </div>
         <div
           className={`col-span-12 rounded overflow-hidden transition-all duration-500 ease-in-out overflow-visible ${
-            showFilter ? "max-h-[400px] opacity-100 pointer-events-auto visible" : "max-h-0 opacity-0 pointer-events-none invisible"
+            showFilter
+              ? "max-h-[400px] opacity-100 pointer-events-auto visible"
+              : "max-h-0 opacity-0 pointer-events-none invisible"
           }`}
         >
           <FilterDialogueForCharts

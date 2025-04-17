@@ -102,21 +102,21 @@ function Dashboard() {
     ]);
   }, [todaysLeadsCount, totalLeadsCount]);
 
-  function handleDateChange(fieldName, data) {
-    console.log("selected dates = ", data);
-    console.log("converted date time = ", formatDatePayload(data));
-    const date_filter = formatDatePayload(data);
-    setFilters((prev) => ({ ...prev, ...date_filter }));
-  }
+  // function handleDateChange(fieldName, data) {
+  //   console.log("selected dates = ", data);
+  //   console.log("converted date time = ", formatDatePayload(data));
+  //   const date_filter = formatDatePayload(data);
+  //   setFilters((prev) => ({ ...prev, ...date_filter }));
+  // }
 
-  function handleResetFilters() {
-    let initialFilters = {};
-    setFilters(initialFilters);
-    setResetFilters(true);
-    setTimeout(() => {
-      setResetFilters(false);
-    }, 1000);
-  }
+  // function handleResetFilters() {
+  //   let initialFilters = {};
+  //   setFilters(initialFilters);
+  //   setResetFilters(true);
+  //   setTimeout(() => {
+  //     setResetFilters(false);
+  //   }, 1000);
+  // }
 
   return (
     <div className="w-full">

@@ -758,3 +758,43 @@ export function getLast10Digits(input) {
   // Return the result (or empty string if input had less than 10 digits)
   return last10Digits;
 }
+
+export const exportActivityDataToExcel = (users, date_time, data) => {
+
+  const allUserIds = new Set();
+  Object.values(data).forEach((arr) =>
+    arr.forEach((item) => allUserIds.add(item.created_by))
+  );
+
+  const getCount = (arr, userId) =>
+    arr.find((item) => item.created_by === userId)?.count || 0;
+
+  const formattedData = [...allUserIds].map((userId) => {
+    const user = users.find((u) => u.id === userId);
+    const calls = getCount(data.calls_done, userId);
+    const connected = getCount(data.connected_calls, userId);
+    const scheduled = getCount(data.walkins_scheduled_today, userId);
+    const walkins = getCount(data.walkins_today, userId);
+    const approved = getCount(data.approved_for_walk_ins, userId);
+
+    const conversionRate =
+      calls > 0 ? ((connected / calls) * 100).toFixed(2) + "%" : "0%";
+
+    return {
+      "User ID": userId,
+      Name: user?.name || "Unknown",
+      "Calls Done": calls,
+      "Connected Calls": connected,
+      // "Conversion Rate": conversionRate,
+      "Walk-ins Scheduled Today": scheduled,
+      "Walk-ins Today": walkins,
+      "Approved for Walk-ins": approved,
+    };
+  });
+
+  const worksheet = utils.json_to_sheet(formattedData);
+  const workbook = utils.book_new();
+  utils.book_append_sheet(workbook, worksheet, "Activity Data");
+
+  writeFile(workbook, `Activity_Data_${date_time ? date_time : ""}.xlsx`);
+};
