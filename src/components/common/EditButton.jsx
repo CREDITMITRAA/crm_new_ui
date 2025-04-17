@@ -7,7 +7,7 @@ function EditButton({ onClick }) {
 
   return (
     <div
-      className={`w-10 h-10 flex items-center justify-center cursor-pointer hover:border border-[#646CFF] rounded-[9px] ${
+      className={`w-10 h-10 flex items-center justify-center cursor-pointer rounded-[9px] button-hover-shadow ${
         !isConfirmationDialogueOpened && "relative group"
       }`}
       style={{

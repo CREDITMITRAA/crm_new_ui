@@ -7,7 +7,7 @@ function AddEmployeeButton({ onClick }) {
 
   return (
     <div
-      className={`w-10 h-10 flex items-center justify-center cursor-pointer hover:border border-[#646CFF] rounded-[9px] ${
+      className={`w-10 h-10 flex items-center justify-center cursor-pointer button-hover-shadow rounded-[9px] ${
         !isConfirmationDialogueOpened && "relative group"
       }`}
       style={{

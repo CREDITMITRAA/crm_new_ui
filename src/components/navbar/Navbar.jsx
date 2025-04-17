@@ -167,17 +167,21 @@ function Navbar() {
 
         {/* Notification Button */}
         {role === ROLE_EMPLOYEE && (
-          <div className="rounded-full flex items-center justify-center w-[2.25rem] h-[2.25rem] mr-[1.25rem]">
+          <button 
+          className="button-hover-shadow rounded-full flex items-center justify-center w-[2.25rem] h-[2.25rem] mr-[1.25rem] button-hover-shadow cursor-pointer"
+          style={{backgroundColor:'unset', borderRadius: '50%'}}
+          >
             <NotificationIcon className="text-[#464646]" />
-          </div>
+          </button>
         )}
 
         {/* Profile Button */}
-        <div
-          className="rounded-full flex items-center justify-center w-[2.25rem] h-[2.25rem] cursor-pointer hover:border border-[#646CFF] mx-2"
+        <button
+          className="button-hover-shadow rounded-full flex items-center justify-center w-[2.25rem] h-[2.25rem] cursor-pointer mx-2 "
+          style={{backgroundColor:'unset', borderRadius: '50%'}}
         >
           <ProfileIcon className="text-[#4300A0]" onClick={() => setShowProfile(!showProfile)}/>
-        </div>
+        </button>
 
         {/* Profile Component */}
         {showProfile && (
@@ -187,10 +191,12 @@ function Navbar() {
         )}
 
         {currentUser?.user.role === ROLE_ADMIN && (
-          <div className="w-[2.25rem] h-[2.25rem] hover:border border-[#646CFF] rounded-full flex justify-center items-center">
+          <button className="w-[2.25rem] h-[2.25rem] rounded-full flex justify-center items-center button-hover-shadow"
+          style={{backgroundColor:'unset', borderRadius: '50%'}}
+          >
             {/* <CreateBackupButton onClick={() => handleClickOnCreateBackup()} /> */}
             <CreateBackupIcon onClick={() => handleClickOnCreateBackup()} />
-          </div>
+          </button>
         )}
       </div>
       <Snackbar

@@ -6,7 +6,7 @@ function DeleteButton({ height = "h-10", onClick, color = null }) {
   
   return (
     <div 
-      className={`w-10 ${height} rounded-[9px] flex justify-center items-center cursor-pointer hover:border border-[#646CFF] ${
+      className={`w-10 ${height} rounded-[9px] flex justify-center items-center cursor-pointer button-hover-shadow ${
         !isConfirmationDialogueOpened && "relative group"
       }`}
       style={{ backgroundColor: "unset" }}

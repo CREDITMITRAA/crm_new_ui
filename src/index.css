@@ -122,15 +122,48 @@ button {
 button:focus,
 button:active {
   outline: none !important;
-  box-shadow: none !important;
-  border: 1px solid #646cff; /* Tailwind blue-600 */
+  /* box-shadow: none !important; */
+  /* border: 1px solid #646cff; /* Tailwind blue-600 */
+  box-shadow: 1px 1px 3px 0px #0000001A,
+ 5px 2px 5px 0px #00000017,
+ 10px 5px 7px 0px #0000000D,
+ 18px 10px 8px 0px #00000003,
+ 28px 15px 9px 0px #00000000;
   border-radius: 9px; /* Optional: match your design */
 }
 
 /* Blue border on hover only */
 button:hover {
-  border: 1px solid #646cff; /* Tailwind blue-600 */
+ /* border: 1px solid #646cff; /* Tailwind blue-600 */
+ box-shadow: 1px 1px 3px 0px #0000001A,
+ 5px 2px 5px 0px #00000017,
+ 10px 5px 7px 0px #0000000D,
+ 18px 10px 8px 0px #00000003,
+ 28px 15px 9px 0px #00000000;
   border-radius: 9px; /* Optional: match your design */
+}
+
+
+.button-hover-shadow {
+  transition: box-shadow 0.3s ease;
+}
+
+.button-hover-shadow:hover {
+  box-shadow:
+    1px 1px 3px 0px #0000001A,
+    5px 2px 5px 0px #00000017,
+    10px 5px 7px 0px #0000000D,
+    18px 10px 8px 0px #00000003,
+    28px 15px 9px 0px #00000000;
+}
+
+.button-hover-shadow:active {
+  box-shadow:
+    1px 1px 3px 0px #0000001A,
+    5px 2px 5px 0px #00000017,
+    10px 5px 7px 0px #0000000D,
+    18px 10px 8px 0px #00000003,
+    28px 15px 9px 0px #00000000;
 }
 
 /* .recharts-wrapper {
