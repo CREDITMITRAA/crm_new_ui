@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import Loader from "../common/loaders/Loader";
 import EmptyDataMessageIcon from "../icons/EmptyDataMessageIcon";
 import { ROLE_EMPLOYEE } from "../../utilities/AppConstants";
+import moment from "moment";
 
 function LoansSummaryTable() {
   const dispatch = useDispatch();
@@ -102,6 +103,7 @@ function LoansSummaryTable() {
               "Bank Name",
               "Loan Amount",
               "EMI",
+              "EMI Date",
               "Outstanding",
               ...(user.user.role !== ROLE_EMPLOYEE ? ["Actions"] : []),
             ].map((header, index) => (
@@ -127,13 +129,16 @@ function LoansSummaryTable() {
                 loanReport.bank_name,
                 Number(loanReport.loan_amount).toFixed(0),
                 Number(loanReport.emi).toFixed(0),
+                loanReport.emi_date ? moment(loanReport.emi_date).format("DD-MM-YYYY") : '-',
                 Number(loanReport.outstanding).toFixed(0),
               ].map((text, colIndex) => (
                 <div
                   key={colIndex}
                   className={`flex-1 px-3 py-2.5 bg-[#D8E8FF] text-[#464646] text-xs border-l border-[#E9F3FF] ${
                     colIndex === 0 ? "border-l-0" : ""
-                  } ${colIndex >= 2 ? "text-right" : "text-center"}`}
+                  } ${
+                    colIndex >= 2 && colIndex !== 4 ? "text-right" : "text-center"
+                  }`}
                 >
                   {text}
                 </div>
@@ -159,14 +164,16 @@ function LoansSummaryTable() {
               <div className="text-[#214768] text-xs font-semibold">Total</div>
             </div>
 
-            {[totalLoanAmount, totalEmi, totalOutstanding].map(
+            {[totalLoanAmount, totalEmi, "", totalOutstanding].map(
               (total, index) => (
                 <div
                   key={index}
-                  className="flex-1 px-3 py-2.5 flex justify-end items-center border-l border-[#E9F3FF]"
+                  className={`flex-1 px-3 py-2.5 flex justify-end items-center border-l border-[#E9F3FF] ${
+                    index === 1 ? "flex-[1]" : "" // Adjust for EMI Date column
+                  }`}
                 >
                   <div className="text-[#214768] text-xs font-semibold">
-                    {total}
+                    {index === 1 ? total : index === 0 ? total : total}
                   </div>
                 </div>
               )

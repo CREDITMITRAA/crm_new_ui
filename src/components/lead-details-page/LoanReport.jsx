@@ -13,6 +13,7 @@ const initialPayload = {
   loan_amount: "",
   emi: "",
   outstanding: "",
+  emi_date: "",
 };
 
 function LoanReport() {
@@ -21,13 +22,7 @@ function LoanReport() {
   const { loading, error } = useSelector((state) => state.loanReports);
   const { isConfirmationDialogueOpened } = useSelector((state) => state.ui);
   const { user } = useSelector((state) => state.auth);
-  const [payload, setPayload] = useState({
-    loan_type: loanTypeOptions[0].value,
-    bank_name: "",
-    loan_amount: "",
-    emi: "",
-    outstanding: "",
-  });
+  const [payload, setPayload] = useState(initialPayload);
   const [openToast, setOpenToast] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
   const [toastStatusMessage, setToastStatusMessage] = useState(null);
@@ -82,15 +77,23 @@ function LoanReport() {
         lead_name: lead.name,
       })
     ).then(() => {
-      dispatch(resetLoanReportUpdaters()); // Reset Redux state after completion
+      dispatch(resetLoanReportUpdaters());
     });
   }
 
   return (
     <>
-      <div className={`${!isConfirmationDialogueOpened && "relative"} w-full bg-[#2147682B] rounded-2xl border border-[#214768] px-[0.938rem] pt-[1.875rem] pb-[0.625rem]`}>
+      <div
+        className={`${
+          !isConfirmationDialogueOpened && "relative"
+        } w-full bg-[#2147682B] rounded-2xl border border-[#214768] px-[0.938rem] pt-[1.875rem] pb-[0.625rem]`}
+      >
         {/* Loan Report Text */}
-        <div className={`${!isConfirmationDialogueOpened && "absolute"} -top-[0.425rem] left-[1.25rem] px-3 bg-[#E9F3FF] rounded-full text-[#214768] text-[10px] font-medium poppins-thin leading-tight`}>
+        <div
+          className={`${
+            !isConfirmationDialogueOpened && "absolute"
+          } -top-[0.425rem] left-[1.25rem] px-3 bg-[#E9F3FF] rounded-full text-[#214768] text-[10px] font-medium poppins-thin leading-tight`}
+        >
           Loan Report
         </div>
 
@@ -103,43 +106,36 @@ function LoanReport() {
             </div>
             <AddButton onClick={() => addLoanReportHandler()} />
           </div>
-          {/* <DropDown
-            key={payload.loan_type} // Force re-render when payload.loan_type changes
-            options={loanTypeOptions}
-            onChange={(field, value) =>
-              setPayload((prev) => ({ ...prev, loan_type: value }))
-            }
-            defaultSelectedOptionIndex={
-              loanTypeOptions.findIndex(
-                (loanType) => loanType.value === payload.loan_type
-              ) || 0
-            }
-            className="w-full"
-          /> */}
 
-<select
-  name="loan_type"
-  value={payload.loan_type || ""}
-  onChange={(e) => setPayload(prev => ({ ...prev, loan_type: e.target.value }))}
-  className="
+          <select
+            name="loan_type"
+            value={payload.loan_type || ""}
+            onChange={(e) =>
+              setPayload((prev) => ({ ...prev, loan_type: e.target.value }))
+            }
+            className="
     w-full h-7 
     bg-[#D9E4F2] rounded-[5px] 
     border-[0.50px] border-neutral-300
     pl-[10px] pr-8 py-[5px]
     text-cyan-900 text-xs 
     font-medium font-['Poppins'] leading-tight
-    appearance-none  /* Removes default dropdown arrow */
+    appearance-none
     bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOCIgaGVpZ2h0PSI1IiB2aWV3Qm94PSIwIDAgOCA1IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxwYXRoIGQ9Ik0xIDEuNUw0IDQuNUw3IDEuNSIgc3Ryb2tlPSIjMTUzZTVDIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPg==')]
     bg-no-repeat bg-[right_10px_center]
     cursor-pointer
   "
->
-  {loanTypeOptions.map((option) => (
-    <option key={option.value} value={option.value} className="text-cyan-900">
-      {option.label}
-    </option>
-  ))}
-</select>
+          >
+            {loanTypeOptions.map((option) => (
+              <option
+                key={option.value}
+                value={option.value}
+                className="text-cyan-900"
+              >
+                {option.label}
+              </option>
+            ))}
+          </select>
 
           {/* Bank Name */}
           <div>
@@ -184,6 +180,112 @@ function LoanReport() {
               placeholder="Enter EMI"
               className="w-full h-[30px] bg-[#D9E4F2] rounded-md px-2 border border-none text-[#214768] text-[10px] inter-inter"
             />
+          </div>
+
+          {/* EMI Date */}
+          <div>
+            <div className="text-[#214768] text-[0.625rem] font-semibold poppins-thin leading-tight mb-[0.313rem]">
+              EMI Date
+            </div>
+            <div className="relative">
+              <input
+                type="date"
+                name="emi_date"
+                value={payload.emi_date}
+                onChange={handleInputChange}
+                className="w-full h-[30px] bg-[#D9E4F2] rounded-md px-2 border border-none text-[#214768] text-[10px] inter-inter
+                [&::-webkit-calendar-picker-indicator]:!opacity-0
+                [&::-webkit-calendar-picker-indicator]:!absolute
+                [&::-webkit-calendar-picker-indicator]:!left-0
+                [&::-webkit-calendar-picker-indicator]:!w-full
+                [&::-webkit-calendar-picker-indicator]:!h-full
+                [&::-webkit-calendar-picker-indicator]:!cursor-pointer"
+              />
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M8 2V5"
+                    stroke="#153E5C"
+                    strokeWidth="1.5"
+                    strokeMiterlimit="10"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M16 2V5"
+                    stroke="#153E5C"
+                    strokeWidth="1.5"
+                    strokeMiterlimit="10"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M3.5 9.09H20.5"
+                    stroke="#153E5C"
+                    strokeWidth="1.5"
+                    strokeMiterlimit="10"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M21 8.5V17C21 20 19.5 22 16 22H8C4.5 22 3 20 3 17V8.5C3 5.5 4.5 3.5 8 3.5H16C19.5 3.5 21 5.5 21 8.5Z"
+                    stroke="#153E5C"
+                    strokeWidth="1.5"
+                    strokeMiterlimit="10"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M15.6947 13.7002H15.7037"
+                    stroke="#153E5C"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M15.6947 16.7002H15.7037"
+                    stroke="#153E5C"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M11.9955 13.7002H12.0045"
+                    stroke="#153E5C"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M11.9955 16.7002H12.0045"
+                    stroke="#153E5C"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M8.29431 13.7002H8.30329"
+                    stroke="#153E5C"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M8.29431 16.7002H8.30329"
+                    stroke="#153E5C"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+            </div>
           </div>
 
           {/* Outstanding Amount */}
