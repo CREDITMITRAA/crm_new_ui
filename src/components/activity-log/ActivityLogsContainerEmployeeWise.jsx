@@ -239,7 +239,7 @@ function ActivityLogsContainerEmployeeWise({
                               </div>
                               {isExpanded && (
                                 <div className="text-[#214768] text-xs flex items-center justify-center">
-                                  {formatTimeTo12Hour(logs[0].createdAt)}
+                                  {moment(logs[0].createdAt).utcOffset(330).format("HH:mm a")}
                                 </div>
                               )}
                             </div>

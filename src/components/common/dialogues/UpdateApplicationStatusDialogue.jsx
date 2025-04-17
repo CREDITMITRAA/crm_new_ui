@@ -174,7 +174,7 @@ function UpdateApplicationStatusDialogue({
                 >
                   Rejection Reason
                 </div>
-
+                
                 {/* Multiline Input (Textarea) */}
                 <textarea
                   className={`border ${
