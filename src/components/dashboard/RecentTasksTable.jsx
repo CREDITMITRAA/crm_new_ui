@@ -477,7 +477,7 @@ function RecentTasksTable() {
                         >
                           <option
                             value="Upcoming"
-                            style={{ color: "#2B323B", cursor: "pointer" }}
+                            style={{ color: "#46464680", cursor: "pointer", backgroundColor:'#F2F7FE'  }}
                             disabled
                             className="truncate"
                           >
@@ -485,7 +485,7 @@ function RecentTasksTable() {
                           </option>
                           <option
                             value="Pending"
-                            style={{ color: "#2B323B", cursor: "pointer" }}
+                            style={{ color: "#46464680", cursor: "pointer", backgroundColor:'#F2F7FE' }}
                             disabled
                             className="truncate"
                           >
@@ -493,7 +493,7 @@ function RecentTasksTable() {
                           </option>
                           <option
                             value="Completed"
-                            style={{ color: "#2B323B", cursor: "pointer" }}
+                            style={{ color: "#464646", cursor: "pointer", backgroundColor:'#F2F7FE' }}
                             className="truncate"
                           >
                             Completed

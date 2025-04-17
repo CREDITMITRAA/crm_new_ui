@@ -24,11 +24,11 @@ function FilterDialogueForWalkInsTable({ setFilters, filters, resetFilters }) {
       // Reset local state
       setSelectedEmployeeName(null);
       // Reset filters in parent component
-      setFilters({
-        walk_in_status: "",
-        created_by: "",
-        // Add any other filter fields you want to reset
-      });
+      // setFilters({
+      //   walk_in_status: "",
+      //   created_by: "",
+      //   // Add any other filter fields you want to reset
+      // });
     }
   }, [resetFilters]);
 

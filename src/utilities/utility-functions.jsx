@@ -103,8 +103,8 @@ export async function exportTasks(params, setToastMessage) {
 
     while (page <= totalPages) {
       const response = await fetchAllTasks({ ...params, page, pageSize });
-      console.log('fetch all tasks api response in export method = ', response);
-      
+      console.log("fetch all tasks api response in export method = ", response);
+
       leads = leads.concat(response.data);
       totalPages = response.pagination.totalPages; // Update total pages
       page += 1;
@@ -157,58 +157,64 @@ export async function exportTasks(params, setToastMessage) {
   }
 }
 
-export async function exportLeadActivityLogs(users, filters, setToastMessage){
+export async function exportLeadActivityLogs(users, filters, setToastMessage) {
   try {
-    let logs = []
-    let page = 1
-    let totalPages = 1
-    let pageSize = 1000
-    while(page <= totalPages){
-      const response = await fetchAllActivityLogs({...filters, page, pageSize})
-      logs = logs.concat(response.data.data)
-      totalPages = response.data.pagination.totalPages
-      page += 1
+    let logs = [];
+    let page = 1;
+    let totalPages = 1;
+    let pageSize = 1000;
+    while (page <= totalPages) {
+      const response = await fetchAllActivityLogs({
+        ...filters,
+        page,
+        pageSize,
+      });
+      logs = logs.concat(response.data.data);
+      totalPages = response.data.pagination.totalPages;
+      page += 1;
       // Ensure export progress doesn't exceed 100%
       let progress = Math.floor(Math.min((page / totalPages) * 100, 100));
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 0));
       setToastMessage(`Exporting Logs... ${progress}%`);
     }
 
-    const processedLogs = logs.map((log)=>{
+    const processedLogs = logs.map((log) => {
       // const formatToISTDate = (utcDate) => {
-      //   if (!utcDate) return ""; 
+      //   if (!utcDate) return "";
       //   const date = new Date(utcDate);
       //   date.setMinutes(date.getMinutes() + 330); // Convert to IST
       //   return date.toISOString().split("T")[0]; // Format YYYY-MM-DD
       // };
 
       const getUserName = (created_by) => {
-        return users.find((user)=> user.id === created_by).name
-      }
+        return users.find((user) => user.id === created_by).name;
+      };
 
       const processedLog = {
         ...log,
-        createdAt : formatToISTDate(log.createdAt),
-        updatedAt : formatToISTDate(log.updatedAt),
-        created_by : getUserName(log.created_by)
-      }
+        createdAt: formatToISTDate(log.createdAt),
+        updatedAt: formatToISTDate(log.updatedAt),
+        created_by: getUserName(log.created_by),
+      };
 
-      return processedLog
-    })
+      return processedLog;
+    });
 
-    const worksheet = utils.json_to_sheet(processedLogs)
-    const workbook = utils.book_new()
-    utils.book_append_sheet(workbook, worksheet, "Activity Logs")
-    const filename = `Activity_Logs_${new Date().toISOString().split("T")[0]}.xlsx`
-    writeFile(workbook, filename)
-    return true
+    const worksheet = utils.json_to_sheet(processedLogs);
+    const workbook = utils.book_new();
+    utils.book_append_sheet(workbook, worksheet, "Activity Logs");
+    const filename = `Activity_Logs_${
+      new Date().toISOString().split("T")[0]
+    }.xlsx`;
+    writeFile(workbook, filename);
+    return true;
   } catch (error) {
-    console.log('error in exportings lead activity logs = ', error);
-    return false
+    console.log("error in exportings lead activity logs = ", error);
+    return false;
   }
 }
 
-const formatToISTDate = (utcDate, showTime=false) => {
+const formatToISTDate = (utcDate, showTime = false) => {
   if (!utcDate) return ""; // Handle missing or invalid dates
   const date = new Date(utcDate);
   // Adjust to IST
@@ -235,7 +241,7 @@ const formatToISTDate = (utcDate, showTime=false) => {
 
 export function formatTimeTo12Hour(time) {
   // Parse the input UTC time correctly
-  const timeMoment = moment.utc(time, "HH:mm").local(); 
+  const timeMoment = moment.utc(time, "HH:mm").local();
 
   // Format the time to "hh:mm A" (e.g., "10:10 PM")
   return timeMoment.format("hh:mm A");
@@ -593,12 +599,14 @@ export function formatDateTime(taskDate, hour, minute, period) {
 }
 
 export function formatDatePayload(dateObject) {
-  console.log('date object = ', dateObject);
-  
+  console.log("date object = ", dateObject);
+
   const { startDateTime, endDateTime } = dateObject;
 
   if (startDateTime) {
-    const formattedStart = moment(startDateTime, "YYYY-MM-DD hh:mm A").format("YYYY-MM-DD HH:mm");
+    const formattedStart = moment(startDateTime, "YYYY-MM-DD hh:mm A").format(
+      "YYYY-MM-DD HH:mm"
+    );
 
     let formattedEnd;
     if (endDateTime) {
@@ -612,7 +620,9 @@ export function formatDatePayload(dateObject) {
     }
 
     if (!formattedEnd) {
-      return { date: moment(startDateTime, "YYYY-MM-DD hh:mm A").format("YYYY-MM-DD") };
+      return {
+        date: moment(startDateTime, "YYYY-MM-DD hh:mm A").format("YYYY-MM-DD"),
+      };
     }
 
     return {
@@ -648,8 +658,7 @@ export const getStatusDetails = (walkIn) => {
     walkIn.walk_in_status !== "Completed";
 
   const isOverdue =
-    followUpDate.isBefore(currentDate) &&
-    walkIn.walk_in_status === "Upcoming";
+    followUpDate.isBefore(currentDate) && walkIn.walk_in_status === "Upcoming";
 
   const isRescheduledOverdue =
     walkIn.is_rescheduled &&
@@ -682,86 +691,94 @@ export const getStatusDetails = (walkIn) => {
 };
 
 export function truncateWithEllipsis(text, maxLength) {
-  if (typeof text !== 'string') return text;
+  if (typeof text !== "string") return text;
   if (text.length <= maxLength) return text;
-  return text.substring(0, maxLength) + '...';
+  return text.substring(0, maxLength) + "...";
 }
 
-export function isEmpty(array){
+export function isEmpty(array) {
   if (!Array.isArray(array) || array.length === 0) return true;
-  return array.every(item => item.count === 0);
+  return array.every((item) => item.count === 0);
 }
 
 export function extractDate(timestamp) {
   // Try parsing with Date object first
   const date = new Date(timestamp);
-  
+
   // If valid Date object, format as YYYY-MM-DD
   if (!isNaN(date.getTime())) {
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   }
-  
+
   // Fallback to string parsing if Date parsing fails
-  const dateMatch = timestamp.match(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2}\s+\d{4}\b/);
+  const dateMatch = timestamp.match(
+    /\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2}\s+\d{4}\b/
+  );
   if (dateMatch) {
     const months = {
-      Jan: '01', Feb: '02', Mar: '03', Apr: '04', May: '05', Jun: '06',
-      Jul: '07', Aug: '08', Sep: '09', Oct: '10', Nov: '11', Dec: '12'
+      Jan: "01",
+      Feb: "02",
+      Mar: "03",
+      Apr: "04",
+      May: "05",
+      Jun: "06",
+      Jul: "07",
+      Aug: "08",
+      Sep: "09",
+      Oct: "10",
+      Nov: "11",
+      Dec: "12",
     };
     const parts = dateMatch[0].split(/\s+/);
     const month = months[parts[0]];
-    const day = parts[1].padStart(2, '0');
+    const day = parts[1].padStart(2, "0");
     const year = parts[2];
     return `${year}-${month}-${day}`;
   }
-  
+
   // Return null if no date could be extracted
   return null;
 }
 
 export function hasNoData(array) {
-  return isEmpty(array) || array.every(item => item.count === 0);
+  return isEmpty(array) || array.every((item) => item.count === 0);
 }
 
 export const formatName = (name) => {
-  if (!name || typeof name !== 'string') {
-    return name || ''; // Return original or empty string if invalid
+  if (!name || typeof name !== "string") {
+    return name || ""; // Return original or empty string if invalid
   }
 
   return name
-    .split(' ') // Split into words
-    .map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-    )
-    .join(' '); // Join back with spaces
+    .split(" ") // Split into words
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" "); // Join back with spaces
 };
 
 export const formatSentence = (sentence) => {
-  if (!sentence || typeof sentence !== 'string') {
-    return sentence || '';
+  if (!sentence || typeof sentence !== "string") {
+    return sentence || "";
   }
 
   sentence = sentence.trim().toLowerCase(); // Remove extra space & lowercase all
   return sentence.charAt(0).toUpperCase() + sentence.slice(1);
 };
 
-
 export function getLast10Digits(input) {
   // Remove all non-digit characters
-  const digitsOnly = input.replace(/\D/g, '');
-  
+  const digitsOnly = input.replace(/\D/g, "");
+
   // Extract last 10 digits
   const last10Digits = digitsOnly.slice(-10);
-  
+
   // Return the result (or empty string if input had less than 10 digits)
   return last10Digits;
 }
 
 export const exportActivityDataToExcel = (users, date_time, data) => {
-
   const allUserIds = new Set();
   Object.values(data).forEach((arr) =>
     arr.forEach((item) => allUserIds.add(item.created_by))
@@ -799,3 +816,82 @@ export const exportActivityDataToExcel = (users, date_time, data) => {
 
   writeFile(workbook, `Activity_Data_${date_time ? date_time : ""}.xlsx`);
 };
+
+export async function exportWalkInLeadsHandler(
+  params,
+  selectedLeadIds = [],
+  walkIns = [],
+  users = [],
+  fieldsToExport = [],
+  setToastMessage
+) {
+  try {
+    let leadsToBeExported = [];
+
+    if (selectedLeadIds.length === 0) {
+      leadsToBeExported = [...walkIns];
+    } else {
+      leadsToBeExported = walkIns.filter((walkIn) =>
+        selectedLeadIds.includes(walkIn.id)
+      );
+    }
+
+    const processedLeads = leadsToBeExported.map((walkIn) => {
+      const formatToISTDate = (utcDate) => {
+        if (!utcDate) return "";
+        const date = new Date(utcDate);
+        date.setMinutes(date.getMinutes() + 330); // Convert to IST
+        return date.toISOString().split("T")[0]; // Format YYYY-MM-DD
+      };
+
+      // Create a flattened object with both walk-in and lead properties
+      const processedWalkIn = {
+        // Walk-in properties
+        ...walkIn,
+        createdAt: formatToISTDate(walkIn.createdAt),
+        updatedAt: formatToISTDate(walkIn.updatedAt),
+        walk_in_date_time: formatToISTDate(walkIn.walk_in_date_time),
+        rescheduled_date_time: formatToISTDate(walkIn.rescheduled_date_time),
+        
+        // Lead properties (flattened)
+        ...(walkIn.lead && {
+          lead_id: walkIn.lead.id,
+          name: walkIn.lead.name,
+          phone: walkIn.lead.phone,
+          lead_status: walkIn.lead.lead_status,
+          verification_status: walkIn.lead.verification_status,
+          LeadAssignments: walkIn.lead.LeadAssignments 
+            ? walkIn.lead.LeadAssignments.map(assignment => 
+                assignment.AssignedTo ? assignment.AssignedTo.name : "Unknown"
+              ).join(", ")
+            : ""
+        })
+      };
+
+      return processedWalkIn;
+    });
+
+    const leadsToExport = processedLeads.map((walkIn) => {
+      const exportedLead = {};
+      fieldsToExport.forEach((field) => {
+        // Handle nested fields by checking both root and lead object
+        exportedLead[field] = walkIn[field] !== undefined 
+          ? walkIn[field] 
+          : (walkIn.lead && walkIn.lead[field] !== undefined)
+            ? walkIn.lead[field]
+            : "";
+      });
+      return exportedLead;
+    });
+
+    const worksheet = utils.json_to_sheet(leadsToExport);
+    const workbook = utils.book_new();
+    utils.book_append_sheet(workbook, worksheet, "Walk-In Leads");
+    const filename = `Walk_In_Leads_${new Date().toISOString().split("T")[0]}.xlsx`;
+    writeFile(workbook, filename);
+    return true;
+  } catch (error) {
+    console.error("Export Error:", error);
+    return false;
+  }
+}

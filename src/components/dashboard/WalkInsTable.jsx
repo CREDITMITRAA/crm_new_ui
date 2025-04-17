@@ -13,7 +13,7 @@ import FilterButton from "../common/FiltersButton";
 import ClearButton from "../common/ClearButton";
 import ExportButton from "../common/ExportButton";
 import {
-  exportLeadsHandler,
+  exportWalkInLeadsHandler,
   formatDatePayload,
   formatName,
   formatSentence,
@@ -69,17 +69,17 @@ function WalkInsTable() {
     ...(role === ROLE_EMPLOYEE && { created_by: user.user.id }),
   });
   const fieldsToExport = [
-    "id",
-    "name",
-    "email",
-    "phone",
-    "lead_source",
-    "lead_status",
-    "application_status",
-    "status",
-    "createdAt",
-    "updatedAt",
-    "LeadAssignments",
+    "id",                  // Walk-in ID
+    "lead_id",             // From lead.id
+    "name",                // From lead.name
+    "phone",               // From lead.phone
+    "walk_in_status",      // Walk-in status
+    "walk_in_date_time",   // Formatted walk-in time
+    "lead_status",         // From lead.lead_status
+    "verification_status", // From lead.verification_status
+    "LeadAssignments",     // Processed assignments
+    "createdAt",           // Formatted walk-in creation date
+    "updatedAt"            // Formatted walk-in update date
   ];
   const [isPickerOpen, setIsPickerOpen] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
@@ -197,7 +197,7 @@ function WalkInsTable() {
     setToastStatusMessage("In Progress...");
     setOpenToast(true);
     let response = null;
-    response = await exportLeadsHandler(
+    response = await exportWalkInLeadsHandler(
       filters,
       [],
       walkIns,
@@ -531,47 +531,49 @@ function WalkInsTable() {
                           {walkIn.walk_in_status !== "Rescheduled" && (
                             <option
                               value="Upcoming"
-                              style={{ color: "orange", cursor: "pointer" }}
+                              style={{ color: "#46464680", cursor: "pointer", backgroundColor:'#F2F7FE' }}
                               disabled
-                              className="truncate"
+                              className="truncate inter-inter"
                             >
                               Upcoming
                             </option>
                           )}
                           <option
                             value="Rescheduled"
-                            style={{ color: "red", cursor: "pointer" }}
-                            className="truncate"
+                            style={{ color: "#464646", cursor: "pointer", backgroundColor:'#F2F7FE' }}
+                            className="truncate inter-inter"
                           >
                             Rescheduled
                           </option>
                           <option
                             value="Completed"
-                            style={{ color: "green", cursor: "pointer" }}
-                            className="truncate"
+                            style={{ color: "#464646", cursor: "pointer", backgroundColor:'#F2F7FE' }}
+                            className="truncate inter-inter"
                           >
                             Completed
                           </option>
                           <option
                             value="Cancelled"
                             style={{
-                              color: "red",
+                              color: "#464646",
                               cursor: "pointer",
-                              fontWeight: "bold",
+                              // fontWeight: "bold",
+                              backgroundColor:'#F2F7FE'
                             }}
-                            className="truncate"
+                            className="truncate inter-inter"
                           >
                             Cancel
                           </option>
                           <option
                             value="Pending"
                             style={{
-                              color: "red",
+                              color: "#46464680",
                               cursor: "pointer",
-                              fontWeight: "bold",
+                              // fontWeight: "bold",
+                              backgroundColor:'#F2F7FE'
                             }}
                             disabled
-                            className="truncate"
+                            className="truncate inter-inter"
                           >
                             Pending
                           </option>
@@ -579,7 +581,7 @@ function WalkInsTable() {
                       ) : (
                         <>
                           <span
-                            className="truncate w-full text-center px-1 flex justify-left"
+                            className="truncate w-full inter-inter text-center px-1 flex justify-left"
                             style={{
                               ...style,
                               color:
