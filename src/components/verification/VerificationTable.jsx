@@ -436,10 +436,11 @@ function VerificationTable({ leads, filters }) {
                     className="truncate w-full text-left"
                     style={{
                       color:
-                        optionColors.find(
-                          (item) =>
-                            item.optionName === lead?.verification_status
-                        )?.optionColor || "#000",
+                        // optionColors.find(
+                        //   (item) =>
+                        //     item.optionName === lead?.verification_status
+                        // )?.optionColor || "#000",
+                        "#2B323B"
                     }}
                   >
                     {terminologiesMap.get(lead?.verification_status) ||

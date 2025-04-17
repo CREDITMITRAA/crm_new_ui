@@ -86,6 +86,7 @@ function AddActivityDialogue({
     return () => {
       dispatch(setIsConfirmationDialogueOpened(false));
       dispatch(setIsAddActivityDialogueOpened(false));
+      onActivityAdded()
     };
   }, []);
 
@@ -178,7 +179,7 @@ function AddActivityDialogue({
       const result = await dispatch(addActivity(payload));
       if (addActivity.fulfilled.match(result)) {
         console.log("Activity added successfully");
-        onActivityAdded(); // Call the callback
+        // onActivityAdded(); // Call the callback
       } else if (addActivity.rejected.match(result)) {
         console.error("Error adding activity:", result.error);
       }

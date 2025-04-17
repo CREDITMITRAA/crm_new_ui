@@ -81,6 +81,7 @@ function ScheduleWalkInOrCallDialogue({
     return () => {
       dispatch(setIsConfirmationDialogueOpened(false));
       setIsCall(false);
+      onScheduleWalkInOrCall()
     };
   }, []);
 
@@ -137,7 +138,7 @@ function ScheduleWalkInOrCallDialogue({
     try {
       const result = await dispatch(scheduleWalkIn(payload));
       if (scheduleWalkIn.fulfilled.match(result)) {
-        onScheduleWalkInOrCall();
+        // onScheduleWalkInOrCall();
       } else if (scheduleWalkIn.rejected.match(result)) {
         console.error("Error scheduling :", result.error);
       }
