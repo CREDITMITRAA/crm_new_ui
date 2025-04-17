@@ -78,11 +78,11 @@ function RecentTasksTable() {
     console.log("filters = ", filters);
     let excludedKeys = [];
     fetchTasks({ ...filters });
-    if(role === ROLE_EMPLOYEE){
-          excludedKeys = ["pageSize", "date", "date_time_range", "created_by"]
-        }else{
-          excludedKeys = ["pageSize", "date", "date_time_range"]
-        }
+    if (role === ROLE_EMPLOYEE) {
+      excludedKeys = ["pageSize", "date", "date_time_range", "created_by"];
+    } else {
+      excludedKeys = ["pageSize", "date", "date_time_range"];
+    }
 
     // Exclude 'pageSize' from the filters count check
     const filterKeys = Object.keys(filters).filter((key) => key !== "pageSize");
@@ -187,7 +187,7 @@ function RecentTasksTable() {
     setTimeout(() => {
       setResetFilters(false);
     }, 1000);
-    setShowFilter(false)
+    setShowFilter(false);
   }
 
   async function handleExportLeads() {
@@ -283,7 +283,9 @@ function RecentTasksTable() {
 
       <div
         className={`col-span-12 rounded overflow-hidden transition-all duration-500 ease-in-out overflow-visible ${
-          showFilter ? "max-h-[400px] opacity-100 pointer-events-auto visible" : "max-h-0 opacity-0 pointer-events-none invisible"
+          showFilter
+            ? "max-h-[400px] opacity-100 pointer-events-auto visible"
+            : "max-h-0 opacity-0 pointer-events-none invisible"
         }`}
       >
         <FilterDialogueForRecentTasksTable
@@ -424,8 +426,7 @@ function RecentTasksTable() {
                     {/* Task Type */}
                     <div className="w-[17%] h-full flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight">
                       <span className="truncate w-full px-1 py-0.5">
-                        {truncateWithEllipsis("Executive Consultation", 24) ||
-                          ""}
+                        {truncateWithEllipsis(task.activity_status, 24) || ""}
                       </span>
                     </div>
 

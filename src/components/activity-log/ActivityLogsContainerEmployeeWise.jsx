@@ -239,7 +239,9 @@ function ActivityLogsContainerEmployeeWise({
                               </div>
                               {isExpanded && (
                                 <div className="text-[#214768] text-xs flex items-center justify-center">
-                                  {moment(logs[0].createdAt).utcOffset(330).format("HH:mm a")}
+                                  {moment(logs[0].createdAt)
+                                    .utcOffset(330)
+                                    .format("HH:mm a")}
                                 </div>
                               )}
                             </div>
@@ -253,25 +255,33 @@ function ActivityLogsContainerEmployeeWise({
                               }`}
                             >
                               <ul className="list-disc list-outside pl-5 text-[#32086d] mt-1">
-                                {logs.map((log) => (
-                                  <li
-                                    key={log.id}
-                                    className="text-sm poppins-thin mt-1"
-                                  >
-                                    <span className="text-[#425565] text-xs font-normal poppins-thin">
-                                      {log.activity_desc.split(" to ")[0]}
-                                    </span>
-                                    <span className="text-[#114F00] text-xs font-semibold poppins-thin">
-                                      {" to "}
-                                      {log.activity_type === "LEAD_ASSIGNMENT"
-                                        ? terminologiesMap.get(
-                                            log.activity_desc.split(" to ")[1]
-                                          ) ||
-                                          log.activity_desc.split(" to ")[1]
-                                        : log.activity_desc.split(" to ")[1]}
-                                    </span>
-                                  </li>
-                                ))}
+                                {logs.map((log) => {
+                                  const [beforeTo, afterTo] =
+                                    log.activity_desc.split(" to ");
+                                  const hasAfterTo =
+                                    afterTo && afterTo.trim() !== "";
+
+                                  return (
+                                    <li
+                                      key={log.id}
+                                      className="text-sm poppins-thin mt-1"
+                                    >
+                                      <span className="text-[#425565] text-xs font-normal poppins-thin">
+                                        {beforeTo}
+                                      </span>
+                                      {hasAfterTo && (
+                                        <span className="text-[#114F00] text-xs font-semibold poppins-thin">
+                                          {" to "}
+                                          {log.activity_type ===
+                                          "LEAD_ASSIGNMENT"
+                                            ? terminologiesMap.get(afterTo) ||
+                                              afterTo
+                                            : afterTo}
+                                        </span>
+                                      )}
+                                    </li>
+                                  );
+                                })}
                               </ul>
 
                               {logs[0].note && (
