@@ -291,6 +291,9 @@ const PerformanceChartHorizontal = (
         return acc;
       }, {});
       setShowDot(Object.keys(filteredFilters).length > 0);
+      isEmpty(originalData.calls_done) &&
+    isEmpty(originalData.connected_calls) &&
+    isEmpty(originalData.interested)
     }, 500);
 
     return () => clearTimeout(timeout);
@@ -484,17 +487,17 @@ const PerformanceChartHorizontal = (
     );
   }
 
-  if (
-    isEmpty(originalData.calls_done) &&
-    isEmpty(originalData.connected_calls) &&
-    isEmpty(originalData.interested)
-  ) {
-    return (
-      <div className="w-full h-[20rem] bg-[#F0F6FF] flex justify-center items-center rounded-xl shadow-xl">
-        <EmptyDataMessageIcon size={100} />
-      </div>
-    );
-  }
+  // if (
+  //   isEmpty(originalData.calls_done) &&
+  //   isEmpty(originalData.connected_calls) &&
+  //   isEmpty(originalData.interested)
+  // ) {
+  //   return (
+  //     <div className="w-full h-[20rem] bg-[#F0F6FF] flex justify-center items-center rounded-xl shadow-xl">
+  //       <EmptyDataMessageIcon size={100} />
+  //     </div>
+  //   );
+  // }
 
   return (
     <div>
@@ -511,8 +514,8 @@ const PerformanceChartHorizontal = (
                 filters.hasOwnProperty("date_time_range")
               }
               resetFilters={resetFilters}
-              fieldName="date" // Uncomment this
-              date={filters?.date_time_range || filters?.date} // Uncomment this
+              fieldName="date"
+              date={filters?.date_time_range || filters?.date}
               buttonBackgroundColor="bg-[#C7D4E4]"
               showBoxShadow={true}
             />
@@ -527,19 +530,7 @@ const PerformanceChartHorizontal = (
               filters.hasOwnProperty("date_time_range")) && (
               <ClearButton onClick={() => handleResetFilters()} />
             )}
-
-            <ExportButton
-              onClick={() =>
-                // exportActivityDataToExcel(
-                //   users,
-                //   filters.hasOwnProperty("date_time_range")
-                //     ? filters.date_time_range
-                //     : filters.date,
-                //   originalData
-                // )
-                setExportData(true)
-              }
-            />
+            <ExportButton onClick={() => setExportData(true)} />
           </div>
         </div>
         <div
@@ -556,6 +547,8 @@ const PerformanceChartHorizontal = (
           />
         </div>
       </div>
+      
+      {/* Modified chart container to handle empty state */}
       <div className="w-full h-[637px] bg-[#F0F6FF] rounded-2xl p-5 shadow-xl mt-1.5">
         <div className="flex justify-between items-center mb-6">
           <div className="text-black text-base font-semibold poppins-thin leading-tight">
@@ -565,41 +558,45 @@ const PerformanceChartHorizontal = (
             <ChartStatusBadge
               text="Interested"
               dotColor={"#9D9D9D"}
-              bgColor={"#EAF0F8"} // a3a3a333
+              bgColor={"#EAF0F8"}
               isActive={activeBadges.interested}
               onClick={() => handleBadgeClick("interested")}
             />
             <ChartStatusBadge
               text="Connected"
               dotColor={"#B0CCE1"}
-              bgColor={"#EAF0F8"} // cbd5e133
+              bgColor={"#EAF0F8"}
               isActive={activeBadges.connected}
               onClick={() => handleBadgeClick("connected")}
             />
             <ChartStatusBadge
               text="Calls Done"
               dotColor={"#E2E3DE"}
-              bgColor={"#EAF0F8"} //e5e5e533
+              bgColor={"#EAF0F8"}
               isActive={activeBadges.calls_done}
               onClick={() => handleBadgeClick("calls_done")}
             />
           </div>
         </div>
 
-        {!isConfirmationDialogueOpened && (
-          <ResponsiveContainer width="100%">
+        {isEmpty(originalData.calls_done) &&
+        isEmpty(originalData.connected_calls) &&
+        isEmpty(originalData.interested) ? (
+          <div className="w-full h-[calc(100%-80px)] flex justify-center items-center">
+            <EmptyDataMessageIcon size={100} />
+          </div>
+        ) : !isConfirmationDialogueOpened ? (
+          <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={transformedData}
               margin={{ top: 20, right: 20, left: 20, bottom: 80 }}
             >
               <XAxis
                 dataKey="name"
-                // tick={{ fontSize: 10, fill: "#6b7280" }}
                 padding={{ left: 10, right: 10 }}
                 tick={<CustomTick />}
               />
               <YAxis
-                // tick={{ fontSize: 10, fill: "#6b7280" }}
                 domain={[0, "dataMax + 20"]}
                 padding={{ top: 10, bottom: 10 }}
                 tick={<CustomYAxisTick />}
@@ -608,16 +605,13 @@ const PerformanceChartHorizontal = (
                 content={<CustomTooltip activeBadges={activeBadges} />}
                 cursor={{ fill: "transparent" }}
               />
-
               <Bar
                 dataKey="callsDone"
                 shape={(props) => {
-                  // Only render if there's any data for active badges
                   const hasData =
                     (activeBadges.calls_done && props.payload.callsDone > 0) ||
                     (activeBadges.connected && props.payload.connected > 0) ||
                     (activeBadges.interested && props.payload.interested > 0);
-
                   return hasData ? (
                     <CombinedBar
                       {...props}
@@ -630,10 +624,10 @@ const PerformanceChartHorizontal = (
               />
             </BarChart>
           </ResponsiveContainer>
-        )}
+        ) : null}
       </div>
     </div>
-  );
+  )
 };
 
 export default PerformanceChartHorizontal;
