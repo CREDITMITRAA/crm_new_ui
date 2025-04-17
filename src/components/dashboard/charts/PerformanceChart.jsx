@@ -289,17 +289,20 @@ const PerformanceChart = () => {
     );
   }
 
-  if (
-    isEmpty(originalData.approved_for_walk_ins) &&
-    isEmpty(originalData.walkins_scheduled_today) &&
-    isEmpty(originalData.walkins_today)
-  ) {
-    return (
-      <div className="w-full h-[20rem] bg-[#F0F6FF] flex justify-center items-center rounded-xl shadow-xl">
-        <EmptyDataMessageIcon size={100} />
-      </div>
-    );
-  }
+  console.log('original data = ', originalData);
+  
+
+  // if (
+  //   isEmpty(originalData.approved_for_walk_ins) &&
+  //   isEmpty(originalData.walkins_scheduled_today) &&
+  //   isEmpty(originalData.walkins_today)
+  // ) {
+  //   return (
+  //     <div className="w-full h-[20rem] bg-[#F0F6FF] flex justify-center items-center rounded-xl shadow-xl">
+  //       <EmptyDataMessageIcon size={100} />
+  //     </div>
+  //   );
+  // }
 
   return (
     <div>
@@ -383,90 +386,100 @@ const PerformanceChart = () => {
         </div>
 
         {/* Bar Chart Section */}
-        {!isConfirmationDialogueOpened && (
-          <ResponsiveContainer width="100%" height={400}>
-            <BarChart
-              data={transformedData}
-              margin={chartConfig.margin}
-              barCategoryGap={chartConfig.barCategoryGap}
-              barGap={chartConfig.barGap}
-            >
-              <defs>
-                <linearGradient id="callsGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#7BB7A6" />
-                  <stop offset="100%" stopColor="#7BB7A6" />
-                </linearGradient>
-                <linearGradient
-                  id="connectedGradient"
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
-                >
-                  <stop offset="0%" stopColor="#547494" />
-                  <stop offset="100%" stopColor="#547494" />
-                </linearGradient>
-                <linearGradient
-                  id="interestedGradient"
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
-                >
-                  <stop offset="0%" stopColor="#9ECF4F" />
-                  <stop offset="100%" stopColor="#9ECF4F" />
-                </linearGradient>
-              </defs>
-
-              <XAxis
-                dataKey="name"
-                tick={<CustomTick />}
-                interval={0}
-                scale="point"
-                padding={{ left: 40, right: 40 }}
-              />
-
-              <YAxis
-                width={chartConfig.margin.left - 20}
-                tickCount={10}
-                domain={[0, "dataMax"]}
-                allowDecimals={false}
-                tick={<CustomYAxisTick />}
-                padding={{ top: 10, bottom: 10 }}
-              />
-
-              <Tooltip
-                content={<CustomTooltip activeBadges={activeBadges} />}
-                cursor={{ fill: "transparent" }}
-              />
-
-              {activeBadges.approved && (
-                <Bar
-                  dataKey="interested"
-                  fill="url(#interestedGradient)"
-                  barSize={chartConfig.barSize}
-                  radius={[10, 10, 0, 10]}
+        {
+          isEmpty(originalData.approved_for_walk_ins) &&
+          isEmpty(originalData.walkins_scheduled_today) &&
+          isEmpty(originalData.walkins_today) ?
+          (
+            <div className="w-full h-[20rem] flex justify-center items-center">
+              <EmptyDataMessageIcon size={100} />
+            </div>
+          ) :
+          !isConfirmationDialogueOpened && (
+            <ResponsiveContainer width="100%" height={500}>
+              <BarChart
+                data={transformedData}
+                margin={chartConfig.margin}
+                barCategoryGap={chartConfig.barCategoryGap}
+                barGap={chartConfig.barGap}
+              >
+                <defs>
+                  <linearGradient id="callsGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#7BB7A6" />
+                    <stop offset="100%" stopColor="#7BB7A6" />
+                  </linearGradient>
+                  <linearGradient
+                    id="connectedGradient"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop offset="0%" stopColor="#547494" />
+                    <stop offset="100%" stopColor="#547494" />
+                  </linearGradient>
+                  <linearGradient
+                    id="interestedGradient"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop offset="0%" stopColor="#9ECF4F" />
+                    <stop offset="100%" stopColor="#9ECF4F" />
+                  </linearGradient>
+                </defs>
+  
+                <XAxis
+                  dataKey="name"
+                  tick={<CustomTick />}
+                  interval={0}
+                  scale="point"
+                  padding={{ left: 40, right: 40 }}
                 />
-              )}
-              {activeBadges.walkinsToday && (
-                <Bar
-                  dataKey="walkinsToday"
-                  fill="url(#connectedGradient)"
-                  barSize={chartConfig.barSize}
-                  radius={[10, 10, 0, 0]}
+  
+                <YAxis
+                  width={chartConfig.margin.left - 20}
+                  tickCount={10}
+                  domain={[0, "dataMax"]}
+                  allowDecimals={false}
+                  tick={<CustomYAxisTick />}
+                  padding={{ top: 10, bottom: 10 }}
                 />
-              )}
-              {activeBadges.walkinsScheduled && (
-                <Bar
-                  dataKey="walkinsScheduled"
-                  fill="url(#callsGradient)"
-                  barSize={chartConfig.barSize}
-                  radius={[10, 10, 10, 0]}
+  
+                <Tooltip
+                  content={<CustomTooltip activeBadges={activeBadges} />}
+                  cursor={{ fill: "transparent" }}
                 />
-              )}
-            </BarChart>
-          </ResponsiveContainer>
-        )}
+  
+                {activeBadges.approved && (
+                  <Bar
+                    dataKey="interested"
+                    fill="url(#interestedGradient)"
+                    barSize={chartConfig.barSize}
+                    radius={[10, 10, 0, 10]}
+                  />
+                )}
+                {activeBadges.walkinsToday && (
+                  <Bar
+                    dataKey="walkinsToday"
+                    fill="url(#connectedGradient)"
+                    barSize={chartConfig.barSize}
+                    radius={[10, 10, 0, 0]}
+                  />
+                )}
+                {activeBadges.walkinsScheduled && (
+                  <Bar
+                    dataKey="walkinsScheduled"
+                    fill="url(#callsGradient)"
+                    barSize={chartConfig.barSize}
+                    radius={[10, 10, 10, 0]}
+                  />
+                )}
+              </BarChart>
+            </ResponsiveContainer>
+          )
+        }
       </div>
     </div>
   );

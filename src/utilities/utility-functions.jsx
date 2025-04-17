@@ -688,7 +688,8 @@ export function truncateWithEllipsis(text, maxLength) {
 }
 
 export function isEmpty(array){
-  return !Array.isArray(array) || array.length === 0
+  if (!Array.isArray(array) || array.length === 0) return true;
+  return array.every(item => item.count === 0);
 }
 
 export function extractDate(timestamp) {

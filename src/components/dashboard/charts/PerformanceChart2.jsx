@@ -549,7 +549,7 @@ const PerformanceChartHorizontal = (
       </div>
       
       {/* Modified chart container to handle empty state */}
-      <div className="w-full h-[637px] bg-[#F0F6FF] rounded-2xl p-5 shadow-xl mt-1.5">
+      <div className="w-full bg-[#F0F6FF] rounded-2xl p-4 shadow-xl mt-1.5">
         <div className="flex justify-between items-center mb-6">
           <div className="text-black text-base font-semibold poppins-thin leading-tight">
             Strategic Performance Metrics
@@ -582,11 +582,11 @@ const PerformanceChartHorizontal = (
         {isEmpty(originalData.calls_done) &&
         isEmpty(originalData.connected_calls) &&
         isEmpty(originalData.interested) ? (
-          <div className="w-full h-[calc(100%-80px)] flex justify-center items-center">
+          <div className="w-full h-[20rem] flex justify-center items-center">
             <EmptyDataMessageIcon size={100} />
           </div>
         ) : !isConfirmationDialogueOpened ? (
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height={500}>
             <BarChart
               data={transformedData}
               margin={{ top: 20, right: 20, left: 20, bottom: 80 }}
