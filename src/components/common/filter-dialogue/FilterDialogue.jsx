@@ -120,7 +120,7 @@ function FilterDialogue({ resetFilters, setFilters, filters }) {
             name="leadId"
             value={filters?.leadId || ""}
             onChange={(e) =>
-              setFilters((prev) => ({ ...prev, leadId: e.target.value }))
+              setFilters((prev) => ({ ...prev, leadId: e.target.value.trim() }))
             }
             placeholder="Filter by id"
             className="text-[#214768] text-sm font-normal inter-inter w-full h-full bg-transparent focus:outline-none focus:border-[#4200a0] focus:ring-0 border-none placeholder:text-[#214768]/50"
@@ -136,7 +136,7 @@ function FilterDialogue({ resetFilters, setFilters, filters }) {
             name="phone"
             value={filters?.phone || ""}
             onChange={(e) =>
-              setFilters((prev) => ({ ...prev, phone: e.target.value }))
+              setFilters((prev) => ({ ...prev, phone: e.target.value.trim() }))
             }
             placeholder="Filter by phone"
             className="text-[#214768] text-sm font-normal inter-inter w-full h-full bg-transparent focus:outline-none focus:border-[#4200a0] focus:ring-0 border-none placeholder:text-[#214768]/50"
@@ -154,6 +154,7 @@ function FilterDialogue({ resetFilters, setFilters, filters }) {
             onChange={(e) =>
               setFilters((prev) => ({ ...prev, name: e.target.value }))
             }
+            onBlur={(e) => setFilters(prev => ({ ...prev, name: e.target.value.trim() }))}
             placeholder="Filter by lead name"
             className="text-[#214768] text-sm font-normal inter-inter w-full h-full bg-transparent focus:outline-none focus:border-[#4200a0] focus:ring-0 border-none placeholder:text-[#214768]/50"
           />
