@@ -131,9 +131,9 @@ function LoansSummaryTable() {
               ].map((text, colIndex) => (
                 <div
                   key={colIndex}
-                  className={`flex-1 px-3 py-2.5 bg-[#D8E8FF] text-center text-[#464646] text-xs border-l border-[#E9F3FF] ${
+                  className={`flex-1 px-3 py-2.5 bg-[#D8E8FF] text-[#464646] text-xs border-l border-[#E9F3FF] ${
                     colIndex === 0 ? "border-l-0" : ""
-                  }`}
+                  } ${colIndex >= 2 ? "text-right" : "text-center"}`}
                 >
                   {text}
                 </div>
@@ -163,7 +163,7 @@ function LoansSummaryTable() {
               (total, index) => (
                 <div
                   key={index}
-                  className="flex-1 px-3 py-2.5 flex justify-start items-center border-l border-[#E9F3FF]"
+                  className="flex-1 px-3 py-2.5 flex justify-end items-center border-l border-[#E9F3FF]"
                 >
                   <div className="text-[#214768] text-xs font-semibold">
                     {total}
@@ -171,10 +171,9 @@ function LoansSummaryTable() {
                 </div>
               )
             )}
-            {
-              user.user.role !== ROLE_EMPLOYEE && 
+            {user.user.role !== ROLE_EMPLOYEE && (
               <div className="flex-1 px-3 py-2.5 border-l border-[#E9F3FF] bg-[#D8E8FF]"></div>
-            }
+            )}
           </div>
         </div>
       ) : (

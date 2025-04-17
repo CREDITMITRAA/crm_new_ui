@@ -82,68 +82,68 @@ function CreditSummaryTable() {
         </div>
       ) : creditReports.length > 0 ? (
         <div className="w-full h-auto rounded-2xl border border-[#E9F3FF] overflow-hidden inter-inter">
-          {/* Table Header */}
-          <div className="bg-[#B6C9E3] grid grid-cols-[3fr_3fr_1fr]">
-            {[
-              "Credit Card Name",
-              "Outstanding",
-              ...(user.user.role !== ROLE_EMPLOYEE ? ["Actions"] : []),
-            ].map((header, index) => (
-              <div
-                key={index}
-                className="px-3 py-2.5 text-center text-[#214768] text-xs font-semibold border-l border-t border-[#E9F3FF] first:border-l-0"
-              >
-                {header}
-              </div>
-            ))}
-          </div>
+  {/* Table Header */}
+  <div className={`bg-[#B6C9E3] grid ${user.user.role !== ROLE_EMPLOYEE ? "grid-cols-[3fr_3fr_1fr]" : "grid-cols-[3fr_3fr]"}`}>
+    {[
+      "Credit Card Name",
+      "Outstanding",
+      ...(user.user.role !== ROLE_EMPLOYEE ? ["Actions"] : []),
+    ].map((header, index) => (
+      <div
+        key={index}
+        className="px-3 py-2.5 text-center text-[#214768] text-xs font-semibold border-l border-t border-[#E9F3FF] first:border-l-0"
+      >
+        {header}
+      </div>
+    ))}
+  </div>
 
-          {/* Table Rows */}
-          {creditReports.map((creditReport) => (
-            <div
-              key={creditReport.id}
-              className="grid grid-cols-[3fr_3fr_1fr] border-t border-r border-[#E9F3FF] bg-[#D8E8FF]"
-            >
-              {[
-                creditReport.credit_card_name,
-                Number(creditReport.total_outstanding).toFixed(0),
-              ].map((text, colIndex) => (
-                <div
-                  key={colIndex}
-                  className="px-3 py-2.5 text-left text-[#464646] text-xs border-l border-r border-[#D8E8FF] first:border-l-0"
-                >
-                  {text}
-                </div>
-              ))}
-              {/* Actions Column */}
-              {user.user.role !== ROLE_EMPLOYEE && (
-                <div className="px-3 py-2.5 flex justify-center items-center border-l border-[#E9F3FF]">
-                  <DeleteIcon
-                    color="#214768"
-                    onClick={() =>
-                      handleClickOnDelete(creditReport.id, creditReport)
-                    }
-                  />
-                </div>
-              )}
-            </div>
-          ))}
-
-          {/* Total Row */}
-          <div className="grid grid-cols-[3fr_3fr_1fr] border-t border-[#E9F3FF] bg-[#D8E8FF]">
-            <div className="px-3 py-2.5 flex justify-center items-center border-l border-[#E9F3FF] first:border-l-0">
-              <div className="text-[#214768] text-xs font-semibold">Total</div>
-            </div>
-            <div className="px-3 py-2.5 flex justify-start items-center border-l border-[#E9F3FF]">
-              <div className="text-[#214768] text-xs font-semibold">
-                {totalOutstanding}
-              </div>
-            </div>
-            {user.user.role !== ROLE_EMPLOYEE && (
-              <div className="px-3 py-2.5 border-l border-[#E9F3FF]"></div>
-            )}
-          </div>
+  {/* Table Rows */}
+  {creditReports.map((creditReport) => (
+    <div
+      key={creditReport.id}
+      className={`grid ${user.user.role !== ROLE_EMPLOYEE ? "grid-cols-[3fr_3fr_1fr]" : "grid-cols-[3fr_3fr]"} border-t border-r border-[#E9F3FF] bg-[#D8E8FF]`}
+    >
+      {[
+        creditReport.credit_card_name,
+        Number(creditReport.total_outstanding).toFixed(0),
+      ].map((text, colIndex) => (
+        <div
+          key={colIndex}
+          className={`px-3 py-2.5 ${colIndex === 1 ? "text-right" : "text-center"} text-[#464646] text-xs border-l border-r border-[#D8E8FF] first:border-l-0`}
+        >
+          {text}
         </div>
+      ))}
+      {user.user.role !== ROLE_EMPLOYEE && (
+        <div className="px-3 py-2.5 flex justify-center items-center border-l border-[#E9F3FF]">
+          <DeleteIcon
+            color="#214768"
+            onClick={() =>
+              handleClickOnDelete(creditReport.id, creditReport)
+            }
+          />
+        </div>
+      )}
+    </div>
+  ))}
+
+  {/* Total Row */}
+  <div className={`grid ${user.user.role !== ROLE_EMPLOYEE ? "grid-cols-[3fr_3fr_1fr]" : "grid-cols-[3fr_3fr]"} border-t border-[#E9F3FF] bg-[#D8E8FF]`}>
+    <div className="px-3 py-2.5 flex justify-center items-center border-l border-[#E9F3FF] first:border-l-0">
+      <div className="text-[#214768] text-xs font-semibold">Total</div>
+    </div>
+    <div className="px-3 py-2.5 flex justify-end items-center border-l border-[#E9F3FF]">
+      <div className="text-[#214768] text-xs font-semibold">
+        {totalOutstanding}
+      </div>
+    </div>
+    {user.user.role !== ROLE_EMPLOYEE && (
+      <div className="px-3 py-2.5 border-l border-[#E9F3FF]"></div>
+    )}
+  </div>
+</div>
+
       ) : (
         <div className="w-full h-[20rem] bg-[#F0F6FF] flex justify-center items-center rounded-2xl shadow-xl">
           <EmptyDataMessageIcon
