@@ -30,7 +30,7 @@ function SignIn() {
   return (
     <div className="w-screen h-screen relative overflow-hidden">
       {(loading || isLoading) && (
-        <div className="absolute inset-0 flex justify-center items-center bg-black/40 backdrop-blur-lg z-10">
+        <div className="absolute inset-0 flex justify-center items-center bg-black/40 backdrop-blur-sm z-10">
           <Loader size={50} />
         </div>
       )}
@@ -45,7 +45,7 @@ function SignIn() {
       />
 
       {/* 🔹 Foreground Content */}
-      <div className="relative z-10 w-full h-full grid grid-cols-12">
+      <div className="relative  w-full h-full grid grid-cols-12">
         {/* Left side section */}
         <div className="col-span-6 h-full w-full flex justify-center items-center">
           <div className="py-8 h-full w-full px-24" style={{ display: "none" }}>
