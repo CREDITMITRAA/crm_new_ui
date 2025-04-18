@@ -129,16 +129,17 @@ function ScheduleWalkInOrCallDialogue({
     payload["created_by"] = user.user.id;
     payload["lead_id"] = selectedLead.id;
     payload["lead_name"] = selectedLead.name;
-    payload["walk_in_date_time"] = formatDateTime(
-      taskDate,
-      hour,
-      minute,
-      period
-    );
     payload["note"] = description;
     if (isReschedule) {
       payload["is_rescheduled"] = true;
       payload["rescheduled_date_time"] = formatDateTime(
+        taskDate,
+        hour,
+        minute,
+        period
+      );
+    }else{
+      payload["walk_in_date_time"] = formatDateTime(
         taskDate,
         hour,
         minute,
