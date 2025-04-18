@@ -9,14 +9,17 @@ function FilterDialogueForActivityLogsTable({
   resetFilters,
 }) {
   const { users, userOptions } = useSelector((state) => state.users);
-  const {isConfirmationDialogueOpened} = useSelector((state)=>state.ui)
+  const { isConfirmationDialogueOpened } = useSelector((state) => state.ui);
   const [employees, setEmployees] = useState([
-    { label: "Filter by employee", value: "" },
+    { label: "Filter by associate", value: "" },
   ]);
   const [selectedEmployeeName, setSelectedEmployeeName] = useState(null);
   useEffect(() => {
     if (users && users.length > 0) {
-      setEmployees([{ label: "Select Employee", value: "" }, ...userOptions]);
+      setEmployees([
+        { label: "Filter by associate", value: "" },
+        ...userOptions,
+      ]);
     }
   }, [users]);
 
@@ -28,15 +31,18 @@ function FilterDialogueForActivityLogsTable({
   return (
     <div className="w-full h-max bg-[#E6F4FF] mb-2 p-2 grid grid-cols-12 gap-4 rounded-xl min-w-[36rem]">
       {/* Filter by Employee Name (Input) */}
-      <div className="col-span-4 w-full h-10 relative" style={{zIndex: isConfirmationDialogueOpened && -1}}>
+      <div
+        className="col-span-4 w-full h-10 relative"
+        style={{ zIndex: isConfirmationDialogueOpened && -1 }}
+      >
         <div className="w-full h-full bg-[#F2F7FE] rounded-xl border border-[#214768] flex items-center px-2">
           <input
             type="text"
             className="text-[#214768] text-sm font-normal inter-inter w-full h-full bg-transparent focus:outline-none focus:border-[#4200a0] focus:ring-0 border-none placeholder:text-[#214768]/50"
-            placeholder="Enter lead id"
+            placeholder="Enter lead ID"
             value={filters?.lead_id || ""}
             onChange={(e) =>
-              setFilters((prev)=>({...prev, lead_id:e.target.value}))
+              setFilters((prev) => ({ ...prev, lead_id: e.target.value }))
             }
             name="lead_id"
           />
@@ -55,8 +61,30 @@ function FilterDialogueForActivityLogsTable({
     </div>
   </div> */}
 
+      {/* Filter by Lead Name */}
+      <div
+        className="col-span-4 w-full h-10 relative"
+        style={{ zIndex: isConfirmationDialogueOpened && -1 }}
+      >
+        <div className="w-full h-full bg-[#F2F7FE] rounded-xl border border-[#214768] flex items-center px-2">
+          <input
+            type="text"
+            className="text-[#214768] text-sm font-normal inter-inter w-full h-full bg-transparent focus:outline-none focus:border-[#4200a0] focus:ring-0 border-none placeholder:text-[#214768]/50"
+            placeholder="Enter lead name"
+            value={filters?.lead_name || ""}
+            onChange={(e) =>
+              setFilters((prev) => ({ ...prev, lead_name: e.target.value }))
+            }
+            name="lead_id"
+          />
+        </div>
+      </div>
+
       {/* Filter By Employee (Dropdown) */}
-      <div className="col-span-4 w-full h-10 relative" style={{zIndex: isConfirmationDialogueOpened && -1}}>
+      <div
+        className="col-span-4 w-full h-10 relative"
+        style={{ zIndex: isConfirmationDialogueOpened && -1 }}
+      >
         <div className="w-full h-full rounded-xl flex items-center">
           <DropDown
             options={employees}

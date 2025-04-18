@@ -15,7 +15,7 @@ function FilterDialogueForWalkInsTable({ setFilters, filters, resetFilters }) {
     { label: "Rescheduled", value: "Rescheduled" },
   ];
   const [employees, setEmployees] = useState([
-    { label: "Select employee", value: "" },
+    { label: "Filter by associate", value: "" },
   ]);
   const [selectedEmployeeName, setSelectedEmployeeName] = useState(null);
 
@@ -34,7 +34,7 @@ function FilterDialogueForWalkInsTable({ setFilters, filters, resetFilters }) {
 
   useEffect(() => {
     if (users && users.length > 0) {
-      setEmployees([{ label: "Select Employee", value: "" }, ...userOptions]);
+      setEmployees([{ label: "Filter by associate", value: "" }, ...userOptions]);
     }
   }, [users]);
 

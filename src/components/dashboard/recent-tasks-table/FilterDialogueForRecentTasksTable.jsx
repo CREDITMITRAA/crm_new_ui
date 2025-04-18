@@ -24,7 +24,7 @@ function FilterDialogueForRecentTasksTable({
     { label: "Completed", value: "Completed" },
   ];
   const taskTypeOptions = [
-    { label: "Filter by task type", value: "" },
+    { label: "Filter by tasks", value: "" },
     { label: terminologiesMap.get(FOLLOW_UP), value: FOLLOW_UP },
     { label: terminologiesMap.get(CALL_BACK), value: CALL_BACK },
     {
@@ -33,12 +33,12 @@ function FilterDialogueForRecentTasksTable({
     },
   ];
   const [employees, setEmployees] = useState([
-    { label: "Filter by employee", value: "" },
+    { label: "Filter by associate", value: "" },
   ]);
   const [selectedEmployeeName, setSelectedEmployeeName] = useState(null);
   useEffect(() => {
     if (users && users.length > 0) {
-      setEmployees([{ label: "Select Employee", value: "" }, ...userOptions]);
+      setEmployees([{ label: "Filter by associate", value: "" }, ...userOptions]);
     }
   }, [users]);
 

@@ -7,7 +7,7 @@ function FilterDialogueForCharts({ setFilters, filters, resetFilters }) {
   const { isConfirmationDialogueOpened } = useSelector((state) => state.ui);
   
   const [employees, setEmployees] = useState([
-    { label: "Select employee", value: "" },
+    { label: "Filter by associate", value: "" },
   ]);
   const [selectedEmployee, setSelectedEmployee] = useState(""); // Store the selected value, not name
 
@@ -23,7 +23,7 @@ function FilterDialogueForCharts({ setFilters, filters, resetFilters }) {
   useEffect(() => {
     if (users && users.length > 0) {
       setEmployees([
-        { label: "Select Employee", value: "" },
+        { label: "Filter by associate", value: "" },
         ...userOptions,
       ]);
     }
