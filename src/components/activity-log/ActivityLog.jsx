@@ -207,6 +207,7 @@ function ActivityLog() {
             <FilterButton
               onClick={() => setShowFilter(!showFilter)}
               showDot={showDot}
+              showFilter={showFilter}
             />
             {showDot && <ClearButton onClick={() => handleResetFilters()} />}
             <ExportButton onClick={() => handleExportLeads()} />

@@ -328,6 +328,7 @@ const PerformanceChart = () => {
               <FilterButton
                 onClick={() => setShowFilter(!showFilter)}
                 showDot={showDot}
+                showFilter={showFilter}
               />
             )}
             {(showDot ||

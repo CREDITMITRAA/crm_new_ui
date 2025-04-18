@@ -523,6 +523,7 @@ const PerformanceChartHorizontal = (
               <FilterButton
                 onClick={() => setShowFilter(!showFilter)}
                 showDot={showDot}
+                showFilter={showFilter}
               />
             )}
             {(showDot ||

@@ -1,13 +1,13 @@
 import { useSelector } from "react-redux";
 import FiltersIcon from "../icons/FiltersIcon";
 
-function FilterButton({ onClick, showDot }) {
+function FilterButton({ onClick, showDot, showFilter }) {
   const { isConfirmationDialogueOpened } = useSelector((state) => state.ui);
   
   return (
     <div className={`${!isConfirmationDialogueOpened && 'relative group'} w-10 h-10`}>
       <button
-        className="w-full h-full rounded-[9px] flex justify-center items-center cursor-pointer hover:border border-[#646CFF]"
+        className={`w-full h-full rounded-[9px] flex justify-center items-center cursor-pointer hover:border border-[#646CFF] ${showFilter && "button-shadow "}`}
         onClick={onClick}
         style={{ backgroundColor: "unset" }}
       >

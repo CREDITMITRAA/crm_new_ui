@@ -913,6 +913,7 @@ function Leads() {
             <FilterButton
               onClick={() => setShowFilter(!showFilter)}
               showDot={showDot}
+              showFilter={showFilter}
             />
             {showDot && <ClearButton onClick={() => handleResetFilters()} />}
             {tableType === ASSIGNED_TABLE && (

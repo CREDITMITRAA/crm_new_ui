@@ -124,11 +124,11 @@ button:active {
   outline: none !important;
   /* box-shadow: none !important; */
   /* border: 1px solid #646cff; /* Tailwind blue-600 */
-  box-shadow: 1px 1px 3px 0px #0000001A,
+  /* box-shadow: 1px 1px 3px 0px #0000001A,
  5px 2px 5px 0px #00000017,
  10px 5px 7px 0px #0000000D,
  18px 10px 8px 0px #00000003,
- 28px 15px 9px 0px #00000000;
+ 28px 15px 9px 0px #00000000; */
   border-radius: 9px; /* Optional: match your design */
 }
 
@@ -157,7 +157,16 @@ button:hover {
     28px 15px 9px 0px #00000000;
 }
 
-.button-hover-shadow:active {
+/* .button-hover-shadow:active {
+  box-shadow:
+    1px 1px 3px 0px #0000001A,
+    5px 2px 5px 0px #00000017,
+    10px 5px 7px 0px #0000000D,
+    18px 10px 8px 0px #00000003,
+    28px 15px 9px 0px #00000000;
+} */
+
+.button-shadow {
   box-shadow:
     1px 1px 3px 0px #0000001A,
     5px 2px 5px 0px #00000017,
@@ -165,7 +174,6 @@ button:hover {
     18px 10px 8px 0px #00000003,
     28px 15px 9px 0px #00000000;
 }
-
 /* .recharts-wrapper {
   position: static !important;
 } */
