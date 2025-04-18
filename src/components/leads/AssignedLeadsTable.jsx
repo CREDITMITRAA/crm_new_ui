@@ -22,6 +22,7 @@ import {
   getLast10Digits,
   truncateWithEllipsis,
 } from "../../utilities/utility-functions";
+import ReAssignedIcon from "../icons/ReAssignedIcon";
 
 function AssignedLeadsTable({
   leads,
@@ -231,7 +232,8 @@ function AssignedLeadsTable({
                 onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
               >
                 <span className="truncate px-1 w-full text-center flex justify-left">
-                  {truncateWithEllipsis(lead.id, 8)}
+                  {truncateWithEllipsis(lead.id, 5)}
+                  {lead.is_reassigned && <ReAssignedIcon size={14}/>}
                 </span>
               </div>
 

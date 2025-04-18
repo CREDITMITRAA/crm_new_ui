@@ -393,7 +393,7 @@ function WalkInsTable({ leads }) {
                     </span>
                     {lead.walkIns[0].is_call && (
                       <span className="">
-                        <CallIcon size={16} />
+                        <CallIcon size={14} />
                       </span>
                     )}
                   </div>
