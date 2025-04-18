@@ -55,10 +55,10 @@ function FilterDialogueForRecentTasksTable({
     <div className="w-full h-max bg-[#E6F4FF] mb-2 p-2 grid grid-cols-12 gap-4 rounded-xl min-w-[36rem]">
       {/* filter by task type */}
       <div
-        className="col-span-3 w-full h-10 relative"
+        className="col-span-3 w-full h-8 relative"
         style={{ zIndex: isConfirmationDialogueOpened && -1 }}
       >
-        <div className="w-full h-full rounded-xl flex items-center">
+        <div className="w-full h-full bg-[#D4D5D53D] rounded-xl flex items-center">
           {/* <input
               type="text"
               placeholder="Filter By Walk-In / Call Status"
@@ -70,8 +70,8 @@ function FilterDialogueForRecentTasksTable({
               onChange={(name, value) =>
                 employeeNameFilterNameChange(name, value)
               }
-              optionsBackgroundColor="#F2F7FE"
-              buttonBackgroundColor="#F2F7FE"
+              optionsBackgroundColor="#B7B7B700"
+              buttonBackgroundColor="#B7B7B700"
               className={"min-w-full"}
               selectedOption={filters?.task_type}
               resetFilters={resetFilters}
@@ -82,6 +82,7 @@ function FilterDialogueForRecentTasksTable({
               buttonBorderRadius="0.8rem"
               buttonHeight="100%"
               optionsTextColor="#464646"
+              size="sm"
             />
           </div>
         </div>
@@ -89,23 +90,23 @@ function FilterDialogueForRecentTasksTable({
 
       {/* filter by task status */}
       <div
-        className="col-span-3 w-full h-10 relative"
+        className="col-span-3 w-full h-8 relative"
         style={{ zIndex: isConfirmationDialogueOpened && -1 }}
       >
-        <div className="w-full h-full rounded-xl flex items-center">
+        <div className="w-full bg-[#D4D5D53D] h-full rounded-xl flex items-center">
           {/* <input
               type="text"
               placeholder="Filter By Walk-In / Call Status"
               className="text-[#21044b] text-sm font-normal inter-inter w-full h-full bg-transparent focus:outline-none focus:border-[#4200a0] focus:ring-0 border-none placeholder:text-[#32086d]/50"
             /> */}
-          <div className="w-full">
+          <div className="w-full ">
             <DropDown
               options={taskStatusOptions}
               onChange={(name, value) =>
                 employeeNameFilterNameChange(name, value)
               }
-              optionsBackgroundColor="#F2F7FE"
-              buttonBackgroundColor="#F2F7FE"
+              optionsBackgroundColor="#B7B7B700"
+              buttonBackgroundColor="#B7B7B700"
               className={"min-w-full"}
               selectedOption={filters?.task_status}
               resetFilters={resetFilters}
@@ -116,6 +117,7 @@ function FilterDialogueForRecentTasksTable({
               buttonBorderRadius="0.8rem"
               buttonHeight="100%"
               optionsTextColor="#464646"
+              size="sm"
             />
           </div>
         </div>
@@ -124,17 +126,17 @@ function FilterDialogueForRecentTasksTable({
       {/* Employee Name */}
       {role !== ROLE_EMPLOYEE && (
         <div
-          className="col-span-3 w-full h-10 relative"
+          className="col-span-3 w-full h-8 relative"
           style={{ zIndex: isConfirmationDialogueOpened && -1 }}
         >
-          <div className="w-full h-full rounded-xl flex items-center">
+          <div className="w-full h-full bg-[#D4D5D53D] rounded-xl flex items-center">
             <DropDown
               options={employees}
               onChange={(name, value) =>
                 employeeNameFilterNameChange(name, value)
               }
-              optionsBackgroundColor="#F2F7FE"
-              buttonBackgroundColor="#F2F7FE"
+              optionsBackgroundColor="#B7B7B700"
+              buttonBackgroundColor="#B7B7B700"
               className={"min-w-full"}
               selectedOption={selectedEmployeeName}
               resetFilters={resetFilters}
@@ -145,6 +147,7 @@ function FilterDialogueForRecentTasksTable({
               buttonBorderRadius="0.8rem"
               buttonHeight="100%"
               optionsTextColor="#464646"
+              size="sm"
             />
           </div>
         </div>

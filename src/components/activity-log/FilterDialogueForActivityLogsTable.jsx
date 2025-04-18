@@ -32,13 +32,13 @@ function FilterDialogueForActivityLogsTable({
     <div className="w-full h-max bg-[#E6F4FF] mb-2 p-2 grid grid-cols-12 gap-4 rounded-xl min-w-[36rem]">
       {/* Filter by Employee Name (Input) */}
       <div
-        className="col-span-4 w-full h-10 relative"
+        className="col-span-4 w-full h-8 relative"
         style={{ zIndex: isConfirmationDialogueOpened && -1 }}
       >
-        <div className="w-full h-full bg-[#F2F7FE] rounded-xl border border-[#214768] flex items-center px-2">
+        <div className="w-full h-full bg-[#D4D5D53D] rounded-xl border border-[#214768] flex items-center px-2">
           <input
             type="text"
-            className="text-[#214768] text-sm font-normal inter-inter w-full h-full bg-transparent focus:outline-none focus:border-[#4200a0] focus:ring-0 border-none placeholder:text-[#214768]/50"
+            className="text-[#214768] text-xs font-normal inter-inter w-full h-full bg-transparent focus:outline-none focus:border-[#4200a0] focus:ring-0 border-none placeholder:text-[#214768]/50"
             placeholder="Enter lead ID"
             value={filters?.lead_id || ""}
             onChange={(e) =>
@@ -63,13 +63,13 @@ function FilterDialogueForActivityLogsTable({
 
       {/* Filter by Lead Name */}
       <div
-        className="col-span-4 w-full h-10 relative"
+        className="col-span-4 w-full h-8 relative"
         style={{ zIndex: isConfirmationDialogueOpened && -1 }}
       >
-        <div className="w-full h-full bg-[#F2F7FE] rounded-xl border border-[#214768] flex items-center px-2">
+        <div className="w-full h-full bg-[#D4D5D53D] rounded-xl border border-[#214768] flex items-center px-2">
           <input
             type="text"
-            className="text-[#214768] text-sm font-normal inter-inter w-full h-full bg-transparent focus:outline-none focus:border-[#4200a0] focus:ring-0 border-none placeholder:text-[#214768]/50"
+            className="text-[#214768] text-xs font-normal inter-inter w-full h-full bg-transparent focus:outline-none focus:border-[#4200a0] focus:ring-0 border-none placeholder:text-[#214768]/50"
             placeholder="Enter lead name"
             value={filters?.lead_name || ""}
             onChange={(e) =>
@@ -82,17 +82,17 @@ function FilterDialogueForActivityLogsTable({
 
       {/* Filter By Employee (Dropdown) */}
       <div
-        className="col-span-4 w-full h-10 relative"
+        className="col-span-4 w-full h-8 relative"
         style={{ zIndex: isConfirmationDialogueOpened && -1 }}
       >
-        <div className="w-full h-full rounded-xl flex items-center">
+        <div className="w-full h-full bg-[#D4D5D53D] rounded-xl flex items-center">
           <DropDown
             options={employees}
             onChange={(name, value) =>
               employeeNameFilterNameChange(name, value)
             }
-            optionsBackgroundColor="#F2F7FE"
-            buttonBackgroundColor="#F2F7FE"
+            optionsBackgroundColor="#B7B7B700"
+            buttonBackgroundColor="#B7B7B700"
             className={"min-w-full"}
             selectedOption={selectedEmployeeName}
             resetFilters={resetFilters}
@@ -104,6 +104,7 @@ function FilterDialogueForActivityLogsTable({
             buttonBorderRadius="0.8rem"
             buttonHeight="100%"
             optionsTextColor="#464646"
+            size="sm"
           />
         </div>
       </div>

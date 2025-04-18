@@ -116,7 +116,7 @@ function Navbar() {
                       >
                         {getInitials(user.name)}
                       </div>
-                      <div className="w-2.5 h-2.5 absolute bottom-0 left-0 bg-[#19ff00] rounded-full border border-white" />
+                      <div className="w-2.5 h-2.5 absolute bottom-0 left-0 bg-[#7BB7A6] rounded-full border border-white" />
                     </div>
                 
                     {/* Tooltip that only shows when hovering the circle */}

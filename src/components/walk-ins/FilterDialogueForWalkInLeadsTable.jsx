@@ -5,14 +5,17 @@ import { getUsersNameAndId } from "../../features/users/usersThunks";
 import {
   applicationStatusOptionsForWalkInsPageFilters,
   leadStatusOptionsForWalkInsPageFilters,
+  NORMAL_LOGIN,
   ROLE_EMPLOYEE,
   verificationStatusOptions,
 } from "../../utilities/AppConstants";
+import DateButton from "../common/DateButton";
 
 function FilterDialogueForWalkInLeadsTable({
   resetFilters,
   setFilters,
   filters,
+  tableType = null,
 }) {
   const dispatch = useDispatch();
   const [employees, setEmployees] = useState([
@@ -69,10 +72,10 @@ function FilterDialogueForWalkInLeadsTable({
   }
 
   return (
-    <div className="w-full h-max bg-[#E6F4FF] mt-4 p-4 grid grid-cols-12 gap-2 rounded-xl">
+    <div className="w-full h-max bg-[#E6F4FF] mt-4 p-4 py-2 grid grid-cols-12 gap-2 rounded-xl">
       {/* lead id */}
-      <div className="col-span-3 w-full h-10">
-        <div className="w-full h-full bg-[#F2F7FE] rounded-xl border border-[#214768] flex items-center justify-start pl-0">
+      <div className={`w-full h-8 ${tableType !== NORMAL_LOGIN ? 'col-span-3 mt-4' : 'col-span-4'}`}>
+        <div className="w-full h-full bg-[#D4D5D53D] rounded-xl border border-[#214768] flex items-center justify-start pl-0">
           <input
             type="text"
             name="leadId"
@@ -81,14 +84,14 @@ function FilterDialogueForWalkInLeadsTable({
               setFilters((prev) => ({ ...prev, leadId: e.target.value.trim() }))
             }
             placeholder="Filter by id"
-            className="text-[#214768] text-sm font-normal inter-inter w-full h-full bg-transparent focus:outline-none focus:border-[#214768] focus:ring-0 border-none placeholder:text-[#214768]/50"
+            className="text-[#214768] text-xs font-normal inter-inter w-full h-full bg-transparent focus:outline-none focus:border-[#214768] focus:ring-0 border-none placeholder:text-[#214768]/50"
           />
         </div>
       </div>
 
       {/* phone no */}
-      <div className="col-span-3 w-full h-10">
-        <div className="w-full h-full bg-[#F2F7FE] rounded-xl border border-[#214768] flex items-center justify-start pl-0">
+      <div className={`w-full h-8 ${tableType !== NORMAL_LOGIN ? 'col-span-3  mt-4' : 'col-span-4'}`}>
+        <div className="w-full h-full bg-[#D4D5D53D] rounded-xl border border-[#214768] flex items-center justify-start pl-0">
           <input
             type="text"
             name="phone"
@@ -97,14 +100,14 @@ function FilterDialogueForWalkInLeadsTable({
               setFilters((prev) => ({ ...prev, phone: e.target.value.trim() }))
             }
             placeholder="Filter by phone"
-            className="text-[#214768] text-sm font-normal inter-inter w-full h-full bg-transparent focus:outline-none focus:border-[#214768] focus:ring-0 border-none placeholder:text-[#214768]/50"
+            className="text-[#214768] text-xs font-normal inter-inter w-full h-full bg-transparent focus:outline-none focus:border-[#214768] focus:ring-0 border-none placeholder:text-[#214768]/50"
           />
         </div>
       </div>
 
       {/* lead name */}
-      <div className="col-span-3 w-full h-10">
-        <div className="w-full h-full bg-[#F2F7FE] rounded-xl border border-[#214768] flex items-center justify-start pl-0">
+      <div className={`w-full h-8 ${tableType !== NORMAL_LOGIN ? 'col-span-3 mt-4' : 'col-span-4'}`}>
+        <div className="w-full h-full bg-[#D4D5D53D] rounded-xl border border-[#214768] flex items-center justify-start pl-0">
           <input
             type="text"
             name="name"
@@ -112,21 +115,43 @@ function FilterDialogueForWalkInLeadsTable({
             onChange={(e) =>
               setFilters((prev) => ({ ...prev, name: e.target.value }))
             }
-            onBlur={(e) => setFilters(prev => ({ ...prev, name: e.target.value.trim() }))}
+            onBlur={(e) =>
+              setFilters((prev) => ({ ...prev, name: e.target.value.trim() }))
+            }
             placeholder="Filter by lead name"
-            className="text-[#214768] text-sm font-normal inter-inter w-full h-full bg-transparent focus:outline-none focus:border-[#214768] focus:ring-0 border-none placeholder:text-[#214768]/50"
+            className="text-[#214768] text-xs font-normal inter-inter w-full h-full bg-transparent focus:outline-none focus:border-[#214768] focus:ring-0 border-none placeholder:text-[#214768]/50"
           />
         </div>
       </div>
 
+      {/* FILTER BY APPOINTMENT DATE TIME */}
+      {tableType !== NORMAL_LOGIN && (
+        <div className="col-span-3 flex flex-col">
+          <div className="text-[#214768] text-[10px] font-normal poppins-thin leading-none tracking-tight">
+            Appointment Date
+          </div>
+          <div className="w-full h-8 rounded-xl border border-[#214768] justify-center items-center gap-2.5 inline-flex mt-[0.325rem]">
+            <DateButton
+              buttonBackgroundColor="[#D4D5D53D]"
+              onDateChange={(fieldName, value) =>
+                handleDateChange(fieldName, value)
+              }
+              fieldName="assigned_on"
+              resetFilters={resetFilters}
+              fromFilter={true}
+            />
+          </div>
+        </div>
+      )}
+
       {/* lead source */}
-      <div className="col-span-3 w-full h-10">
-        <div className="w-full h-full rounded-xl flex items-center justify-start pl-0">
+      <div className={`w-full h-8 ${tableType !== NORMAL_LOGIN ? 'col-span-3' : role !== ROLE_EMPLOYEE ? 'col-span-3' : 'col-span-4'}`}>
+        <div className="w-full h-full bg-[#D4D5D53D] rounded-xl flex items-center justify-start pl-0">
           <DropDown
             options={leadSourceOptions}
             onChange={(name, value) => handleSelect(name, value)}
-            optionsBackgroundColor="#F2F7FE"
-            buttonBackgroundColor="#F2F7FE"
+            optionsBackgroundColor="#B7B7B700"
+            buttonBackgroundColor="#B7B7B700"
             className={"min-w-full"}
             selectedOption={selectedEmployeeName}
             resetFilters={resetFilters}
@@ -138,19 +163,20 @@ function FilterDialogueForWalkInLeadsTable({
             buttonBorderRadius="0.8rem"
             buttonHeight="100%"
             optionsTextColor="#464646"
+            size="sm"
           />
         </div>
       </div>
 
       {/* Employee name */}
       {role !== ROLE_EMPLOYEE && (
-        <div className="col-span-4 w-full h-10">
-          <div className="w-full h-full rounded-xl flex items-center">
+        <div className={`w-full h-8 ${tableType !== NORMAL_LOGIN ? 'col-span-3' : role !== ROLE_EMPLOYEE ? 'col-span-3' : 'col-span-4'}`}>
+          <div className="w-full h-full bg-[#D4D5D53D] rounded-xl flex items-center">
             <DropDown
               options={employees}
               onChange={(name, value) => handleSelect(name, value)}
-              optionsBackgroundColor="#F2F7FE"
-              buttonBackgroundColor="#F2F7FE"
+              optionsBackgroundColor="#B7B7B700"
+              buttonBackgroundColor="#B7B7B700"
               className={"min-w-full"}
               selectedOption={selectedEmployeeName}
               resetFilters={resetFilters}
@@ -161,19 +187,20 @@ function FilterDialogueForWalkInLeadsTable({
               buttonBorderRadius="0.8rem"
               buttonHeight="100%"
               optionsTextColor="#464646"
+              size="sm"
             />
           </div>
         </div>
       )}
 
       {/* application status */}
-      <div className="col-span-4 w-full h-10">
-        <div className="w-full h-full rounded-xl flex items-center">
+      <div className={`w-full h-8 ${tableType !== NORMAL_LOGIN ? 'col-span-3' : role !== ROLE_EMPLOYEE ? 'col-span-3' : 'col-span-4'}`}>
+        <div className="w-full h-full bg-[#D4D5D53D] rounded-xl flex items-center">
           <DropDown
             options={optionsForApplicationStatus}
             onChange={(name, value) => handleSelect(name, value)}
-            optionsBackgroundColor="#F2F7FE"
-            buttonBackgroundColor="#F2F7FE"
+            optionsBackgroundColor="#B7B7B700"
+            buttonBackgroundColor="#B7B7B700"
             className={"min-w-full"}
             selectedOption={selectedEmployeeName}
             resetFilters={resetFilters}
@@ -184,18 +211,19 @@ function FilterDialogueForWalkInLeadsTable({
             buttonBorderRadius="0.8rem"
             buttonHeight="100%"
             optionsTextColor="#464646"
+            size="sm"
           />
         </div>
       </div>
 
       {/* lead status */}
-      <div className="col-span-4 w-full h-10">
-        <div className="w-full h-full rounded-xl flex items-center">
+      <div className={`w-full h-8 ${tableType !== NORMAL_LOGIN ? 'col-span-3' : role !== ROLE_EMPLOYEE ? 'col-span-3' : 'col-span-4'}`}>
+        <div className="w-full h-full bg-[#D4D5D53D] rounded-xl flex items-center">
           <DropDown
             options={optionsForLeadStatus}
             onChange={(name, value) => handleSelect(name, value)}
-            optionsBackgroundColor="#F2F7FE"
-            buttonBackgroundColor="#F2F7FE"
+            optionsBackgroundColor="#B7B7B700"
+            buttonBackgroundColor="#B7B7B700"
             className={"min-w-full"}
             selectedOption={selectedEmployeeName}
             resetFilters={resetFilters}
@@ -206,6 +234,7 @@ function FilterDialogueForWalkInLeadsTable({
             buttonBorderRadius="0.8rem"
             buttonHeight="100%"
             optionsTextColor="#464646"
+            size="sm"
           />
         </div>
       </div>

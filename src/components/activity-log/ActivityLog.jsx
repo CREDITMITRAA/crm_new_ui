@@ -29,7 +29,9 @@ function ActivityLog() {
     (state) => state.activityLogs
   );
   const { users } = useSelector((state) => state.users);
-  const [filters, setFilters] = useState({});
+  const [filters, setFilters] = useState({
+    from_dashboard:true
+  });
   const [resetFilters, setResetFilters] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
   const [showDot, setShowDot] = useState(false);

@@ -94,7 +94,7 @@ export const terminologiesMap = new Map([
 ])
 
 export const verificationStatusOptions = [
-  { label: "Select verification status", value: "" },
+  { label: "Filter by verification status", value: "" },
   { label: terminologiesMap.get(UNDER_REVIEW), value: UNDER_REVIEW },
   { label: terminologiesMap.get(ON_HOLD), value: ON_HOLD },
   { label: terminologiesMap.get(MANAGER_1_APPROVED), value: MANAGER_1_APPROVED },
@@ -140,7 +140,7 @@ export const loanTypeOptions = [
 ];
 
 export const leadStatusOptionsForVerification1Table = [
-  { label: "Select Status", value: "", style:{color:'#464646',backgroundColor:'#F2F7FE', } }, // 808080
+  { label: "Filter by lead status", value: "", style:{color:'#464646',backgroundColor:'#F2F7FE', } }, // 808080
   { label: VERIFICATION_1, value: VERIFICATION_1 , style:{color:'#464646',backgroundColor:'#F2F7FE'}}, // FA913C
   { label: SCHEDULE_FOR_WALK_IN, value: SCHEDULE_FOR_WALK_IN , style:{color:'#464646',backgroundColor:'#F2F7FE'}}, // 0A509B
   { label: SCHEDULE_CALL_WITH_MANAGER, value: SCHEDULE_CALL_WITH_MANAGER , style:{color:'#464646',backgroundColor:'#F2F7FE'}}, // 968C41

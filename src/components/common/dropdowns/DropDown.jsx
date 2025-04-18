@@ -7,27 +7,26 @@ function DropDown({
   className = "",
   fieldName = "",
   disabled = false,
+  size = "md", // 'sm' for h-8 (32px), 'md' for h-10 (40px)
   // Button Styling
   buttonBackgroundColor = "#D9E4F2",
   buttonTextColor = "#214768",
   buttonBorder = "none",
-  buttonBorderRadius = "0.375rem", // md
-  buttonPadding = "0.5rem 0.75rem", // px-3 py-2
-  buttonHeight = "auto",
+  buttonBorderRadius = "0.375rem",
   buttonWidth = "100%",
   buttonMinWidth = "4rem",
-  buttonFontSize = "0.875rem", // text-sm
+  buttonFontSize = "0.75rem",
   buttonBoxShadow = "1px 1px 3px 0px #0000001A, 5px 2px 5px 0px #00000017, 10px 5px 7px 0px #0000000D, 18px 10px 8px 0px #00000003, 28px 15px 9px 0px #00000000",
   // Options Styling
-  optionsBackgroundColor = "#FFFFFF",
+  optionsBackgroundColor = "#FF0000",
   optionsTextColor = "#214768",
   optionsDisabledTextColor = "#ABAAB9",
-  optionsFontSize = "0.75rem", // text-xs
-  optionsFontWeight = "500", // font-medium
-  optionsPadding = "0.375rem 0.75rem", // py-1.5 px-3
-  optionsMaxHeight = "10rem", // max-h-40
+  optionsFontSize = "0.75rem",
+  optionsFontWeight = "500",
+  optionsPadding = "0.375rem 0.75rem",
+  optionsMaxHeight = "10rem",
   optionsBorder = "none",
-  optionsBorderRadius = "0.375rem", // rounded-md
+  optionsBorderRadius = "0.375rem",
   optionsBoxShadow = "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
   // Dropdown Arrow
   dropdownArrowColor = "#214768",
@@ -36,11 +35,24 @@ function DropDown({
   resetFilters = false,
   selectedOption,
 }) {
+  // Size configuration
+  const sizeConfig = {
+    sm: {
+      height: "2rem", // h-8 (32px)
+      padding: "0.25rem 0.5rem",
+      lineHeight: "1.5rem",
+    },
+    md: {
+      height: "2.5rem", // h-10 (40px)
+      padding: "0.5rem 0.75rem",
+      lineHeight: "2rem",
+    },
+  };
+
   const [internalSelected, setInternalSelected] = useState(
     options.length > 0 ? options[defaultSelectedOptionIndex]?.value : ""
   );
 
-  // Handle both controlled (selectedOption) and uncontrolled (internalSelected) scenarios
   const currentValue =
     selectedOption?.value !== undefined
       ? selectedOption.value
@@ -69,7 +81,7 @@ function DropDown({
 
   return (
     <select
-      className={`${className} ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+      className={`outline-none ring-0 focus:ring-0 focus:outline-none ${className} ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
       disabled={disabled}
       value={currentValue}
       onChange={handleChange}
@@ -79,12 +91,17 @@ function DropDown({
         color: currentValue === "" ? "#21476880" : buttonTextColor,
         border: buttonBorder,
         borderRadius: buttonBorderRadius,
-        padding: buttonPadding,
-        height: buttonHeight,
+        padding: sizeConfig[size].padding,
+        height: sizeConfig[size].height,
+        lineHeight: sizeConfig[size].lineHeight,
         width: buttonWidth,
         minWidth: buttonMinWidth,
         fontSize: buttonFontSize,
-        boxShadow: buttonBoxShadow,
+        // boxShadow: buttonBoxShadow,
+        // Text overflow
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
         // Dropdown Arrow
         backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='${encodeURIComponent(dropdownArrowColor)}' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`,
         backgroundRepeat: "no-repeat",
@@ -102,7 +119,7 @@ function DropDown({
           value={item.value}
           disabled={item?.value === ""}
           style={{
-            backgroundColor: optionsBackgroundColor,
+            backgroundColor: "#D9E4F2",
             color: item?.value === "" ? optionsDisabledTextColor : optionsTextColor,
             fontSize: optionsFontSize,
             fontWeight: optionsFontWeight,
@@ -110,7 +127,6 @@ function DropDown({
             border: optionsBorder,
             borderRadius: optionsBorderRadius,
           }}
-          className="inter-inter"
         >
           {item.label}
         </option>

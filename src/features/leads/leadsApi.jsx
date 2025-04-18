@@ -60,3 +60,7 @@ export async function updateVerificationStatusApi(payload){
 export async function fetchLeadsByAssignedUserId(params){
     return PrivateAxios.get(`/api/lead-assignments/get-leads-by-assigned-user-id`,{params:params})
 }
+
+export async function fetchDistinctInvalidLeadReasons(){
+    return PrivateAxios.get('/api/invalid-leads/get-distinct-invalid-lead-reasons')
+}

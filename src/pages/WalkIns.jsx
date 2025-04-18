@@ -261,7 +261,7 @@ function WalkIns() {
           <div className="flex grid-cols-6 gap-2">
             <PrimaryButton
               isActive={!showNormalLoginTable}
-              name="Walk-In"
+              name="Appointments"
               onClick={() => {
                 handleResetFilters();
                 setShowNormalLoginTable(false);
@@ -304,6 +304,7 @@ function WalkIns() {
           setFilters={setFilters}
           filters={filters}
           resetFilters={resetFilters}
+          tableType={tableType}
         />
       </div>
 

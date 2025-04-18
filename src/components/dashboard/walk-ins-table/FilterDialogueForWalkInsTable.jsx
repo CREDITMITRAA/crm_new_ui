@@ -6,7 +6,7 @@ import { ROLE_EMPLOYEE } from "../../../utilities/AppConstants";
 function FilterDialogueForWalkInsTable({ setFilters, filters, resetFilters }) {
   const { users, userOptions } = useSelector((state) => state.users);
   const { role } = useSelector((state) => state.auth);
-  const {isConfirmationDialogueOpened} = useSelector((state)=>state.ui)
+  const { isConfirmationDialogueOpened } = useSelector((state) => state.ui);
   const options = [
     { label: "Filter by status", value: "" },
     { label: "Pending", value: "Pending" },
@@ -34,7 +34,10 @@ function FilterDialogueForWalkInsTable({ setFilters, filters, resetFilters }) {
 
   useEffect(() => {
     if (users && users.length > 0) {
-      setEmployees([{ label: "Filter by associate", value: "" }, ...userOptions]);
+      setEmployees([
+        { label: "Filter by associate", value: "" },
+        ...userOptions,
+      ]);
     }
   }, [users]);
 
@@ -51,16 +54,19 @@ function FilterDialogueForWalkInsTable({ setFilters, filters, resetFilters }) {
   return (
     <div className="w-full h-max bg-[#E6F4FF] mb-2 p-2 grid grid-cols-12 gap-4 rounded-xl min-w-[36rem]">
       {/* Walk-In / Call Status */}
-      <div className="col-span-3 w-full h-10 relative" style={{zIndex: isConfirmationDialogueOpened && -1}}>
-        <div className="w-full h-full rounded-xl flex items-center">
+      <div
+        className="col-span-3 w-full h-8 relative"
+        style={{ zIndex: isConfirmationDialogueOpened && -1 }}
+      >
+        <div className="w-full bg-[#D4D5D53D] h-full rounded-xl flex items-center">
           <div className="w-full">
             <DropDown
               options={options}
               onChange={(name, value) =>
                 handleFilterChange("walk_in_status", value)
               }
-              optionsBackgroundColor="#F2F7FE"
-              buttonBackgroundColor="#F2F7FE"
+              optionsBackgroundColor="#B7B7B700"
+              buttonBackgroundColor="#B7B7B700"
               className={"min-w-full"}
               selectedOption={filters?.walk_in_status || ""}
               resetFilters={resetFilters}
@@ -69,9 +75,10 @@ function FilterDialogueForWalkInsTable({ setFilters, filters, resetFilters }) {
               backgroundColor="#F2F7FE"
               textColor="text-[#214768]"
               buttonBorder="1px solid #214768"
-            buttonBorderRadius="0.8rem"
-            buttonHeight="100%"
-            optionsTextColor="#464646"
+              buttonBorderRadius="0.8rem"
+              buttonHeight="100%"
+              optionsTextColor="#464646"
+              size="sm"
             />
           </div>
         </div>
@@ -79,15 +86,18 @@ function FilterDialogueForWalkInsTable({ setFilters, filters, resetFilters }) {
 
       {/* Employee Name */}
       {role !== ROLE_EMPLOYEE && (
-        <div className="col-span-3 w-full h-10 relative" style={{zIndex: isConfirmationDialogueOpened && -1}}>
-          <div className="w-full h-full rounded-xl flex items-center">
+        <div
+          className="col-span-3 w-full h-8 relative"
+          style={{ zIndex: isConfirmationDialogueOpened && -1 }}
+        >
+          <div className="w-full bg-[#D4D5D53D] h-full rounded-xl flex items-center">
             <DropDown
               options={employees}
               onChange={(name, value) =>
                 handleFilterChange("created_by", value)
               }
-              optionsBackgroundColor="#F2F7FE"
-              buttonBackgroundColor="#F2F7FE"
+              optionsBackgroundColor="#B7B7B700"
+              buttonBackgroundColor="#B7B7B700"
               className={"min-w-full"}
               selectedOption={selectedEmployeeName || ""}
               resetFilters={resetFilters}
@@ -96,9 +106,10 @@ function FilterDialogueForWalkInsTable({ setFilters, filters, resetFilters }) {
               backgroundColor="#F2F7FE"
               textColor="text-[#214768]"
               buttonBorder="1px solid #214768"
-            buttonBorderRadius="0.8rem"
-            buttonHeight="100%"
-            optionsTextColor="#464646"
+              buttonBorderRadius="0.8rem"
+              buttonHeight="100%"
+              optionsTextColor="#464646"
+              size="sm"
             />
           </div>
         </div>

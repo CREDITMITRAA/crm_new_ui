@@ -20,7 +20,7 @@ import DropDown from "../components/common/dropdowns/DropDown";
 import AssignToButton from "../components/common/AssignToButton";
 import UploadLeadsButton from "../components/common/UploadLeadsButton";
 import ConfirmationDialogue from "../components/common/dialogues/ConfirmationDialogue";
-import { assignLeads, uploadLeadsInBulk } from "../features/leads/leadsApi";
+import { assignLeads, fetchDistinctInvalidLeadReasons, uploadLeadsInBulk } from "../features/leads/leadsApi";
 import Snackbar from "../components/common/snackbars/Snackbar";
 import AlertButton from "../components/common/AlertButton";
 import { exportLeadsHandler, isEmpty } from "../utilities/utility-functions";
@@ -51,7 +51,7 @@ function Leads() {
   const { users, userOptions } = useSelector((state) => state.users);
   const { user, role } = useSelector((state) => state.auth);
   const { height } = useSelector((state) => state.ui);
-
+  const [reasons, setReasons] = useState([])
   const [filters, setFilters] = useState(() => ({
     ...(role === ROLE_EMPLOYEE && {
       userId: user.user.id,
@@ -123,6 +123,10 @@ function Leads() {
     }, 500),
     [dispatch]
   );
+
+  useEffect(()=>{
+    fetchUniqueInvalidLeadsReasons()
+  },[])
 
   // Initial load effect
   useEffect(() => {
@@ -832,6 +836,28 @@ function Leads() {
     }
   }
 
+  async function fetchUniqueInvalidLeadsReasons() {
+    try {
+      console.log('calling reasons api');
+  
+      const response = await fetchDistinctInvalidLeadReasons();
+      console.log('reasons = ', response.data.data);
+  
+      const latestReasons = [
+        { label: "Filter by reason", value: "" }, // default option
+        ...response.data.data.map((reason) => ({
+          label: reason,
+          value: reason
+        }))
+      ];
+  
+      setReasons(latestReasons);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  
+
   return (
     <div className="w-full">
       {/* <!-- Cards Container --> */}
@@ -944,6 +970,8 @@ function Leads() {
           setFilters={setFilters}
           filters={filters}
           resetFilters={resetFilters}
+          tableType={tableType}
+          reasons={reasons}
         />
       </div>
 
