@@ -5,6 +5,7 @@ import {
   FOLLOW_UP,
   OTHERS,
   SCHEDULED_CALL_WITH_MANAGER,
+  terminologiesMap,
 } from "../../../utilities/AppConstants";
 import DateButton from "../DateButton";
 import DropDown from "../dropdowns/DropDown";
@@ -133,7 +134,7 @@ function UpdateLeadStatusDialogue({
           </div>
 
           <div className="w-full flex justify-center my-2 text-[#888888]">
-            <span>{`You are about to change lead status to ${payload?.lead_status} `}</span>
+            <span>{`You are about to change lead status to ${terminologiesMap.get(payload?.lead_status)} `}</span>
           </div>
 
           <div className="relative w-full h-max mt-[1.375rem]">

@@ -85,6 +85,7 @@ function WalkInsTable({ leads }) {
   const [isCall, setIsCall] = useState(false);
   const [selectedLeadStatus, setSelectedLeadStatus] = useState(null);
   const [selectedLead, setSelectedLead] = useState(false);
+  const [isReschedule, setIsReschedule] = useState(false)
 
   useEffect(() => {
     if (loading) {
@@ -146,6 +147,7 @@ function WalkInsTable({ leads }) {
 
       // Proceed with rescheduling
       setIsCall(newStatus === RESCHEDULE_CALL_WITH_MANAGER);
+      setIsReschedule(true)
       setSelectedLead(lead);
       setSelectedLeadStatus(newStatus);
       setShowScheduleWalkInOrCallDialogue(true);
@@ -648,6 +650,7 @@ function WalkInsTable({ leads }) {
             );
           }}
           fromTable={true}
+          isReschedule={isReschedule}
         />
       )}
     </>

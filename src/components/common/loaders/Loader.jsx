@@ -5,7 +5,7 @@ const Loader = ({ size = 40 }) => {
     <div className="relative flex items-center  justify-center">
       {/* Outer Dark Blue Semicircle - Counterclockwise */}
       <div
-        className="absolute border-[3px] border-[#32086d] border-t-transparent border-l-transparent rounded-full"
+        className="absolute border-[3px] border-[#214768] border-t-transparent border-l-transparent rounded-full"
         style={{
           width: `${size}px`,
           height: `${size}px`,
@@ -15,7 +15,7 @@ const Loader = ({ size = 40 }) => {
 
       {/* Middle Light Blue Semicircle - Clockwise */}
       <div
-        className="absolute border-[3px] border-[#5591ff] border-t-transparent border-l-transparent rounded-full"
+        className="absolute border-[3px] border-[#5E95C5] border-t-transparent border-l-transparent rounded-full"
         style={{
           width: `${size * 0.75}px`,
           height: `${size * 0.75}px`,
@@ -25,7 +25,7 @@ const Loader = ({ size = 40 }) => {
 
       {/* Inner Dark Blue Semicircle - Counterclockwise */}
       <div
-        className="absolute border-[3px] border-[#32086d] border-t-transparent border-l-transparent rounded-full"
+        className="absolute border-[3px] border-[#214768] border-t-transparent border-l-transparent rounded-full"
         style={{
           width: `${size * 0.5}px`,
           height: `${size * 0.5}px`,

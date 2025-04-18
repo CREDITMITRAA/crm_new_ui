@@ -549,6 +549,7 @@ export async function downloadReport(
 
 export function formatDateTime(taskDate, hour, minute, period) {
   try {
+    console.log(taskDate,hour,minute,period);
     if (taskDate && hour !== undefined && minute !== undefined && period) {
       let dateObj = new Date(taskDate); // Ensure taskDate is converted into a Date object
 

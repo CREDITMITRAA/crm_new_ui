@@ -213,7 +213,7 @@ function ActivityLogsContainerEmployeeWise({
                                   {formatName(logs[0].lead_name)}
                                 </div>
                                 <div className="w-5 h-5 flex items-center justify-center">
-                                  <LeadNavigationIcon />
+                                  <LeadNavigationIcon color="#214768"/>
                                 </div>
                               </div>
                               <div

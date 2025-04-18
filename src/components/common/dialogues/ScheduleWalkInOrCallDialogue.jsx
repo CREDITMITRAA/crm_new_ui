@@ -3,6 +3,8 @@ import {
   activityOptions,
   CALL_BACK,
   FOLLOW_UP,
+  RESCHEDULE_CALL_WITH_MANAGER,
+  RESCHEDULE_WALK_IN,
   SCHEDULE_CALL_WITH_MANAGER,
   SCHEDULE_FOR_WALK_IN,
   SCHEDULED_CALL_WITH_MANAGER,
@@ -81,7 +83,7 @@ function ScheduleWalkInOrCallDialogue({
     return () => {
       dispatch(setIsConfirmationDialogueOpened(false));
       setIsCall(false);
-      onScheduleWalkInOrCall()
+      onScheduleWalkInOrCall();
     };
   }, []);
 
@@ -134,6 +136,15 @@ function ScheduleWalkInOrCallDialogue({
       period
     );
     payload["note"] = description;
+    if (isReschedule) {
+      payload["is_rescheduled"] = true;
+      payload["rescheduled_date_time"] = formatDateTime(
+        taskDate,
+        hour,
+        minute,
+        period
+      );
+    }
     setOpenToast(true);
     try {
       const result = await dispatch(scheduleWalkIn(payload));
@@ -148,7 +159,14 @@ function ScheduleWalkInOrCallDialogue({
   }
 
   function handleDateChange(date) {
-    setTaskDate(date);
+    date = new Date(date);
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+    const day = String(date.getDate()).padStart(2, "0");
+
+    const formatted = `${year}-${month}-${day}`;
+    setTaskDate(formatted);
   }
 
   function handleDateTimeChange(fieldName, value) {
@@ -198,7 +216,13 @@ function ScheduleWalkInOrCallDialogue({
       >
         <>
           <span className="text-[#214768] font-semibold leading-5 poppins-thin">
-            {isCall ? SCHEDULE_CALL_WITH_MANAGER : SCHEDULE_FOR_WALK_IN}
+            {isReschedule
+              ? isCall
+                ? RESCHEDULE_CALL_WITH_MANAGER
+                : RESCHEDULE_WALK_IN
+              : isCall
+              ? SCHEDULE_CALL_WITH_MANAGER
+              : SCHEDULE_FOR_WALK_IN}
           </span>
 
           {/* status and date time container */}
@@ -244,8 +268,8 @@ function ScheduleWalkInOrCallDialogue({
                 date={taskDate && extractDate(taskDate)}
                 fromTable={true}
                 buttonBackgroundColor="[#D9E4F2]"
-                    showBoxShadow={true}
-                    borderColor="[#214768]"
+                showBoxShadow={true}
+                borderColor="[#214768]"
               />
             </div>
 
@@ -264,11 +288,11 @@ function ScheduleWalkInOrCallDialogue({
                   fieldName="hours"
                   textColor="text-[#000000]"
                   buttonWidth="max-content"
-                      buttonMinWidth="4rem"
-                      buttonBorder="1px solid #214768"
-                      buttonBorderRadius="0.8rem"
-                      buttonHeight="100%"
-                      optionsTextColor="#464646"
+                  buttonMinWidth="4rem"
+                  buttonBorder="1px solid #214768"
+                  buttonBorderRadius="0.8rem"
+                  buttonHeight="100%"
+                  optionsTextColor="#464646"
                 />
                 <DropDown
                   options={minutes}
@@ -278,11 +302,11 @@ function ScheduleWalkInOrCallDialogue({
                   fieldName="minutes"
                   textColor="text-[#000000]"
                   buttonWidth="max-content"
-                      buttonMinWidth="4rem"
-                      buttonBorder="1px solid #214768"
-                      buttonBorderRadius="0.8rem"
-                      buttonHeight="100%"
-                      optionsTextColor="#464646"
+                  buttonMinWidth="4rem"
+                  buttonBorder="1px solid #214768"
+                  buttonBorderRadius="0.8rem"
+                  buttonHeight="100%"
+                  optionsTextColor="#464646"
                 />
                 <DropDown
                   options={periods}
@@ -292,11 +316,11 @@ function ScheduleWalkInOrCallDialogue({
                   fieldName="periods"
                   textColor="text-[#000000]"
                   buttonWidth="max-content"
-                      buttonMinWidth="4rem"
-                      buttonBorder="1px solid #214768"
-                      buttonBorderRadius="0.8rem"
-                      buttonHeight="100%"
-                      optionsTextColor="#464646"
+                  buttonMinWidth="4rem"
+                  buttonBorder="1px solid #214768"
+                  buttonBorderRadius="0.8rem"
+                  buttonHeight="100%"
+                  optionsTextColor="#464646"
                 />
               </div>
             </div>
