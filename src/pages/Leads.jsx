@@ -116,12 +116,17 @@ function Leads() {
   const fetchLeads = useCallback(
     debounce((filters) => {
       if (role === ROLE_EMPLOYEE) {
+        console.log("table type = ", tableType)
         dispatch(getLeadsByAssignedUserId(filters));
+      } else if(tableType === INVALID_LEADS_TABLE) {
+        console.log("table type = ", tableType)
+        dispatch(getAllInvalidLeads(filters))
       } else {
+        console.log("table type = ", tableType)
         dispatch(getAllLeads(filters));
       }
     }, 500),
-    [dispatch]
+    [dispatch, role, tableType]
   );
 
   useEffect(()=>{
@@ -142,7 +147,7 @@ function Leads() {
           dispatch(getAllLeads({ pageSize: newPageSize }));
         }
         dispatch(getAllDistinctLeadSources());
-        if (role !== "EMPLOYEE") {
+        if (role !== ROLE_EMPLOYEE && tableType === INVALID_LEADS_TABLE) {
           dispatch(getAllInvalidLeads());
         }
         initialMount.current = false;
@@ -789,6 +794,8 @@ function Leads() {
   }
 
   function moreOptionsClickHandler(value) {
+    console.log('value = ', value);
+    
     if (value === EXPORT_LEADS) {
       if (tableType === NOT_ASSIGNED_TABLE) {
         handleExportLeads();
@@ -797,6 +804,7 @@ function Leads() {
       }
     } else {
       setTableType(value);
+      handleResetFilters()
     }
   }
 
@@ -875,9 +883,9 @@ function Leads() {
                 isActive={tableType === ASSIGNED_TABLE}
                 name="Assigned"
                 onClick={() => {
+                  setTableType(ASSIGNED_TABLE);
                   handleResetFilters();
                   setShowNotAssignedTable(false);
-                  setTableType(ASSIGNED_TABLE);
                   setShowFilter(false);
                 }}
                 backgroundColor="#C7D4E4"
@@ -888,9 +896,9 @@ function Leads() {
                 name="Not Assigned"
                 isActive={tableType === NOT_ASSIGNED_TABLE}
                 onClick={() => {
+                  setTableType(NOT_ASSIGNED_TABLE);
                   handleResetFilters();
                   setShowNotAssignedTable(true);
-                  setTableType(NOT_ASSIGNED_TABLE);
                   setFilters((prev) => ({
                     ...prev,
                     assigned_to: "not_assigned",
