@@ -64,7 +64,7 @@ function ActivityLog() {
     // Filter out keys with empty values
     const filteredFilters = Object.keys(filters)?.reduce((acc, key) => {
       // Skip keys like "page", "pageSize", "totalPages", and "total"
-      if (!["page", "pageSize", "totalPages","createdAt", "total"].includes(key)) {
+      if (!["page", "pageSize", "totalPages","createdAt", "total", "from_dashboard"].includes(key)) {
         // Check if the value is not empty
         const value = filters[key];
         if (
@@ -146,6 +146,7 @@ function ActivityLog() {
   function handleResetFilters() {
     let initialFilters = {
       pageSize: 10,
+      from_dashboard:true
     };
     setFilters(initialFilters);
     setResetFilters(true);
