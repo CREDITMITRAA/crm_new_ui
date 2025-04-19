@@ -53,140 +53,103 @@ const CombinedBar = (props) => {
     0
   );
 
-  // If no active data or all values are zero, don't render anything
-  if (maxValue === 0) {
-    return null;
-  }
+  if (maxValue === 0) return null;
 
-  // Calculate heights for each segment
-  const callsDoneHeight =
-    activeBadges.calls_done && data.callsDone > 0
-      ? (data.callsDone / maxValue) * height
-      : 0;
-  const connectedHeight =
-    activeBadges.connected && data.connected > 0
-      ? (data.connected / maxValue) * height
-      : 0;
-  const interestedHeight =
-    activeBadges.interested && data.interested > 0
-      ? (data.interested / maxValue) * height
-      : 0;
+  // Calculate heights and positions
+  const callsDoneHeight = activeBadges.calls_done ? (data.callsDone / maxValue) * height : 0;
+  const connectedHeight = activeBadges.connected ? (data.connected / maxValue) * height : 0;
+  const interestedHeight = activeBadges.interested ? (data.interested / maxValue) * height : 0;
 
-  // Calculate y positions for each segment
   const callsDoneY = y + height - callsDoneHeight;
   const connectedY = y + height - connectedHeight;
   const interestedY = y + height - interestedHeight;
 
-  // Shadow settings
-  const shadowHeight = 50; // Increased shadow height
-  const shadowOpacity = 0.2; // Increased opacity
+  // Shadow configuration
+  const shadowOpacity = 0.2;
+  const minHeightForShadow = 15; // Minimum bar height to show shadow
+  const maxShadowHeight = 60; // Maximum shadow height in pixels
+
+  // Dynamic shadow height calculation (capped percentage of bar height)
+  const getShadowHeight = (barHeight) => {
+    if (barHeight < minHeightForShadow) return 0;
+    const proportionalHeight = Math.min(barHeight * 0.5, maxShadowHeight);
+    return Math.max(proportionalHeight, 3); // Ensure minimum 3px if visible
+  };
+
+  // Shadow gradient definition
+  const ShadowGradient = ({ id }) => (
+    <linearGradient id={id} x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stopColor="#000000" stopOpacity={shadowOpacity} />
+      <stop offset="80%" stopColor="#000000" stopOpacity={shadowOpacity * 0.3} />
+      <stop offset="100%" stopColor="#000000" stopOpacity="0" />
+    </linearGradient>
+  );
+
+  // Bar with shadow component
+  const BarWithShadow = ({ yPos, barHeight, fill, id }) => {
+    const shadowH = getShadowHeight(barHeight);
+    const shouldShowShadow = shadowH > 0 && barHeight > 0;
+
+    return (
+      <>
+        <rect
+          x={x}
+          y={yPos}
+          width={width}
+          height={barHeight}
+          fill={fill}
+          rx="10"
+          ry="10"
+        />
+        {shouldShowShadow && (
+          <rect
+            x={x}
+            y={yPos}
+            width={width}
+            height={shadowH}
+            fill={`url(#${id})`}
+            rx="10"
+            ry="10"
+          />
+        )}
+      </>
+    );
+  };
 
   return (
     <g>
-      {/* Define more intense gradients for shadows */}
       <defs>
-        <linearGradient id="callsDoneShadow" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0%" stopColor="#000000" stopOpacity={shadowOpacity} />
-          <stop
-            offset="60%"
-            stopColor="#000000"
-            stopOpacity={shadowOpacity * 0.5}
-          />
-          <stop offset="100%" stopColor="#000000" stopOpacity="0" />
-        </linearGradient>
-        <linearGradient id="connectedShadow" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0%" stopColor="#000000" stopOpacity={shadowOpacity} />
-          <stop
-            offset="60%"
-            stopColor="#000000"
-            stopOpacity={shadowOpacity * 0.5}
-          />
-          <stop offset="100%" stopColor="#000000" stopOpacity="0" />
-        </linearGradient>
-        <linearGradient id="interestedShadow" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0%" stopColor="#000000" stopOpacity={shadowOpacity} />
-          <stop
-            offset="60%"
-            stopColor="#000000"
-            stopOpacity={shadowOpacity * 0.5}
-          />
-          <stop offset="100%" stopColor="#000000" stopOpacity="0" />
-        </linearGradient>
+        <ShadowGradient id="callsDoneShadow" />
+        <ShadowGradient id="connectedShadow" />
+        <ShadowGradient id="interestedShadow" />
       </defs>
 
-      {/* Bottom segment (callsDone) - #e5e5e5 */}
+      {/* Render bars with dynamic shadows */}
       {activeBadges.calls_done && data.callsDone > 0 && (
-        <>
-          <rect
-            x={x}
-            y={callsDoneY}
-            width={width}
-            height={callsDoneHeight}
-            fill="#E2E3DE"
-            rx="10"
-            ry="10"
-          />
-          {/* More prominent shadow for callsDone bar */}
-          <rect
-            x={x}
-            y={callsDoneY}
-            width={width}
-            height={shadowHeight}
-            fill="url(#callsDoneShadow)"
-            rx="10"
-            ry="10"
-          />
-        </>
+        <BarWithShadow
+          yPos={callsDoneY}
+          barHeight={callsDoneHeight}
+          fill="#E2E3DE"
+          id="callsDoneShadow"
+        />
       )}
 
-      {/* Middle segment (connected) - #cbd5e1 */}
       {activeBadges.connected && data.connected > 0 && (
-        <>
-          <rect
-            x={x}
-            y={connectedY}
-            width={width}
-            height={connectedHeight}
-            fill="#B0CCE1"
-            rx="10"
-            ry="10"
-          />
-          {/* More prominent shadow for connected bar */}
-          <rect
-            x={x}
-            y={connectedY}
-            width={width}
-            height={shadowHeight}
-            fill="url(#connectedShadow)"
-            rx="10"
-            ry="10"
-          />
-        </>
+        <BarWithShadow
+          yPos={connectedY}
+          barHeight={connectedHeight}
+          fill="#B0CCE1"
+          id="connectedShadow"
+        />
       )}
 
-      {/* Top segment (interested) - #a3a3a3 */}
       {activeBadges.interested && data.interested > 0 && (
-        <>
-          <rect
-            x={x}
-            y={interestedY}
-            width={width}
-            height={interestedHeight}
-            fill="#9D9D9D"
-            rx="10"
-            ry="10"
-          />
-          {/* More prominent shadow for interested bar */}
-          <rect
-            x={x}
-            y={interestedY}
-            width={width}
-            height={10}
-            fill="url(#interestedShadow)"
-            rx="10"
-            ry="10"
-          />
-        </>
+        <BarWithShadow
+          yPos={interestedY}
+          barHeight={interestedHeight}
+          fill="#9D9D9D"
+          id="interestedShadow"
+        />
       )}
     </g>
   );
