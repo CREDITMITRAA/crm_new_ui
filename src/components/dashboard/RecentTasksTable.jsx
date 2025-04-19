@@ -443,7 +443,7 @@ function RecentTasksTable() {
                     {/* Task Type */}
                     <div className="w-[17%] h-full flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight">
                       <span className="truncate w-full px-1 py-0.5">
-                        {truncateWithEllipsis(task.activity_status, 24) || ""}
+                        {truncateWithEllipsis(terminologiesMap.get(task.activity_status), 24) || ""}
                       </span>
                     </div>
 
@@ -470,82 +470,88 @@ function RecentTasksTable() {
 
                     {/* Task Status */}
                     <div className="w-[8%] h-full flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight">
-                      {user.user.role === ROLE_EMPLOYEE ? (
-                        <select
-                          className="w-full px-1 py-0.5 text-xs font-normal inter-inter leading-tight bg-transparent border-none outline-none appearance-none cursor-pointer truncate"
-                          value={task.task_status}
-                          onChange={(e) =>
-                            handleStatusChange(
-                              task.id,
-                              e.target.value,
-                              task.activity_status,
-                              task.lead_id,
-                              task.Lead.name
-                            )
-                          }
-                          style={{
-                            ...style,
-                            border: "none",
-                            backgroundColor: "transparent",
-                            outline: "none",
-                            fontSize: "inherit",
-                            cursor: "pointer",
-                          }}
-                        >
-                          <option
-                            value="Upcoming"
-                            style={{ color: "#46464680", cursor: "pointer", backgroundColor:'#F2F7FE'  }}
-                            disabled
-                            className="truncate"
-                          >
-                            Upcoming
-                          </option>
-                          <option
-                            value="Pending"
-                            style={{ color: "#46464680", cursor: "pointer", backgroundColor:'#F2F7FE' }}
-                            disabled
-                            className="truncate"
-                          >
-                            Pending
-                          </option>
-                          <option
-                            value="Completed"
-                            style={{ color: "#464646", cursor: "pointer", backgroundColor:'#F2F7FE' }}
-                            className="truncate"
-                          >
-                            Completed
-                          </option>
-                        </select>
-                      ) : (
-                        <>
-                          <span
-                            className="truncate w-full px-1 py-0.5"
-                            style={{
-                              ...style,
-                              color:
-                                status === "Pending" ? "#D18C31" : "inherit",
-                              // fontWeight: status === "Pending" && "bold",
-                              animation:
-                                status === "Pending"
-                                  ? "blink 1.5s ease-in-out infinite"
-                                  : "none",
-                            }}
-                          >
-                            {status}
-                          </span>
-
-                          {status === "Pending" && (
-                            <style>
-                              {`
-                  @keyframes blink {
-                    50% { opacity: 0; }
-                  }
-                `}
-                            </style>
-                          )}
-                        </>
-                      )}
-                    </div>
+  {user.user.role === ROLE_EMPLOYEE ? (
+    <div className="relative w-full">
+      {/* Blinking text overlay only for Pending status */}
+      {task.task_status === "Pending" && (
+        <span
+          className="absolute left-1 top-0.5 truncate pointer-events-none"
+          style={{
+            color: "#D18C31",
+            animation: "blink 1.5s ease-in-out infinite",
+          }}
+        >
+          Pending
+        </span>
+      )}
+      {/* Always visible select dropdown */}
+      <select
+        className="w-full px-1 py-0.5 text-xs font-normal inter-inter leading-tight bg-transparent border-none outline-none appearance-none cursor-pointer truncate"
+        value={task.task_status}
+        onChange={(e) =>
+          handleStatusChange(
+            task.id,
+            e.target.value,
+            task.activity_status,
+            task.lead_id,
+            task.Lead.name
+          )
+        }
+        style={{
+          color: task.task_status === "Pending" ? "transparent" : "inherit",
+          border: "none",
+          backgroundColor: "transparent",
+          outline: "none",
+          fontSize: "inherit",
+          cursor: "pointer",
+        }}
+      >
+        <option
+          value="Upcoming"
+          style={{ color: "#46464680", cursor: "pointer", backgroundColor: '#F2F7FE' }}
+          disabled
+          className="truncate"
+        >
+          Upcoming
+        </option>
+        <option
+          value="Pending"
+          style={{ color: "#46464680", cursor: "pointer", backgroundColor: '#F2F7FE' }}
+          disabled
+          className="truncate"
+        >
+          Pending
+        </option>
+        <option
+          value="Completed"
+          style={{ color: "#464646", cursor: "pointer", backgroundColor: '#F2F7FE' }}
+          className="truncate"
+        >
+          Completed
+        </option>
+      </select>
+    </div>
+  ) : (
+    <>
+      <span
+        className="truncate w-full px-1 py-0.5"
+        style={{
+          color: status === "Pending" ? "#D18C31" : "inherit",
+          animation: status === "Pending" ? "blink 1.5s ease-in-out infinite" : "none",
+        }}
+      >
+        {status}
+      </span>
+    </>
+  )}
+  
+  {/* Blink animation style */}
+  <style jsx>{`
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+  `}</style>
+</div>
                   </div>
                 );
               })}

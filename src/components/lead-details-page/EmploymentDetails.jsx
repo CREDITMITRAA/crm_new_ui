@@ -54,7 +54,10 @@ function EmploymentDetails() {
   const [toastMessage, setToastMessage] = useState(null);
   const [toastStatusMessage, setToastStatusMessage] = useState(null);
   const [toastStatusType, setToastStatusType] = useState(null);
-  const [shouldSnackbarCloseOnClickOfOutside, setShouldSnackbarCloseOnClickOfOutside] = useState(true);
+  const [
+    shouldSnackbarCloseOnClickOfOutside,
+    setShouldSnackbarCloseOnClickOfOutside,
+  ] = useState(true);
 
   useEffect(() => {
     console.log("lead from store = ", lead);
@@ -75,7 +78,30 @@ function EmploymentDetails() {
   );
 
   function handleChange(fieldName, value) {
-    if (value === lead[fieldName]) return;
+    // Skip if value is empty array, empty string, or unchanged
+    if (
+      (Array.isArray(value) && value.length === 0) ||
+      value === "" ||
+      value === lead[fieldName]
+    ) {
+      return;
+    }
+
+    // Special handling for alternate_phones to compare properly
+    if (fieldName === "alternate_phones") {
+      const existingPhones = Array.isArray(lead.alternate_phones)
+        ? lead.alternate_phones
+        : [];
+      const newPhonesSet = new Set([...existingPhones, value]);
+
+      // Check if the phone number is actually new
+      if (
+        newPhonesSet.size === existingPhones.length &&
+        existingPhones.includes(value)
+      ) {
+        return; // No change, exit early
+      }
+    }
 
     let updatedPayload = { ...apiPayload };
 
@@ -87,6 +113,9 @@ function EmploymentDetails() {
         ...new Set([...existingPhones, value]),
       ];
     } else if (fieldName === "company_category_id") {
+      // Only update if the category actually changed
+      if (value === lead.company_category_id) return;
+
       updatedPayload.company_category_id = value;
       updatedPayload.company_category_name = companyCategoriesMap.get(value);
     } else {
@@ -102,7 +131,12 @@ function EmploymentDetails() {
     setShouldSnackbarCloseOnClickOfOutside(false);
 
     setTimeout(() => {
-      updateLeadDetailsDebounced(lead.id, updatedPayload, user.user.id, lead.name);
+      updateLeadDetailsDebounced(
+        lead.id,
+        updatedPayload,
+        user.user.id,
+        fieldName === "name" ? value : lead.name
+      );
     }, 100);
   }
 

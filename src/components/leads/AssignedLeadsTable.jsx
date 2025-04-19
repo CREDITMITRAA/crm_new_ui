@@ -233,7 +233,7 @@ function AssignedLeadsTable({
               >
                 <span className="truncate px-1 w-full text-center flex justify-left">
                   {truncateWithEllipsis(lead.id, 5)}
-                  {lead.is_reassigned && <ReAssignedIcon size={14}/>}
+                  {lead.is_reassigned && <ReAssignedIcon size={14} />}
                 </span>
               </div>
 
@@ -265,7 +265,7 @@ function AssignedLeadsTable({
                 <span className="truncate w-full text-center flex justify-left">
                   {role === ROLE_EMPLOYEE
                     ? truncateWithEllipsis(
-                        terminologiesMap.get(lead.leadStatus),
+                        terminologiesMap.get(lead?.leadStatus),
                         20
                       )
                     : truncateWithEllipsis(
@@ -296,11 +296,19 @@ function AssignedLeadsTable({
                 className="w-[12%] flex flex-col justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
                 onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
               >
-                <span className="truncate w-full text-center flex justify-left">
-                  {moment(lead.createdAt)
-                    .utcOffset(330)
-                    .format("DD MMM YY hh:mm a")}
-                </span>
+                {role === ROLE_EMPLOYEE ? (
+                  <span className="truncate w-full text-center flex justify-left">
+                    {moment(lead.importedOn)
+                      .utcOffset(330)
+                      .format("DD MMM YY hh:mm a")}
+                  </span>
+                ) : (
+                  <span className="truncate w-full text-center flex justify-left">
+                    {moment(lead.createdAt)
+                      .utcOffset(330)
+                      .format("DD MMM YY hh:mm a")}
+                  </span>
+                )}
                 {/* <span className="truncate w-full text-center flex justify-left">
                   {moment(lead.createdAt).utcOffset(330).format("hh:mm:ss A")}
                 </span> */}
@@ -386,6 +394,7 @@ function AssignedLeadsTable({
                       setSelectedLead(lead);
                       setShowAddActivityDialogue(true);
                     }}
+                    size={16}
                   />
                 )}
                 <ViewIcon onClick={() => handleClickOnView(lead.id)} />
@@ -410,6 +419,7 @@ function AssignedLeadsTable({
                 userId: user.user.id,
                 page: pagination.page,
                 pageSize: pagination.pageSize,
+                exclude_verification: true,
               })
             );
             dispatch(

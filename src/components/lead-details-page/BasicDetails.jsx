@@ -77,43 +77,56 @@ function BasicDetails() {
     console.log("Field name =", fieldName, "Value =", value);
     
     // Skip if value is empty array or empty string
-    if (Array.isArray(value) && value.length === 0) {
-      return;
+    if ((Array.isArray(value) && value.length === 0) || value === '') {
+        return;
     }
     
-    if (value !== lead[fieldName] && !(Array.isArray(value) && value.length === 0)) {
-      setApiPayload((prev) => {
-        let updatedPayload = { ...prev };
-  
-        if (fieldName === "alternate_phones") {
-          // Ensure we're working with an array and filter out empty values
-          const phonesArray = Array.isArray(value) ? value : [value];
-          const cleanedPhones = phonesArray.filter(phone => phone && phone.trim() !== "");
-          updatedPayload.alternate_phones = [...new Set(cleanedPhones)];
-        } else {
-          updatedPayload[fieldName] = value;
+    // Get the current value from the lead object
+    const currentValue = lead[fieldName];
+    
+    // Function to compare values deeply
+    const isValueChanged = (newVal, oldVal) => {
+        if (Array.isArray(newVal) && Array.isArray(oldVal)) {
+            if (newVal.length !== oldVal.length) return true;
+            return newVal.some((item, index) => item !== oldVal[index]);
         }
-  
-        return updatedPayload;
-      });
-  
-      setToastMessage("Updating lead details...");
-      setToastStatusMessage("In Progress...");
-      setToastStatusType("INFO");
-      setOpenToast(true);
-      setShouldSnackbarCloseOnClickOfOutside(false);
-  
-      setTimeout(() => {
-        setApiPayload((latestPayload) => {
-          updateLeadDetailsDebounced(lead.id, {
-            ...latestPayload,
-            lead_name: fieldName === 'name' ? value : lead.name
-          });          
-          return latestPayload;
+        return newVal !== oldVal;
+    };
+    
+    // Check if the value has actually changed
+    if (isValueChanged(value, currentValue)) {
+        setApiPayload((prev) => {
+            let updatedPayload = { ...prev };
+    
+            if (fieldName === "alternate_phones") {
+                // Ensure we're working with an array and filter out empty values
+                const phonesArray = Array.isArray(value) ? value : [value];
+                const cleanedPhones = phonesArray.filter(phone => phone && phone.trim() !== "");
+                updatedPayload.alternate_phones = [...new Set(cleanedPhones)];
+            } else {
+                updatedPayload[fieldName] = value;
+            }
+    
+            return updatedPayload;
         });
-      }, 100);
+    
+        setToastMessage("Updating lead details...");
+        setToastStatusMessage("In Progress...");
+        setToastStatusType("INFO");
+        setOpenToast(true);
+        setShouldSnackbarCloseOnClickOfOutside(false);
+    
+        setTimeout(() => {
+            setApiPayload((latestPayload) => {
+                updateLeadDetailsDebounced(lead.id, {
+                    ...latestPayload,
+                    lead_name: fieldName === 'name' ? value : lead.name
+                });          
+                return latestPayload;
+            });
+        }, 100);
     }
-  }
+}
 
   useEffect(() => {
     console.log("api paylaod = ", apiPayload);

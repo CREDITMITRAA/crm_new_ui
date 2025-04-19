@@ -10,6 +10,7 @@ import {
   verificationStatusOptions,
 } from "../../utilities/AppConstants";
 import DateButton from "../common/DateButton";
+import { formatDatePayload } from "../../utilities/utility-functions";
 
 function FilterDialogueForWalkInLeadsTable({
   resetFilters,
@@ -71,10 +72,25 @@ function FilterDialogueForWalkInLeadsTable({
     }
   }
 
+  function handleDateChange(fieldName, data) {
+    console.log("selected dates = ", data);
+    const date_time_range_filter = formatDatePayload(data);
+    const payload = {
+      [fieldName]:
+        date_time_range_filter.date ?? date_time_range_filter.date_time_range,
+    };
+
+    setFilters((prev) => ({ ...prev, ...payload }));
+  }
+
   return (
     <div className="w-full h-max bg-[#E6F4FF] mt-4 p-4 py-2 grid grid-cols-12 gap-2 rounded-xl">
       {/* lead id */}
-      <div className={`w-full h-8 ${tableType !== NORMAL_LOGIN ? 'col-span-3 mt-4' : 'col-span-4'}`}>
+      <div
+        className={`w-full h-8 ${
+          tableType !== NORMAL_LOGIN ? "col-span-3 mt-4" : "col-span-4"
+        }`}
+      >
         <div className="w-full h-full bg-[#D4D5D53D] rounded-xl border border-[#214768] flex items-center justify-start pl-0">
           <input
             type="text"
@@ -90,7 +106,11 @@ function FilterDialogueForWalkInLeadsTable({
       </div>
 
       {/* phone no */}
-      <div className={`w-full h-8 ${tableType !== NORMAL_LOGIN ? 'col-span-3  mt-4' : 'col-span-4'}`}>
+      <div
+        className={`w-full h-8 ${
+          tableType !== NORMAL_LOGIN ? "col-span-3  mt-4" : "col-span-4"
+        }`}
+      >
         <div className="w-full h-full bg-[#D4D5D53D] rounded-xl border border-[#214768] flex items-center justify-start pl-0">
           <input
             type="text"
@@ -106,7 +126,11 @@ function FilterDialogueForWalkInLeadsTable({
       </div>
 
       {/* lead name */}
-      <div className={`w-full h-8 ${tableType !== NORMAL_LOGIN ? 'col-span-3 mt-4' : 'col-span-4'}`}>
+      <div
+        className={`w-full h-8 ${
+          tableType !== NORMAL_LOGIN ? "col-span-3 mt-4" : "col-span-4"
+        }`}
+      >
         <div className="w-full h-full bg-[#D4D5D53D] rounded-xl border border-[#214768] flex items-center justify-start pl-0">
           <input
             type="text"
@@ -136,7 +160,7 @@ function FilterDialogueForWalkInLeadsTable({
               onDateChange={(fieldName, value) =>
                 handleDateChange(fieldName, value)
               }
-              fieldName="assigned_on"
+              fieldName="appointment_date"
               resetFilters={resetFilters}
               fromFilter={true}
             />
@@ -145,7 +169,15 @@ function FilterDialogueForWalkInLeadsTable({
       )}
 
       {/* lead source */}
-      <div className={`w-full h-8 ${tableType !== NORMAL_LOGIN ? 'col-span-3' : role !== ROLE_EMPLOYEE ? 'col-span-3' : 'col-span-4'}`}>
+      <div
+        className={`w-full h-8 ${
+          tableType !== NORMAL_LOGIN
+            ? "col-span-3"
+            : role !== ROLE_EMPLOYEE
+            ? "col-span-3"
+            : "col-span-4"
+        }`}
+      >
         <div className="w-full h-full bg-[#D4D5D53D] rounded-xl flex items-center justify-start pl-0">
           <DropDown
             options={leadSourceOptions}
@@ -171,7 +203,15 @@ function FilterDialogueForWalkInLeadsTable({
 
       {/* Employee name */}
       {role !== ROLE_EMPLOYEE && (
-        <div className={`w-full h-8 ${tableType !== NORMAL_LOGIN ? 'col-span-3' : role !== ROLE_EMPLOYEE ? 'col-span-3' : 'col-span-4'}`}>
+        <div
+          className={`w-full h-8 ${
+            tableType !== NORMAL_LOGIN
+              ? "col-span-3"
+              : role !== ROLE_EMPLOYEE
+              ? "col-span-3"
+              : "col-span-4"
+          }`}
+        >
           <div className="w-full h-full bg-[#D4D5D53D] rounded-xl flex items-center">
             <DropDown
               options={employees}
@@ -196,7 +236,15 @@ function FilterDialogueForWalkInLeadsTable({
       )}
 
       {/* application status */}
-      <div className={`w-full h-8 ${tableType !== NORMAL_LOGIN ? 'col-span-3' : role !== ROLE_EMPLOYEE ? 'col-span-3' : 'col-span-4'}`}>
+      <div
+        className={`w-full h-8 ${
+          tableType !== NORMAL_LOGIN
+            ? "col-span-3"
+            : role !== ROLE_EMPLOYEE
+            ? "col-span-3"
+            : "col-span-4"
+        }`}
+      >
         <div className="w-full h-full bg-[#D4D5D53D] rounded-xl flex items-center">
           <DropDown
             options={optionsForApplicationStatus}
@@ -220,7 +268,15 @@ function FilterDialogueForWalkInLeadsTable({
       </div>
 
       {/* lead status */}
-      <div className={`w-full h-8 ${tableType !== NORMAL_LOGIN ? 'col-span-3' : role !== ROLE_EMPLOYEE ? 'col-span-3' : 'col-span-4'}`}>
+      <div
+        className={`w-full h-8 ${
+          tableType !== NORMAL_LOGIN
+            ? "col-span-3"
+            : role !== ROLE_EMPLOYEE
+            ? "col-span-3"
+            : "col-span-4"
+        }`}
+      >
         <div className="w-full h-full bg-[#D4D5D53D] rounded-xl flex items-center">
           <DropDown
             options={optionsForLeadStatus}

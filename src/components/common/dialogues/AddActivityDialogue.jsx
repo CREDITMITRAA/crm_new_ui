@@ -13,7 +13,11 @@ import PopupButton from "../PopupButton";
 import { useDispatch, useSelector } from "react-redux";
 import { addActivity } from "../../../features/activities/activitiesThunks";
 import Snackbar from "../snackbars/Snackbar";
-import { formatDateTime } from "../../../utilities/utility-functions";
+import {
+  extractDate,
+  formatDateTime,
+  isEmpty,
+} from "../../../utilities/utility-functions";
 import {
   setIsAddActivityDialogueOpened,
   setIsConfirmationDialogueOpened,
@@ -27,10 +31,16 @@ function AddActivityDialogue({
   selectedLead = {},
   setOpenToast,
   openToast,
+  setToastStatusType,
+  setToastStatusMessage,
+  setToastMessage,
 }) {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const { lead } = useSelector((state) => state.leads);
+  const { loanReports } = useSelector((state) => state.loanReports);
+  const { creditReports } = useSelector((state) => state.creditReports);
+  const { payslips, bureaus } = useSelector((state) => state.leadDocuments);
   const { loading, error } = useSelector((state) => state.activities);
   const hours = Array.from({ length: 12 }, (_, i) => {
     const hour = String(i + 1).padStart(2, "0");
@@ -64,15 +74,15 @@ function AddActivityDialogue({
       selectedActivityStatus,
       selectedLead
     );
-    if (
-      selectedLead?.activities?.[0]?.docsCollected ||
-      selectedLead?.Activities?.[0].docs_collected
-    ) {
-      baseOptions.push({
-        label: terminologiesMap.get(VERIFICATION_1),
-        value: VERIFICATION_1,
-      });
-    }
+    // if (
+    //   selectedLead?.activities?.[0]?.docsCollected ||
+    //   selectedLead?.Activities?.[0].docs_collected
+    // ) {
+    //   baseOptions.push({
+    //     label: terminologiesMap.get(VERIFICATION_1),
+    //     value: VERIFICATION_1,
+    //   });
+    // }
     dispatch(setIsConfirmationDialogueOpened(true));
     dispatch(setIsAddActivityDialogueOpened(true));
     if (selectedActivityStatus) {
@@ -86,7 +96,7 @@ function AddActivityDialogue({
     return () => {
       dispatch(setIsConfirmationDialogueOpened(false));
       dispatch(setIsAddActivityDialogueOpened(false));
-      onActivityAdded()
+      onActivityAdded();
     };
   }, []);
 
@@ -182,16 +192,27 @@ function AddActivityDialogue({
         // onActivityAdded(); // Call the callback
       } else if (addActivity.rejected.match(result)) {
         console.error("Error adding activity:", result.error);
+        setToastStatusMessage("Error...");
+        setToastStatusType("ERROR");
+        setToastMessage("Failed to add acitivity !");
       }
     } catch (error) {
+      setToastStatusMessage("Error...");
+      setToastStatusType("ERROR");
+      setToastMessage("Failed to add acitivity !");
       console.error("Error adding activity:", error);
     }
   }
 
   function handleDateChange(date) {
-    console.log("date = ", date);
+    date = new Date(date);
 
-    setTaskDate(date);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+    const day = String(date.getDate()).padStart(2, "0");
+
+    const formatted = `${year}-${month}-${day}`;
+    setTaskDate(formatted);
   }
 
   function handleDateTimeChange(fieldName, value) {
@@ -258,14 +279,44 @@ function AddActivityDialogue({
                 //       ? [{ label: terminologiesMap.get(VERIFICATION_1), value: VERIFICATION_1 }]
                 //       : [])
                 // ]}
-                options={baseOptions}
+                options={[
+                  ...baseOptions,
+                  ...(selectedLead?.Activities?.[0]?.docs_collected ||
+                  selectedLead?.Activities?.[0]?.docsCollected ||
+                  !isEmpty(payslips) ||
+                  !isEmpty(bureaus) ||
+                  !isEmpty(loanReports) ||
+                  !isEmpty(creditReports)
+                    ? [
+                        {
+                          label: terminologiesMap.get(VERIFICATION_1),
+                          value: VERIFICATION_1,
+                        },
+                      ]
+                    : []),
+                ]}
                 className="min-w-[13rem]"
                 onChange={(name, value) => handleSelect(name, value)}
                 fieldName="activity_status"
                 defaultSelectedOptionIndex={
                   fromTable
                     ? 0
-                    : baseOptions?.findIndex(
+                    : [
+                        ...baseOptions,
+                        ...(selectedLead?.Activities?.[0]?.docs_collected ||
+                        selectedLead?.Activities?.[0]?.docsCollected ||
+                        !isEmpty(payslips) ||
+                        !isEmpty(bureaus) ||
+                        !isEmpty(loanReports) ||
+                        !isEmpty(creditReports)
+                          ? [
+                              {
+                                label: terminologiesMap.get(VERIFICATION_1),
+                                value: VERIFICATION_1,
+                              },
+                            ]
+                          : []),
+                      ]?.findIndex(
                         (activity) => activity.value === selectedActivityStatus
                       ) || 0
                 }
@@ -287,15 +338,18 @@ function AddActivityDialogue({
                   <span className="text-[#214768] text-sm font-medium leading-5 mb-[0.625rem]">
                     Date
                   </span>
-                  <DateButton
-                    showDot={false}
-                    showTimeFilterToggleButton={false}
-                    showSingleCalender={true}
-                    onDateChange={(date) => handleDateChange(date)}
-                    buttonBackgroundColor="[#D9E4F2]"
-                    showBoxShadow={true}
-                    borderColor="[#214768]"
-                  />
+                  <div className="h-8">
+                    <DateButton
+                      showDot={false}
+                      showTimeFilterToggleButton={false}
+                      showSingleCalender={true}
+                      onDateChange={(_, date) => handleDateChange(date)}
+                      buttonBackgroundColor="[#D9E4F2]"
+                      showBoxShadow={true}
+                      borderColor="[#214768]"
+                      date={taskDate && extractDate(taskDate)}
+                    />
+                  </div>
                 </div>
 
                 {/* Time section */}
@@ -319,6 +373,7 @@ function AddActivityDialogue({
                       buttonBorderRadius="0.8rem"
                       buttonHeight="100%"
                       optionsTextColor="#464646"
+                      size="sm"
                     />
                     <DropDown
                       options={minutes}
@@ -334,6 +389,7 @@ function AddActivityDialogue({
                       buttonBorderRadius="0.8rem"
                       buttonHeight="100%"
                       optionsTextColor="#464646"
+                      size="sm"
                     />
                     <DropDown
                       options={periods}
@@ -349,6 +405,7 @@ function AddActivityDialogue({
                       buttonBorderRadius="0.8rem"
                       buttonHeight="100%"
                       optionsTextColor="#464646"
+                      size="sm"
                     />
                   </div>
                 </div>

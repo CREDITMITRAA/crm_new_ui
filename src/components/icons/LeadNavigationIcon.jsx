@@ -1,6 +1,6 @@
-const LeadNavigationIcon = ({ className, color = "#32086D" }) => {
+const LeadNavigationIcon = ({ className, color = "#32086D", onClick }) => {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2" onClick={onClick}>
       {/* Additional SVG */}
       <div>
         <svg

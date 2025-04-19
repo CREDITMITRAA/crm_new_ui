@@ -179,7 +179,7 @@ function Leads() {
               "pageSize",
               "totalPages",
               "total",
-              "assigned_to",
+              // "assigned_to",
             ].includes(key);
       
         // Only include if not empty and not in excluded keys

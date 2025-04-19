@@ -23,23 +23,30 @@ const leadDocumentsSlice = createSlice({
             .addCase(getLeadDocumentsByLeadId.pending, (state,action)=>{
                 state.loading=true;
             })
-            .addCase(getLeadDocumentsByLeadId.fulfilled, (state,action)=>{
+            .addCase(getLeadDocumentsByLeadId.fulfilled, (state, action) => {
                 console.log('payslips = ', action.payload.data);
-                state.loading = false
-                action.payload.data.data.forEach((document)=>{
-                    switch(document.document_type){
+            
+                state.loading = false;
+            
+                // Clear the arrays to avoid duplicates
+                state.payslips = [];
+                state.bureaus = [];
+                state.other = [];
+            
+                action.payload.data.data.forEach((document) => {
+                    switch (document.document_type) {
                         case PAYSLIP:
-                            state.payslips.push(document)
+                            state.payslips.push(document);
                             break;
                         case CREDIT_BUREAU:
-                            state.bureaus.push(document)
+                            state.bureaus.push(document);
                             break;
                         case OTHER_DOCS:
-                            state.other.push(document)
+                            state.other.push(document);
                             break;
                     }
-                })
-            })
+                });
+            })            
             .addCase(getLeadDocumentsByLeadId.rejected, (state,action)=>{
                 state.loading = false
                 state.error = action.payload

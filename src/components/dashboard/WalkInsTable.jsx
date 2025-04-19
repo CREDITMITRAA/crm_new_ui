@@ -524,38 +524,95 @@ function WalkInsTable() {
                     {/* Status */}
                     <div className="w-[13%] flex justify-left items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden">
                       {user.user.role === ROLE_EMPLOYEE ? (
-                        <select
-                          className="w-full px-1 py-1 text-xs font-normal inter-inter leading-tight bg-transparent border-none outline-none appearance-none cursor-pointer focus:outline-none focus:ring-0 focus:border-transparent pr-6 truncate"
-                          value={walkIn.walk_in_status || "Upcoming"}
-                          onChange={(e) =>
-                            handleStatusChange(
-                              walkIn.id,
-                              e.target.value,
-                              walkIn.lead.name,
-                              walkIn.lead_id,
-                              walkIn.is_call
-                            )
-                          }
-                          onClick={(e) => (e.target.value = "")}
-                          onBlur={(e) => {
-                            if (e.target.value === "") {
-                              e.target.value =
-                                walkIn.walk_in_status || "Upcoming";
+                        <div className="relative w-full">
+                          {/* Blinking text overlay only for Pending status */}
+                          {walkIn.walk_in_status === "Pending" && (
+                            <span
+                              className="absolute left-1 top-1 truncate pointer-events-none"
+                              style={{
+                                color: "#D18C31",
+                                animation: "blink 1.5s ease-in-out infinite",
+                              }}
+                            >
+                              Pending
+                            </span>
+                          )}
+                          {/* Always visible select dropdown */}
+                          <select
+                            className="w-full px-1 py-1 text-xs font-normal inter-inter leading-tight bg-transparent border-none outline-none appearance-none cursor-pointer focus:outline-none focus:ring-0 focus:border-transparent pr-6 truncate"
+                            value={walkIn.walk_in_status || "Upcoming"}
+                            onChange={(e) =>
+                              handleStatusChange(
+                                walkIn.id,
+                                e.target.value,
+                                walkIn.lead.name,
+                                walkIn.lead_id,
+                                walkIn.is_call
+                              )
                             }
-                          }}
-                          style={{
-                            ...style,
-                            border: "none",
-                            backgroundColor: "transparent",
-                            outline: "none",
-                            fontWeight: "bold",
-                            fontSize: "inherit",
-                            cursor: "pointer",
-                          }}
-                        >
-                          {walkIn.walk_in_status !== "Rescheduled" && (
+                            onClick={(e) => (e.target.value = "")}
+                            onBlur={(e) => {
+                              if (e.target.value === "") {
+                                e.target.value =
+                                  walkIn.walk_in_status || "Upcoming";
+                              }
+                            }}
+                            style={{
+                              color:
+                                walkIn.walk_in_status === "Pending"
+                                  ? "transparent"
+                                  : "inherit",
+                            }}
+                          >
+                            {walkIn.walk_in_status !== "Rescheduled" && (
+                              <option
+                                value="Upcoming"
+                                style={{
+                                  color: "#46464680",
+                                  cursor: "pointer",
+                                  backgroundColor: "#F2F7FE",
+                                }}
+                                disabled
+                                className="truncate inter-inter"
+                              >
+                                Upcoming
+                              </option>
+                            )}
                             <option
-                              value="Upcoming"
+                              value="Rescheduled"
+                              style={{
+                                color: "#464646",
+                                cursor: "pointer",
+                                backgroundColor: "#F2F7FE",
+                              }}
+                              className="truncate inter-inter"
+                            >
+                              Rescheduled
+                            </option>
+                            <option
+                              value="Completed"
+                              style={{
+                                color: "#464646",
+                                cursor: "pointer",
+                                backgroundColor: "#F2F7FE",
+                              }}
+                              className="truncate inter-inter"
+                            >
+                              Completed
+                            </option>
+                            <option
+                              value="Cancelled"
+                              style={{
+                                color: "#464646",
+                                cursor: "pointer",
+                                backgroundColor: "#F2F7FE",
+                              }}
+                              className="truncate inter-inter"
+                            >
+                              Cancel
+                            </option>
+                            <option
+                              value="Pending"
                               style={{
                                 color: "#46464680",
                                 cursor: "pointer",
@@ -564,66 +621,17 @@ function WalkInsTable() {
                               disabled
                               className="truncate inter-inter"
                             >
-                              Upcoming
+                              Pending
                             </option>
-                          )}
-                          <option
-                            value="Rescheduled"
-                            style={{
-                              color: "#464646",
-                              cursor: "pointer",
-                              backgroundColor: "#F2F7FE",
-                            }}
-                            className="truncate inter-inter"
-                          >
-                            Rescheduled
-                          </option>
-                          <option
-                            value="Completed"
-                            style={{
-                              color: "#464646",
-                              cursor: "pointer",
-                              backgroundColor: "#F2F7FE",
-                            }}
-                            className="truncate inter-inter"
-                          >
-                            Completed
-                          </option>
-                          <option
-                            value="Cancelled"
-                            style={{
-                              color: "#464646",
-                              cursor: "pointer",
-                              // fontWeight: "bold",
-                              backgroundColor: "#F2F7FE",
-                            }}
-                            className="truncate inter-inter"
-                          >
-                            Cancel
-                          </option>
-                          <option
-                            value="Pending"
-                            style={{
-                              color: "#46464680",
-                              cursor: "pointer",
-                              // fontWeight: "bold",
-                              backgroundColor: "#F2F7FE",
-                            }}
-                            disabled
-                            className="truncate inter-inter"
-                          >
-                            Pending
-                          </option>
-                        </select>
+                          </select>
+                        </div>
                       ) : (
                         <>
                           <span
                             className="truncate w-full inter-inter text-center px-1 flex justify-left"
                             style={{
-                              ...style,
                               color:
                                 status === "Pending" ? "#D18C31" : "inherit",
-                              // fontWeight: status === "Pending" && "bold",
                               animation:
                                 status === "Pending"
                                   ? "blink 1.5s ease-in-out infinite"
@@ -632,18 +640,17 @@ function WalkInsTable() {
                           >
                             {status}
                           </span>
-
-                          {status === "Pending" && (
-                            <style>
-                              {`
-      @keyframes blink {
-        50% { opacity: 0; }
-      }
-    `}
-                            </style>
-                          )}
                         </>
                       )}
+
+                      {/* Blink animation style */}
+                      <style jsx>{`
+                        @keyframes blink {
+                          50% {
+                            opacity: 0;
+                          }
+                        }
+                      `}</style>
                     </div>
 
                     {/* Notes */}

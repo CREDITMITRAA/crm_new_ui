@@ -158,7 +158,7 @@ function ActivityLogsContainer({
                                           <LeadNavigationIcon />
                                         </div>
                                       </div>
-                                      <div
+                                      {/* <div
                                         onClick={() => toggleItem(leadId, time)}
                                         className="text-[#425565] hover:text-[#114F00] transition-colors cursor-pointer"
                                       >
@@ -178,13 +178,13 @@ function ActivityLogsContainer({
                                             d="M19 9l-7 7-7-7"
                                           />
                                         </svg>
-                                      </div>
+                                      </div> */}
                                     </div>
 
                                     {/* Log text with smooth transition */}
                                     <div
                                       className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                                        isExpanded
+                                        !isExpanded
                                           ? "max-h-[500px] opacity-100"
                                           : "max-h-0 opacity-0"
                                       }`}
@@ -225,7 +225,7 @@ function ActivityLogsContainer({
                                       {logs[0].note && (
                                         <div
                                           className={`w-fit h-max relative bg-none rounded-[5px] text-xs border border-[#005085] mt-2 py-0.5 px-1 text-[#425565] transition-opacity duration-300 ${
-                                            isExpanded
+                                            !isExpanded
                                               ? "opacity-100"
                                               : "opacity-0"
                                           }`}

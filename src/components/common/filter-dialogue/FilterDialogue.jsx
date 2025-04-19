@@ -40,7 +40,7 @@ function FilterDialogue({
   const { users, userOptions } = useSelector((state) => state.users);
   const { leadSources } = useSelector((state) => state.leads);
   const { role } = useSelector((state) => state.auth);
-  const { isConfirmationDialogueOpened } = useSelector((state) => state.ui);
+  const { isConfirmationDialogueOpened, isAddActivityDialogueOpened } = useSelector((state) => state.ui);
   const [leadStatusOptions, setLeadStatusOptions] = useState([
     { label: "Filter by status", value: "" },
     { label: terminologiesMap.get(NOT_CONTACTED), value: NOT_CONTACTED },

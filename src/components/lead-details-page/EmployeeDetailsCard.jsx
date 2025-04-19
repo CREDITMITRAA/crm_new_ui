@@ -17,19 +17,28 @@ import { useEffect, useState } from "react";
 import DropDown from "../common/dropdowns/DropDown";
 import AddActivityDialogue from "../common/dialogues/AddActivityDialogue";
 import { getRecentActivityNotesByLeadId } from "../../features/leads/leadsThunks";
-import { formatName } from "../../utilities/utility-functions";
+import { formatName, isEmpty } from "../../utilities/utility-functions";
+import { getRecentActivity } from "../../features/activities/activitiesThunks";
 
 function EmployeeDetailsCard() {
   const dispatch = useDispatch();
   const { lead, recentActivityNotes } = useSelector((state) => state.leads);
   const { user } = useSelector((state) => state.auth);
-  const { loading, error, uploadDocumentsLoading, uploadDocumentsError } =
-    useSelector((state) => state.leadDocuments);
+  const {
+    loading,
+    error,
+    uploadDocumentsLoading,
+    uploadDocumentsError,
+    payslips,
+    bureaus,
+  } = useSelector((state) => state.leadDocuments);
   const {
     recentActivity,
     loading: activitiesLoading,
     error: activitiesError,
   } = useSelector((state) => state.activities);
+  const { loanReports } = useSelector((state) => state.loanReports);
+  const { creditReports } = useSelector((state) => state.creditReports);
   const [openToast, setOpenToast] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
   const [toastStatusMessage, setToastStatusMessage] = useState(null);
@@ -202,7 +211,11 @@ function EmployeeDetailsCard() {
           >
             {[
               ...activityOptions,
-              ...(lead?.Activities?.[0]?.docs_collected
+              ...(lead?.Activities?.[0]?.docs_collected ||
+              !isEmpty(payslips) ||
+              !isEmpty(bureaus) ||
+              !isEmpty(loanReports) ||
+              !isEmpty(creditReports)
                 ? [
                     {
                       label: terminologiesMap.get(VERIFICATION_1),
@@ -211,11 +224,7 @@ function EmployeeDetailsCard() {
                   ]
                 : []),
             ].map((option) => (
-              <option
-                key={option.value}
-                value={option.value}
-                selected={recentActivity?.activity_status === option.value}
-              >
+              <option key={option.value} value={option.value}>
                 {option.label}
               </option>
             ))}
@@ -270,13 +279,21 @@ function EmployeeDetailsCard() {
           selectedActivityStatus={selectedActivityStatus}
           selectedLead={lead}
           onActivityAdded={() =>
+          {
             dispatch(
               getRecentActivityNotesByLeadId({ leadId: lead.id, limit: 3 })
             )
+            dispatch(
+              getRecentActivity({leadId:lead.id})
+            )
+          }
           }
           setShowAddActivityDialogue={setShowAddActivityDialogue}
           setOpenToast={setOpenToast}
           openToast={openToast}
+          setToastStatusType={setToastStatusType}
+          setToastStatusMessage={setToastStatusMessage}
+          setToastMessage={setToastMessage}
         />
       )}
     </>
