@@ -69,17 +69,17 @@ function WalkInsTable() {
     ...(role === ROLE_EMPLOYEE && { created_by: user.user.id }),
   });
   const fieldsToExport = [
-    "id",                  // Walk-in ID
-    "lead_id",             // From lead.id
-    "name",                // From lead.name
-    "phone",               // From lead.phone
-    "walk_in_status",      // Walk-in status
-    "walk_in_date_time",   // Formatted walk-in time
-    "lead_status",         // From lead.lead_status
+    "id", // Walk-in ID
+    "lead_id", // From lead.id
+    "name", // From lead.name
+    "phone", // From lead.phone
+    "walk_in_status", // Walk-in status
+    "walk_in_date_time", // Formatted walk-in time
+    "lead_status", // From lead.lead_status
     "verification_status", // From lead.verification_status
-    "LeadAssignments",     // Processed assignments
-    "createdAt",           // Formatted walk-in creation date
-    "updatedAt"            // Formatted walk-in update date
+    "LeadAssignments", // Processed assignments
+    "createdAt", // Formatted walk-in creation date
+    "updatedAt", // Formatted walk-in update date
   ];
   const [isPickerOpen, setIsPickerOpen] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
@@ -102,21 +102,43 @@ function WalkInsTable() {
   useEffect(() => {
     console.log("filters = ", filters);
     fetchWalkIns({ ...filters });
-  
-    let excludedKeys = [];
 
-    if(role === ROLE_EMPLOYEE){
-      excludedKeys = ["pageSize", "date", "date_time_range", "created_by"]
-    }else{
-      excludedKeys = ["pageSize", "date", "date_time_range"]
-    }
-  
-    const filterKeys = Object.keys(filters).filter(
-      (key) => !excludedKeys.includes(key) && filters[key] !== ""
+    // Determine excluded keys based on role
+    const excludedKeys =
+      role === ROLE_EMPLOYEE
+        ? ["pageSize", "date", "date_time_range", "created_by"]
+        : ["pageSize", "date", "date_time_range"];
+
+    // Filter out excluded keys and empty values (null, undefined, empty string, empty array, empty object)
+    const filteredFilters = Object.entries(filters).reduce(
+      (acc, [key, value]) => {
+        // Skip if key is in excludedKeys
+        if (excludedKeys.includes(key)) return acc;
+
+        // Skip empty values
+        if (
+          value == null || // null or undefined
+          value === "" || // empty string
+          (Array.isArray(value) && value.length === 0) || // empty array
+          (typeof value === "object" &&
+            !Array.isArray(value) &&
+            Object.keys(value).length === 0) // empty object
+        ) {
+          return acc;
+        }
+
+        // Add valid key-value pair
+        acc[key] = value;
+        return acc;
+      },
+      {}
     );
-  
+
+    // If you still need just the keys for some reason:
+    const filterKeys = Object.keys(filteredFilters);
+
     setShowDot(filterKeys.length > 0);
-  }, [filters]);  
+  }, [filters]);
 
   useEffect(() => {
     if (statusUpdateLoading) {
@@ -245,7 +267,7 @@ function WalkInsTable() {
     setTimeout(() => {
       setResetFilters(false);
     }, 1000);
-    setShowFilter(false)
+    setShowFilter(false);
   }
 
   function handleStatusChange(
@@ -341,7 +363,9 @@ function WalkInsTable() {
 
       <div
         className={`col-span-12 rounded overflow-hidden transition-all duration-500 ease-in-out overflow-visible ${
-          showFilter ? "max-h-[400px] opacity-100 pointer-events-auto visible" : "max-h-0 opacity-0 pointer-events-none invisible"
+          showFilter
+            ? "max-h-[400px] opacity-100 pointer-events-auto visible"
+            : "max-h-0 opacity-0 pointer-events-none invisible"
         }`}
       >
         <FilterDialogueForWalkInsTable
@@ -532,7 +556,11 @@ function WalkInsTable() {
                           {walkIn.walk_in_status !== "Rescheduled" && (
                             <option
                               value="Upcoming"
-                              style={{ color: "#46464680", cursor: "pointer", backgroundColor:'#F2F7FE' }}
+                              style={{
+                                color: "#46464680",
+                                cursor: "pointer",
+                                backgroundColor: "#F2F7FE",
+                              }}
                               disabled
                               className="truncate inter-inter"
                             >
@@ -541,14 +569,22 @@ function WalkInsTable() {
                           )}
                           <option
                             value="Rescheduled"
-                            style={{ color: "#464646", cursor: "pointer", backgroundColor:'#F2F7FE' }}
+                            style={{
+                              color: "#464646",
+                              cursor: "pointer",
+                              backgroundColor: "#F2F7FE",
+                            }}
                             className="truncate inter-inter"
                           >
                             Rescheduled
                           </option>
                           <option
                             value="Completed"
-                            style={{ color: "#464646", cursor: "pointer", backgroundColor:'#F2F7FE' }}
+                            style={{
+                              color: "#464646",
+                              cursor: "pointer",
+                              backgroundColor: "#F2F7FE",
+                            }}
                             className="truncate inter-inter"
                           >
                             Completed
@@ -559,7 +595,7 @@ function WalkInsTable() {
                               color: "#464646",
                               cursor: "pointer",
                               // fontWeight: "bold",
-                              backgroundColor:'#F2F7FE'
+                              backgroundColor: "#F2F7FE",
                             }}
                             className="truncate inter-inter"
                           >
@@ -571,7 +607,7 @@ function WalkInsTable() {
                               color: "#46464680",
                               cursor: "pointer",
                               // fontWeight: "bold",
-                              backgroundColor:'#F2F7FE'
+                              backgroundColor: "#F2F7FE",
                             }}
                             disabled
                             className="truncate inter-inter"

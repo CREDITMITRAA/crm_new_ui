@@ -66,24 +66,58 @@ function Verification1() {
 
   useEffect(() => {
     if (pageSize > 0) {
+      // Fetch leads with current filters and pageSize
       fetchLeads({ ...filters, pageSize });
-      const filteredFilters = Object.keys(filters)?.reduce((acc, key) => {
-        if (
-          role === ROLE_EMPLOYEE ?
-          !["page", "pageSize", "totalPages", "total", "lead_status", "assigned_to"].includes(
-            key
-          ) :
-          !["page", "pageSize", "totalPages", "total", "lead_status"].includes(
-            key
-          )
-        ) {
-          acc[key] = filters[key];
+  
+      // Debug: Log all filters before processing
+      console.log('All filters before filtering:', filters);
+  
+      // Determine excluded keys based on role
+      const excludedKeys = role === ROLE_EMPLOYEE
+        ? ["page", "pageSize", "totalPages", "total", "lead_status", "assigned_to"]
+        : ["page", "pageSize", "totalPages", "total", "lead_status"];
+  
+      // Filter out excluded keys and empty values
+      const filteredFilters = Object.entries(filters).reduce((acc, [key, value]) => {
+        // Skip excluded keys
+        if (excludedKeys.includes(key)) {
+          console.log(`Excluding key (role-based): ${key}`);
+          return acc;
         }
+        
+        // Special debug for array values
+        if (Array.isArray(value)) {
+          console.log(`Array value detected for ${key}:`, value);
+        }
+  
+        // Check for empty values
+        const isEmpty = (
+          value == null || // null or undefined
+          value === "" || // empty string
+          (Array.isArray(value) && value.length === 0) || // empty array
+          (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0) // empty object
+        );
+  
+        if (isEmpty) {
+          console.log(`Excluding empty value for ${key}:`, value);
+          return acc;
+        }
+        
+        // Include valid key-value pair
+        console.log(`Including valid filter ${key}:`, value);
+        acc[key] = value;
         return acc;
       }, {});
-      setShowDot(Object.keys(filteredFilters).length > 0);
+  
+      // Debug: Log the final filtered filters
+      console.log('Final filtered filters:', filteredFilters);
+      
+      // Set dot visibility based on active filters
+      const hasActiveFilters = Object.keys(filteredFilters).length > 0;
+      console.log('Should show dot?', hasActiveFilters);
+      setShowDot(hasActiveFilters);
     }
-  }, [filters, pageSize]);
+  }, [filters, pageSize, role]);
 
   const fetchLeads = useCallback(
     debounce((filters) => {

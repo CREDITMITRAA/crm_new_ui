@@ -88,44 +88,58 @@ function WalkIns() {
   useEffect(() => {
     if (pageSize > 0) {
       fetchLeads({ ...filters, pageSize });
-
-      const filteredFilters = Object.keys(filters)?.reduce((acc, key) => {
-        // Skip these keys
-        let excludedKeys = null
-        if(role === ROLE_EMPLOYEE){
-          excludedKeys = [
-            "page",
-            "pageSize",
-            "totalPages",
-            "total",
-            "lead_status",
-            "assigned_to",
-            ...Object.keys(defaultWalkInLeadsTableFilters),
-          ];
-        }else{
-          excludedKeys = [
-            "page",
-            "pageSize",
-            "totalPages",
-            "total",
-            "lead_status",
-            ...Object.keys(defaultWalkInLeadsTableFilters),
-          ];
+  
+      console.log('Original filters:', filters); // Debug log
+  
+      const excludedKeys = role === ROLE_EMPLOYEE
+  ? [
+      "page",
+      "pageSize",
+      "totalPages",
+      "total",
+      "assigned_to", // Keep this if needed
+      ...Object.keys(defaultWalkInLeadsTableFilters).filter(k => k !== "lead_status"),
+    ]
+  : [
+      "page",
+      "pageSize",
+      "totalPages",
+      "total",
+      ...Object.keys(defaultWalkInLeadsTableFilters).filter(k => k !== "lead_status"),
+    ];
+  
+      console.log('Excluded keys:', excludedKeys); // Debug log
+  
+      const filteredFilters = Object.entries(filters).reduce((acc, [key, value]) => {
+        if (excludedKeys.includes(key)) {
+          console.log(`Excluding key: ${key}`); // Debug log
+          return acc;
         }
-
-        // Also skip 'application_status' if its value is 'normal login'
-        const isNormalLogin =
-          key === "application_status" && filters[key] === NORMAL_LOGIN;
-
-        if (!excludedKeys.includes(key) && !isNormalLogin) {
-          acc[key] = filters[key];
+        
+        if (key === "application_status" && value === NORMAL_LOGIN) {
+          console.log(`Excluding normal login: ${key}`); // Debug log
+          return acc;
         }
+        
+        if (
+          value == null ||
+          value === "" ||
+          (Array.isArray(value) && value.length === 0) ||
+          (typeof value === 'object' && Object.keys(value).length === 0)
+        ) {
+          console.log(`Excluding empty value: ${key}`); // Debug log
+          return acc;
+        }
+  
+        console.log(`Including filter: ${key} =`, value); // Debug log
+        acc[key] = value;
         return acc;
       }, {});
-
+  
+      console.log('Filtered filters:', filteredFilters); // Debug log
       setShowDot(Object.keys(filteredFilters).length > 0);
     }
-  }, [filters, pageSize]);
+  }, [filters, pageSize, role]);
 
   useEffect(() => {
     if (showNormalLoginTable) {

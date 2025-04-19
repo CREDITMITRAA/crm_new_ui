@@ -34,7 +34,7 @@ function FilterDialogue({
 }) {
   const dispatch = useDispatch();
   const [employees, setEmployees] = useState([
-    { label: "Filter by employee name", value: "" },
+    { label: "Filter by associate", value: "" },
   ]);
   const [selectedEmployeeName, setSelectedEmployeeName] = useState(null);
   const { users, userOptions } = useSelector((state) => state.users);
@@ -75,7 +75,7 @@ function FilterDialogue({
 
   useEffect(() => {
     if (users && users.length > 0) {
-      setEmployees([{ label: "Select employee", value: "" }, ...userOptions]);
+      setEmployees([{ label: "Filter by associate", value: "" }, ...userOptions]);
     } else {
       dispatch(getUsersNameAndId());
     }
@@ -83,7 +83,7 @@ function FilterDialogue({
 
   useEffect(() => {
     setLeadSourceOptions([
-      { label: "Select lead source", value: "" },
+      { label: "Filter by source", value: "" },
       ...leadSources,
     ]);
   }, [leadSources]);
@@ -252,6 +252,7 @@ function FilterDialogue({
             buttonHeight="100%"
             optionsTextColor="#464646"
             size="sm"
+            shouldFirstOptionDisabled={false}
           />
         </div>
       </div>
@@ -296,6 +297,7 @@ function FilterDialogue({
               buttonHeight="100%"
               optionsTextColor="#464646"
               size="sm"
+              shouldFirstOptionDisabled={false}
             />
           </div>
         </div>
@@ -321,6 +323,7 @@ function FilterDialogue({
               buttonHeight="100%"
               optionsTextColor="#464646"
               size="sm"
+              shouldFirstOptionDisabled={false}
             />
           </div>
         </div>
@@ -406,6 +409,7 @@ function FilterDialogue({
               buttonHeight="100%"
               optionsTextColor="#464646"
               size="sm"
+              shouldFirstOptionDisabled={false}
             />
           </div>
         </div>

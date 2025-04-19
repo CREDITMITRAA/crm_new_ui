@@ -34,6 +34,7 @@ function DropDown({
   // Other
   resetFilters = false,
   selectedOption,
+  shouldFirstOptionDisabled=true
 }) {
   // Size configuration
   const sizeConfig = {
@@ -117,7 +118,7 @@ function DropDown({
         <option
           key={index}
           value={item.value}
-          disabled={item?.value === ""}
+          disabled={shouldFirstOptionDisabled && item?.value === ""}
           style={{
             backgroundColor: "#D9E4F2",
             color: item?.value === "" ? optionsDisabledTextColor : optionsTextColor,

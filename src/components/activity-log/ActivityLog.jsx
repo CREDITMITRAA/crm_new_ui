@@ -58,30 +58,36 @@ function ActivityLog() {
   }, [activityLogsEmployeeWise]);
 
   useEffect(() => {
-    // Fetch activity logs with the current filters
+    // Fetch activity logs with the current filters (fixed pageSize)
     fetchActivityLogs({ ...filters, pageSize: 10 });
-
-    // Filter out keys with empty values
-    const filteredFilters = Object.keys(filters)?.reduce((acc, key) => {
-      // Skip keys like "page", "pageSize", "totalPages", and "total"
-      if (!["page", "pageSize", "totalPages","createdAt", "total", "from_dashboard"].includes(key)) {
-        // Check if the value is not empty
-        const value = filters[key];
-        if (
-          value !== null &&
-          value !== undefined &&
-          value !== "" &&
-          !(Array.isArray(value) && value.length === 0)
-        ) {
-          acc[key] = value;
-        }
+  
+    // Define keys to always exclude
+    const excludedKeys = ["page", "pageSize", "totalPages", "createdAt", "total", "from_dashboard"];
+  
+    // Filter out excluded keys and empty values in a single pass
+    const filteredFilters = Object.entries(filters).reduce((acc, [key, value]) => {
+      // Skip excluded keys
+      if (excludedKeys.includes(key)) return acc;
+      
+      // Skip empty values
+      if (
+        value == null || // null or undefined
+        value === "" || // empty string
+        (Array.isArray(value) && value.length === 0 // empty array
+        // Add more empty checks if needed (empty object, etc.)
+      )) {
+        return acc;
       }
+      
+      // Include valid key-value pair
+      acc[key] = value;
       return acc;
     }, {});
-
-    // Set showDot based on whether there are any active filters
+  
+    // Set dot visibility based on active filters
     setShowDot(Object.keys(filteredFilters).length > 0);
-  }, [filters]);
+  
+  }, [filters]); // Dependencies remain the same
 
   const fetchActivityLogs = useCallback(
     debounce((filters) => {

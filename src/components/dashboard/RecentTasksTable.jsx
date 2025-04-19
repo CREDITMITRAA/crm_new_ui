@@ -76,20 +76,36 @@ function RecentTasksTable() {
   useEffect(() => {
     console.log("tasks = ", tasks, pagination);
     console.log("filters = ", filters);
-    let excludedKeys = [];
+    
+    // Fetch tasks with all filters
     fetchTasks({ ...filters });
-    if (role === ROLE_EMPLOYEE) {
-      excludedKeys = ["pageSize", "date", "date_time_range", "created_by"];
-    } else {
-      excludedKeys = ["pageSize", "date", "date_time_range"];
-    }
-
-    // Exclude 'pageSize' from the filters count check
-    const filterKeys = Object.keys(filters).filter((key) => key !== "pageSize");
-    const filteredKeys = Object.keys(filters).filter(
-      (key) => !excludedKeys.includes(key) && filters[key] !== ""
-    );
-    setShowDot(filteredKeys.length > 0);
+  
+    // Determine excluded keys based on role
+    const excludedKeys = role === ROLE_EMPLOYEE
+      ? ["pageSize", "date", "date_time_range", "created_by"]
+      : ["pageSize", "date", "date_time_range"];
+  
+    // Filter out excluded keys and empty values
+    const filteredFilters = Object.entries(filters).reduce((acc, [key, value]) => {
+      if (excludedKeys.includes(key)) return acc;
+      
+      // Check for empty values (null, undefined, empty string, empty array, empty object)
+      if (
+        value == null || 
+        value === "" ||
+        (Array.isArray(value) && value.length === 0) ||
+        (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0)
+      ) {
+        return acc;
+      }
+      
+      acc[key] = value;
+      return acc;
+    }, {});
+  
+    // Set showDot based on whether there are any active filters
+    setShowDot(Object.keys(filteredFilters).length > 0);
+  
   }, [filters]);
 
   useEffect(() => {

@@ -285,8 +285,9 @@ const PerformanceChartHorizontal = (
     const timeout = setTimeout(() => {
       dispatch(getChartDataByChartType({ ...filters }));
       const filteredFilters = Object.keys(filters)?.reduce((acc, key) => {
-        if (!["date", "date_time_range"].includes(key)) {
-          acc[key] = filters[key];
+        const value = filters[key];
+        if (!["date", "date_time_range"].includes(key) && value != null && value !== "") {
+          acc[key] = value;
         }
         return acc;
       }, {});

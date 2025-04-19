@@ -164,6 +164,7 @@ function FilterDialogueForWalkInLeadsTable({
             buttonHeight="100%"
             optionsTextColor="#464646"
             size="sm"
+            shouldFirstOptionDisabled={false}
           />
         </div>
       </div>
@@ -188,6 +189,7 @@ function FilterDialogueForWalkInLeadsTable({
               buttonHeight="100%"
               optionsTextColor="#464646"
               size="sm"
+              shouldFirstOptionDisabled={false}
             />
           </div>
         </div>
@@ -212,6 +214,7 @@ function FilterDialogueForWalkInLeadsTable({
             buttonHeight="100%"
             optionsTextColor="#464646"
             size="sm"
+            shouldFirstOptionDisabled={false}
           />
         </div>
       </div>
@@ -235,6 +238,7 @@ function FilterDialogueForWalkInLeadsTable({
             buttonHeight="100%"
             optionsTextColor="#464646"
             size="sm"
+            shouldFirstOptionDisabled={false}
           />
         </div>
       </div>

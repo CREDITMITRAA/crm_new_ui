@@ -160,27 +160,33 @@ function Leads() {
     if (pageSize > 0 && !initialMount.current) {
       fetchLeads({ ...filters, pageSize });
       const filteredFilters = Object.keys(filters)?.reduce((acc, key) => {
-        if (
-          role === ROLE_EMPLOYEE
-            ? ![
-                "page",
-                "pageSize",
-                "totalPages",
-                "total",
-                "assigned_to",
-                "userId",
-                "exclude_verification",
-              ].includes(key)
-            : ![
-                "page",
-                "pageSize",
-                "totalPages",
-                "total",
-                "assigned_to",
-              ].includes(key)
-        ) {
+        // Check if value is empty, null, or undefined
+        const isEmptyValue = filters[key] === "" || filters[key] == null;
+        
+        // Check if key should be excluded based on role
+        const shouldExcludeKey = role === ROLE_EMPLOYEE
+          ? [
+              "page",
+              "pageSize",
+              "totalPages",
+              "total",
+              "assigned_to",
+              "userId",
+              "exclude_verification",
+            ].includes(key)
+          : [
+              "page",
+              "pageSize",
+              "totalPages",
+              "total",
+              "assigned_to",
+            ].includes(key);
+      
+        // Only include if not empty and not in excluded keys
+        if (!isEmptyValue && !shouldExcludeKey) {
           acc[key] = filters[key];
         }
+        
         return acc;
       }, {});
       console.log("filtered filters = ", filteredFilters);
@@ -893,7 +899,7 @@ function Leads() {
             )}
             {user.user.role !== ROLE_EMPLOYEE && (
               <PrimaryButton
-                name="Not Assigned"
+                name="Unassigned"
                 isActive={tableType === NOT_ASSIGNED_TABLE}
                 onClick={() => {
                   setTableType(NOT_ASSIGNED_TABLE);

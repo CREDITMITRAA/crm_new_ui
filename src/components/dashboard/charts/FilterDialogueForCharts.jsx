@@ -70,6 +70,7 @@ function FilterDialogueForCharts({ setFilters, filters, resetFilters }) {
             buttonHeight="100%"
             optionsTextColor="#464646"
             size="sm"
+            shouldFirstOptionDisabled={false}
           />
         </div>
       </div>

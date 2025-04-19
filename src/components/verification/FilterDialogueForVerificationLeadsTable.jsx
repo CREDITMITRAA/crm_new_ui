@@ -73,6 +73,10 @@ function FilterDialogueForVerificationLeadsTable({
       case "lead_source":
         setFilters((prev) => ({ ...prev, lead_source: value }));
         break;
+
+        // case "lead_status":
+        //   setFilters((prev) => ({ ...prev, lead_status: value }));
+        //   break;
     }
   }
 
@@ -149,6 +153,7 @@ function FilterDialogueForVerificationLeadsTable({
             buttonHeight="100%"
             optionsTextColor="#464646"
             size="sm"
+            shouldFirstOptionDisabled={false}
           />
         </div>
       </div>
@@ -173,6 +178,7 @@ function FilterDialogueForVerificationLeadsTable({
               buttonHeight="100%"
               optionsTextColor="#464646"
               size="sm"
+              shouldFirstOptionDisabled={false}
             />
           </div>
         </div>
@@ -197,6 +203,7 @@ function FilterDialogueForVerificationLeadsTable({
             buttonHeight="100%"
             optionsTextColor="#464646"
             size="sm"
+            shouldFirstOptionDisabled={false}
           />
         </div>
       </div>
@@ -220,6 +227,7 @@ function FilterDialogueForVerificationLeadsTable({
             buttonHeight="100%"
             optionsTextColor="#464646"
             size="sm"
+            shouldFirstOptionDisabled={false}
           />
         </div>
       </div>
