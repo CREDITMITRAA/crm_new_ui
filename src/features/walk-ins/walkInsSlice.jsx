@@ -3,6 +3,7 @@ import {
   getAllWalkInLeads,
   getWalkIns,
   getWalkInsCount,
+  rescheduleWalkIn,
   updateApplicationStatus,
   updateWalkInOrCallStatus,
 } from "./walkInsThunks";
@@ -17,7 +18,9 @@ const initialState = {
   leads: [],
   leadsPagination: {},
   statusUpdateLoading:false,
-  statusUpdateError:null
+  statusUpdateError:null,
+  rescheduleLoading:false,
+  rescheduleError:null,
 };
 
 const walkInsSlice = createSlice({
@@ -89,6 +92,19 @@ const walkInsSlice = createSlice({
       .addCase(updateWalkInOrCallStatus.rejected, (state,action)=>{
         state.statusUpdateLoading = false
         state.statusUpdateError = action.payload
+      })
+      .addCase(rescheduleWalkIn.pending, (state,action)=>{
+        state.rescheduleLoading = true
+      })
+      .addCase(rescheduleWalkIn.fulfilled, (state,action)=>{
+        state.rescheduleLoading = false
+        state.walkIns = state.walkIns.map((walkIn)=>
+          walkIn.id === action.payload.data.data.id ? {...walkIn, ...action.payload.data.data} : walkIn
+        )
+      })
+      .addCase(rescheduleWalkIn.rejected, (state,action)=>{
+        state.rescheduleLoading = false
+        state.rescheduleError = action.payload
       })
   },
 });

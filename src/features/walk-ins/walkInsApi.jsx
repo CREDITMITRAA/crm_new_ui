@@ -26,3 +26,8 @@ export async function updateWalkInOrCallStatusApi(payload){
     const response  = await PrivateAxios.post('/api/walk-ins/update-walk-in-status', {...payload})
     return response
 }
+
+export async function rescheduleWalkInApi(payload){
+    const response = await PrivateAxios.post('/api/walk-ins/reschedule-walk-in',{...payload})
+    return response
+}

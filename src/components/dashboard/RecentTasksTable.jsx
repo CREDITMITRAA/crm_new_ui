@@ -33,6 +33,7 @@ function RecentTasksTable() {
   const dispatch = useDispatch();
   const { tasks, pagination, statusUpdateLoading, statusUpdateError, loading } =
     useSelector((state) => state.tasks);
+    const {isConfirmationDialogueOpened} = useSelector((state)=>state.ui)
   const { user, role } = useSelector((state) => state.auth);
   const [filters, setFilters] = useState({
     pageSize: 10,
@@ -76,36 +77,41 @@ function RecentTasksTable() {
   useEffect(() => {
     console.log("tasks = ", tasks, pagination);
     console.log("filters = ", filters);
-    
+
     // Fetch tasks with all filters
     fetchTasks({ ...filters });
-  
+
     // Determine excluded keys based on role
-    const excludedKeys = role === ROLE_EMPLOYEE
-      ? ["pageSize", "date", "date_time_range", "created_by"]
-      : ["pageSize", "date", "date_time_range"];
-  
+    const excludedKeys =
+      role === ROLE_EMPLOYEE
+        ? ["pageSize", "date", "date_time_range", "created_by"]
+        : ["pageSize", "date", "date_time_range"];
+
     // Filter out excluded keys and empty values
-    const filteredFilters = Object.entries(filters).reduce((acc, [key, value]) => {
-      if (excludedKeys.includes(key)) return acc;
-      
-      // Check for empty values (null, undefined, empty string, empty array, empty object)
-      if (
-        value == null || 
-        value === "" ||
-        (Array.isArray(value) && value.length === 0) ||
-        (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0)
-      ) {
+    const filteredFilters = Object.entries(filters).reduce(
+      (acc, [key, value]) => {
+        if (excludedKeys.includes(key)) return acc;
+
+        // Check for empty values (null, undefined, empty string, empty array, empty object)
+        if (
+          value == null ||
+          value === "" ||
+          (Array.isArray(value) && value.length === 0) ||
+          (typeof value === "object" &&
+            !Array.isArray(value) &&
+            Object.keys(value).length === 0)
+        ) {
+          return acc;
+        }
+
+        acc[key] = value;
         return acc;
-      }
-      
-      acc[key] = value;
-      return acc;
-    }, {});
-  
+      },
+      {}
+    );
+
     // Set showDot based on whether there are any active filters
     setShowDot(Object.keys(filteredFilters).length > 0);
-  
   }, [filters]);
 
   useEffect(() => {
@@ -443,7 +449,10 @@ function RecentTasksTable() {
                     {/* Task Type */}
                     <div className="w-[17%] h-full flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight">
                       <span className="truncate w-full px-1 py-0.5">
-                        {truncateWithEllipsis(terminologiesMap.get(task.activity_status), 24) || ""}
+                        {truncateWithEllipsis(
+                          terminologiesMap.get(task.activity_status),
+                          24
+                        ) || ""}
                       </span>
                     </div>
 
@@ -470,88 +479,110 @@ function RecentTasksTable() {
 
                     {/* Task Status */}
                     <div className="w-[8%] h-full flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight">
-  {user.user.role === ROLE_EMPLOYEE ? (
-    <div className="relative w-full">
-      {/* Blinking text overlay only for Pending status */}
-      {task.task_status === "Pending" && (
-        <span
-          className="absolute left-1 top-0.5 truncate pointer-events-none"
-          style={{
-            color: "#D18C31",
-            animation: "blink 1.5s ease-in-out infinite",
-          }}
-        >
-          Pending
-        </span>
-      )}
-      {/* Always visible select dropdown */}
-      <select
-        className="w-full px-1 py-0.5 text-xs font-normal inter-inter leading-tight bg-transparent border-none outline-none appearance-none cursor-pointer truncate"
-        value={task.task_status}
-        onChange={(e) =>
-          handleStatusChange(
-            task.id,
-            e.target.value,
-            task.activity_status,
-            task.lead_id,
-            task.Lead.name
-          )
-        }
-        style={{
-          color: task.task_status === "Pending" ? "transparent" : "inherit",
-          border: "none",
-          backgroundColor: "transparent",
-          outline: "none",
-          fontSize: "inherit",
-          cursor: "pointer",
-        }}
-      >
-        <option
-          value="Upcoming"
-          style={{ color: "#46464680", cursor: "pointer", backgroundColor: '#F2F7FE' }}
-          disabled
-          className="truncate"
-        >
-          Upcoming
-        </option>
-        <option
-          value="Pending"
-          style={{ color: "#46464680", cursor: "pointer", backgroundColor: '#F2F7FE' }}
-          disabled
-          className="truncate"
-        >
-          Pending
-        </option>
-        <option
-          value="Completed"
-          style={{ color: "#464646", cursor: "pointer", backgroundColor: '#F2F7FE' }}
-          className="truncate"
-        >
-          Completed
-        </option>
-      </select>
-    </div>
-  ) : (
-    <>
-      <span
-        className="truncate w-full px-1 py-0.5"
-        style={{
-          color: status === "Pending" ? "#D18C31" : "inherit",
-          animation: status === "Pending" ? "blink 1.5s ease-in-out infinite" : "none",
-        }}
-      >
-        {status}
-      </span>
-    </>
-  )}
-  
-  {/* Blink animation style */}
-  <style jsx>{`
-    @keyframes blink {
-      50% { opacity: 0; }
-    }
-  `}</style>
-</div>
+                      {user.user.role === ROLE_EMPLOYEE ? (
+                        <div className={`${!isConfirmationDialogueOpened && 'relative'} w-full`}>
+                          {/* Blinking text overlay only for Pending status */}
+                          {task.task_status === "Pending" && (
+                            <span
+                              className={`${!isConfirmationDialogueOpened && 'absolute left-1 top-0.5'} truncate pointer-events-none`}
+                              style={{
+                                color: "#D18C31",
+                                animation: "blink 1.5s ease-in-out infinite",
+                                display: isConfirmationDialogueOpened && 'none'
+                              }}
+                            >
+                              Pending
+                            </span>
+                          )}
+                          {/* Always visible select dropdown */}
+                          <select
+                            className="w-full px-1 py-0.5 text-xs font-normal inter-inter leading-tight bg-transparent border-none outline-none appearance-none cursor-pointer truncate"
+                            value={task.task_status}
+                            onChange={(e) =>
+                              handleStatusChange(
+                                task.id,
+                                e.target.value,
+                                task.activity_status,
+                                task.lead_id,
+                                task.Lead.name
+                              )
+                            }
+                            style={{
+                              color:
+                                task.task_status === "Pending"
+                                  ? "transparent"
+                                  : "inherit",
+                              border: "none",
+                              backgroundColor: "transparent",
+                              outline: "none",
+                              fontSize: "inherit",
+                              cursor: "pointer",
+                            }}
+                          >
+                            <option
+                              value="Upcoming"
+                              style={{
+                                color: "#46464680",
+                                cursor: "pointer",
+                                backgroundColor: "#F2F7FE",
+                              }}
+                              disabled
+                              className="truncate"
+                            >
+                              Upcoming
+                            </option>
+                            <option
+                              value="Pending"
+                              style={{
+                                color: "#46464680",
+                                cursor: "pointer",
+                                backgroundColor: "#F2F7FE",
+                              }}
+                              disabled
+                              className="truncate"
+                            >
+                              Pending
+                            </option>
+                            <option
+                              value="Completed"
+                              style={{
+                                color: "#464646",
+                                cursor: "pointer",
+                                backgroundColor: "#F2F7FE",
+                              }}
+                              className="truncate"
+                            >
+                              Completed
+                            </option>
+                          </select>
+                        </div>
+                      ) : (
+                        <>
+                          <span
+                            className="truncate w-full px-1 py-0.5"
+                            style={{
+                              color:
+                                status === "Pending" ? "#D18C31" : "inherit",
+                              animation:
+                                status === "Pending"
+                                  ? "blink 1.5s ease-in-out infinite"
+                                  : "none",
+                            }}
+                          >
+                            {status}
+                          </span>
+                        </>
+                      )}
+
+                      {/* Blink animation style */}
+                      <style jsx>{`
+                        @keyframes blink {
+                          50% {
+                            opacity: 0;
+                          }
+                        }
+                      `}</style>
+                    </div>
                   </div>
                 );
               })}

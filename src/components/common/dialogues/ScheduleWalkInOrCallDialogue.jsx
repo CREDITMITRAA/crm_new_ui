@@ -22,6 +22,7 @@ import {
 } from "../../../utilities/utility-functions";
 import { scheduleWalkIn } from "../../../features/verification/verificationThunks";
 import { setIsConfirmationDialogueOpened } from "../../../features/ui/uiSlice";
+import { rescheduleWalkIn } from "../../../features/walk-ins/walkInsThunks";
 
 const options = [
   { label: SCHEDULE_FOR_WALK_IN, value: SCHEDULE_FOR_WALK_IN },
@@ -39,6 +40,10 @@ function ScheduleWalkInOrCallDialogue({
   isCall = false,
   isReschedule = false,
   setIsCall,
+  setToastMessage,
+  setToastStatusType,
+  setToastStatusMessage,
+  selectedWalkIn,
 }) {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
@@ -130,6 +135,7 @@ function ScheduleWalkInOrCallDialogue({
     payload["lead_id"] = selectedLead.id;
     payload["lead_name"] = selectedLead.name;
     payload["note"] = description;
+
     if (isReschedule) {
       payload["is_rescheduled"] = true;
       payload["rescheduled_date_time"] = formatDateTime(
@@ -138,7 +144,7 @@ function ScheduleWalkInOrCallDialogue({
         minute,
         period
       );
-    }else{
+    } else {
       payload["walk_in_date_time"] = formatDateTime(
         taskDate,
         hour,
@@ -146,16 +152,48 @@ function ScheduleWalkInOrCallDialogue({
         period
       );
     }
+
     setOpenToast(true);
+
     try {
-      const result = await dispatch(scheduleWalkIn(payload));
-      if (scheduleWalkIn.fulfilled.match(result)) {
-        // onScheduleWalkInOrCall();
-      } else if (scheduleWalkIn.rejected.match(result)) {
-        console.error("Error scheduling :", result.error);
+      let result = null;
+      if (isReschedule) {
+        result = await dispatch(
+          rescheduleWalkIn({ ...payload, ...selectedWalkIn, rescheduled_date_time: payload.rescheduled_date_time })
+        );
+      } else {
+        result = await dispatch(scheduleWalkIn(payload));
+      }
+
+      // Check the appropriate action based on isReschedule
+      if (isReschedule) {
+        if (rescheduleWalkIn.fulfilled.match(result)) {
+          setToastStatusMessage("Success...");
+          setToastStatusType("SUCCESS");
+          setToastMessage("Walk In Rescheduled Successfully");
+        } else if (rescheduleWalkIn.rejected.match(result)) {
+          console.error("Error rescheduling:", result.error);
+          setToastStatusMessage("Error...");
+          setToastStatusType("ERROR");
+          setToastMessage("Failed to reschedule walk-in!");
+        }
+      } else {
+        if (scheduleWalkIn.fulfilled.match(result)) {
+          setToastMessage("Success...");
+          setToastStatusType("SUCCESS");
+          setToastStatusMessage("Walk In Scheduled Successfully");
+        } else if (scheduleWalkIn.rejected.match(result)) {
+          console.error("Error scheduling:", result.error);
+          setToastStatusMessage("Error...");
+          setToastStatusType("ERROR");
+          setToastMessage("Failed to schedule walk-in!");
+        }
       }
     } catch (error) {
       console.log(error.message);
+      setToastStatusMessage("Error...");
+      setToastStatusType("ERROR");
+      setToastMessage(error.message);
     }
   }
 
@@ -263,17 +301,17 @@ function ScheduleWalkInOrCallDialogue({
                 Date
               </span>
               <div className="h-8">
-              <DateButton
-                showDot={false}
-                showTimeFilterToggleButton={false}
-                showSingleCalender={true}
-                onDateChange={(_, date) => handleDateChange(date)}
-                date={taskDate && extractDate(taskDate)}
-                fromTable={true}
-                buttonBackgroundColor="[#D9E4F2]"
-                showBoxShadow={true}
-                borderColor="[#214768]"
-              />
+                <DateButton
+                  showDot={false}
+                  showTimeFilterToggleButton={false}
+                  showSingleCalender={true}
+                  onDateChange={(_, date) => handleDateChange(date)}
+                  date={taskDate && extractDate(taskDate)}
+                  fromTable={true}
+                  buttonBackgroundColor="[#D9E4F2]"
+                  showBoxShadow={true}
+                  borderColor="[#214768]"
+                />
               </div>
             </div>
 

@@ -23,6 +23,7 @@ const defaultWalkInLeadsTableFilters = {
   lead_status: "",
   for_walk_ins_page: true,
   walk_in_attributes: [
+    "id",
     "is_call",
     "is_rescheduled",
     "rescheduled_date_time",

@@ -40,6 +40,7 @@ const defaultWalkInLeadsTableFilters = {
   lead_status: "",
   for_walk_ins_page: true,
   walk_in_attributes: [
+    "id",
     "is_call",
     "is_rescheduled",
     "rescheduled_date_time",
@@ -86,6 +87,7 @@ function WalkInsTable({ leads }) {
   const [selectedLeadStatus, setSelectedLeadStatus] = useState(null);
   const [selectedLead, setSelectedLead] = useState(false);
   const [isReschedule, setIsReschedule] = useState(false)
+  const [selectedWalkIn, setSelectedWalkIn] = useState(null)
 
   useEffect(() => {
     if (loading) {
@@ -144,13 +146,15 @@ function WalkInsTable({ leads }) {
         showErrorToast(message);
         return;
       }
-
+      console.log('walk in  = ', walk_in);
+      
       // Proceed with rescheduling
       setIsCall(newStatus === RESCHEDULE_CALL_WITH_MANAGER);
       setIsReschedule(true)
       setSelectedLead(lead);
       setSelectedLeadStatus(newStatus);
       setShowScheduleWalkInOrCallDialogue(true);
+      setSelectedWalkIn({...walk_in, walk_in_id: walk_in.id})
       return;
     }
 
@@ -651,6 +655,10 @@ function WalkInsTable({ leads }) {
           }}
           fromTable={true}
           isReschedule={isReschedule}
+          selectedWalkIn={selectedWalkIn}
+          setToastMessage={setToastMessage}
+          setToastStatusType={setToastStatusType}
+          setToastStatusMessage={setToastStatusMessage}
         />
       )}
     </>

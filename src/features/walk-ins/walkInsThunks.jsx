@@ -2,6 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import {
   fetchWalkIns,
   fetchWalkInsCount,
+  rescheduleWalkInApi,
   updateApplicationStatusApi,
   updateWalkInOrCallStatusApi,
 } from "./walkInsApi";
@@ -65,14 +66,28 @@ export const updateApplicationStatus = createAsyncThunk(
 
 export const updateWalkInOrCallStatus = createAsyncThunk(
   "walkIns/updateWalkInOrCallStatus",
-  async (payload,thunkAPI) => {
+  async (payload, thunkAPI) => {
     try {
-      const data = await updateWalkInOrCallStatusApi(payload)
-      return data
+      const data = await updateWalkInOrCallStatusApi(payload);
+      return data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data || "Failed to update walk-in or call status"
       );
     }
   }
-)
+);
+
+export const rescheduleWalkIn = createAsyncThunk(
+  "walkIns/rescheduleWalkIn",
+  async (payload, thunkAPI) => {
+    try {
+      const data = await rescheduleWalkInApi(payload);
+      return data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data || "Failed to reschedule walk-in or call status"
+      );
+    }
+  }
+);
