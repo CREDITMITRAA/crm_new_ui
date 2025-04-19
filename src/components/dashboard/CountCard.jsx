@@ -12,7 +12,7 @@ function CountCard({ title, count, icon, loading }) {
       }}
     >
       {loading ? (
-        <div className="w-full h-[20rem] bg-[#E8EFF8] flex justify-center items-center">
+        <div className="w-full h-[20rem] bg-[#E8EFF8] flex justify-center items-center rounded-2xl shadow-[2px_1px_5px_0px_rgba(0,0,0,0.05)] shadow-[8px_5px_9px_0px_rgba(0,0,0,0.04)] shadow-[17px_12px_13px_0px_rgba(0,0,0,0.03)] shadow-[30px_21px_15px_0px_rgba(0,0,0,0.01)] shadow-[47px_33px_16px_0px_rgba(0,0,0,0.00)]">
           <Loader />
         </div>
       ) : (
