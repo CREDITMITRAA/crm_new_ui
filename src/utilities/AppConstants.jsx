@@ -141,10 +141,10 @@ export const loanTypeOptions = [
 
 export const leadStatusOptionsForVerification1Table = [
   { label: "Filter by lead status", value: "", style:{color:'#464646',backgroundColor:'#F2F7FE', } }, // 808080
-  { label: VERIFICATION_1, value: VERIFICATION_1 , style:{color:'#464646',backgroundColor:'#F2F7FE'}}, // FA913C
-  { label: SCHEDULE_FOR_WALK_IN, value: SCHEDULE_FOR_WALK_IN , style:{color:'#464646',backgroundColor:'#F2F7FE'}}, // 0A509B
-  { label: SCHEDULE_CALL_WITH_MANAGER, value: SCHEDULE_CALL_WITH_MANAGER , style:{color:'#464646',backgroundColor:'#F2F7FE'}}, // 968C41
-  { label: OTHERS, value: OTHERS , style:{color:'#464646',backgroundColor:'#F2F7FE'}}, // FF0000
+  { label: terminologiesMap.get(VERIFICATION_1), value: VERIFICATION_1 , style:{color:'#464646',backgroundColor:'#F2F7FE'}}, // FA913C
+  { label: terminologiesMap.get(SCHEDULE_FOR_WALK_IN), value: SCHEDULE_FOR_WALK_IN , style:{color:'#464646',backgroundColor:'#F2F7FE'}}, // 0A509B
+  { label: terminologiesMap.get(SCHEDULE_CALL_WITH_MANAGER), value: SCHEDULE_CALL_WITH_MANAGER , style:{color:'#464646',backgroundColor:'#F2F7FE'}}, // 968C41
+  { label: terminologiesMap.get(OTHERS), value: OTHERS , style:{color:'#464646',backgroundColor:'#F2F7FE'}}, // FF0000
 ];
 
 export const verificationStatusOptionsForVerificationTable = [
