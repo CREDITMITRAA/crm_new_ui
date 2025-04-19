@@ -23,14 +23,19 @@ function FilterDialogueForVerificationLeadsTable({
   const { role } = useSelector((state) => state.auth);
   const [optionsForVerificationStatus, setOptionsForVerificationStatus] =
     useState(verificationStatusOptions);
-  const [optionsForLeadStatus, setOptionsForLeadStatus] = useState(leadStatusOptionsForVerification1Table)
+  const [optionsForLeadStatus, setOptionsForLeadStatus] = useState(
+    leadStatusOptionsForVerification1Table
+  );
   const [leadSourceOptions, setLeadSourceOptions] = useState([
     { label: "Filter by lead source", value: "" },
   ]);
 
   useEffect(() => {
     if (users && users.length > 0) {
-      setEmployees([{ label: "Filter by associate", value: "" }, ...userOptions]);
+      setEmployees([
+        { label: "Filter by associate", value: "" },
+        ...userOptions,
+      ]);
     } else {
       dispatch(getUsersNameAndId());
     }
@@ -74,9 +79,9 @@ function FilterDialogueForVerificationLeadsTable({
         setFilters((prev) => ({ ...prev, lead_source: value }));
         break;
 
-        // case "lead_status":
-        //   setFilters((prev) => ({ ...prev, lead_status: value }));
-        //   break;
+      case "lead_status":
+        setFilters((prev) => ({ ...prev, lead_status: value }));
+        break;
     }
   }
 
@@ -134,7 +139,11 @@ function FilterDialogueForVerificationLeadsTable({
       </div>
 
       {/* lead source */}
-      <div className={`w-full h-8 ${role === ROLE_EMPLOYEE ? 'col-span-4' : 'col-span-3 '}`}>
+      <div
+        className={`w-full h-8 ${
+          role === ROLE_EMPLOYEE ? "col-span-4" : "col-span-3 "
+        }`}
+      >
         <div className="w-full h-full bg-[#D4D5D53D] rounded-xl flex items-center justify-start pl-0">
           <DropDown
             options={leadSourceOptions}
@@ -160,7 +169,11 @@ function FilterDialogueForVerificationLeadsTable({
 
       {/* Employee name */}
       {role !== ROLE_EMPLOYEE && (
-        <div className={`w-full h-8 ${role === ROLE_EMPLOYEE ? 'col-span-4' : 'col-span-3 '}`}>
+        <div
+          className={`w-full h-8 ${
+            role === ROLE_EMPLOYEE ? "col-span-4" : "col-span-3 "
+          }`}
+        >
           <div className="w-full h-full bg-[#D4D5D53D] rounded-xl flex items-center">
             <DropDown
               options={employees}
@@ -185,7 +198,11 @@ function FilterDialogueForVerificationLeadsTable({
       )}
 
       {/* verification status */}
-      <div className={`w-full h-8 ${role === ROLE_EMPLOYEE ? 'col-span-4' : 'col-span-3 '}`}>
+      <div
+        className={`w-full h-8 ${
+          role === ROLE_EMPLOYEE ? "col-span-4" : "col-span-3 "
+        }`}
+      >
         <div className="w-full h-full bg-[#D4D5D53D] rounded-xl flex items-center">
           <DropDown
             options={optionsForVerificationStatus}
@@ -209,7 +226,11 @@ function FilterDialogueForVerificationLeadsTable({
       </div>
 
       {/* lead status */}
-      <div className={`w-full h-8 ${role === ROLE_EMPLOYEE ? 'col-span-4' : 'col-span-3 '}`}>
+      <div
+        className={`w-full h-8 ${
+          role === ROLE_EMPLOYEE ? "col-span-4" : "col-span-3 "
+        }`}
+      >
         <div className="w-full h-full bg-[#D4D5D53D] rounded-xl flex items-center">
           <DropDown
             options={optionsForLeadStatus}
