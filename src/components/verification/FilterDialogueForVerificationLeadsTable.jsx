@@ -13,6 +13,8 @@ function FilterDialogueForVerificationLeadsTable({
   setFilters,
   filters,
 }) {
+  console.log('filters = ', filters);
+  
   const dispatch = useDispatch();
   const [employees, setEmployees] = useState([
     { label: "Filter by associate", value: "" },
@@ -80,6 +82,9 @@ function FilterDialogueForVerificationLeadsTable({
         break;
 
       case "lead_status":
+        if(value === ""){
+          value = "Verification 1"
+        }
         setFilters((prev) => ({ ...prev, lead_status: value }));
         break;
     }
@@ -249,6 +254,7 @@ function FilterDialogueForVerificationLeadsTable({
             optionsTextColor="#464646"
             size="sm"
             shouldFirstOptionDisabled={false}
+            defaultSelectedOptionIndex={filters?.lead_status && 1}
           />
         </div>
       </div>

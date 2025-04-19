@@ -74,8 +74,8 @@ function Verification1() {
   
       // Determine excluded keys based on role
       const excludedKeys = role === ROLE_EMPLOYEE
-        ? ["page", "pageSize", "totalPages", "total", "lead_status", "assigned_to"]
-        : ["page", "pageSize", "totalPages", "total", "lead_status"];
+        ? ["page", "pageSize", "totalPages", "total", "assigned_to"]
+        : ["page", "pageSize", "totalPages", "total",];
   
       // Filter out excluded keys and empty values
       const filteredFilters = Object.entries(filters).reduce((acc, [key, value]) => {

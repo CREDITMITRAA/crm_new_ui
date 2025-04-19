@@ -102,6 +102,9 @@ function FilterDialogue({
 
       case "lead_source":
         setFilters((prev) => ({ ...prev, lead_source: value }));
+
+      case "reason":
+       setFilters((prev) => ({ ...prev, reason: value }));
     }
   }
 

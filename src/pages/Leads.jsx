@@ -211,7 +211,7 @@ function Leads() {
 
   useEffect(() => {
     if (users && users.length > 0) {
-      setEmployees([{ label: "Select Employee", value: "" }, ...userOptions]);
+      setEmployees([{ label: "Select associate", value: "" }, ...userOptions]);
     } else {
       dispatch(getUsersNameAndId());
     }
@@ -916,7 +916,7 @@ function Leads() {
             )}
             {selectedLeadIds?.length > 0 &&
               tableType !== INVALID_LEADS_TABLE && (
-                <div className="w-max h-max bg-[#F4EBFF] rounded-xl flex items-center">
+                <div className="w-max h-8 bg-[#F4EBFF] rounded-xl flex items-center my-1">
                   <DropDown
                     options={employees}
                     onChange={(name, value) => handleSelect(name, value)}
@@ -944,6 +944,8 @@ function Leads() {
                     resetFilters={resetFilters}
                     fieldName="created_by"
                     disabled={false}
+                    size="sm"
+                    shouldFirstOptionDisabled={false}
                   />
                 </div>
               )}

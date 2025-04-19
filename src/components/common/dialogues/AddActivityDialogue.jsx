@@ -276,6 +276,7 @@ function AddActivityDialogue({
                 buttonBorderRadius="0.8rem"
                 buttonHeight="100%"
                 optionsTextColor="#464646"
+                size="sm"
               />
             </div>
 

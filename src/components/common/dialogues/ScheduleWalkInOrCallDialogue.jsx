@@ -253,6 +253,7 @@ function ScheduleWalkInOrCallDialogue({
                 buttonBorderRadius="0.8rem"
                 buttonHeight="100%"
                 optionsTextColor="#464646"
+                size="sm"
               />
             </div>
 
@@ -261,6 +262,7 @@ function ScheduleWalkInOrCallDialogue({
               <span className="text-[#214768] text-sm font-medium leading-5 mb-[0.625rem]">
                 Date
               </span>
+              <div className="h-8">
               <DateButton
                 showDot={false}
                 showTimeFilterToggleButton={false}
@@ -272,6 +274,7 @@ function ScheduleWalkInOrCallDialogue({
                 showBoxShadow={true}
                 borderColor="[#214768]"
               />
+              </div>
             </div>
 
             {/* Time section */}
@@ -294,6 +297,7 @@ function ScheduleWalkInOrCallDialogue({
                   buttonBorderRadius="0.8rem"
                   buttonHeight="100%"
                   optionsTextColor="#464646"
+                  size="sm"
                 />
                 <DropDown
                   options={minutes}
@@ -308,6 +312,7 @@ function ScheduleWalkInOrCallDialogue({
                   buttonBorderRadius="0.8rem"
                   buttonHeight="100%"
                   optionsTextColor="#464646"
+                  size="sm"
                 />
                 <DropDown
                   options={periods}
@@ -322,6 +327,7 @@ function ScheduleWalkInOrCallDialogue({
                   buttonBorderRadius="0.8rem"
                   buttonHeight="100%"
                   optionsTextColor="#464646"
+                  size="sm"
                 />
               </div>
             </div>
