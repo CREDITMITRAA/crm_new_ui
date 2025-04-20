@@ -46,7 +46,7 @@ function WalkInsTable() {
   } = useSelector((state) => state.walkIns);
   const { users } = useSelector((state) => state.users);
   const { user, role } = useSelector((state) => state.auth);
-  const {isConfirmationDialogueOpened} = useSelector((state)=>state.ui)
+  const { isConfirmationDialogueOpened } = useSelector((state) => state.ui);
   const [openToast, setOpenToast] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
   const [toastStatusMessage, setToastStatusMessage] = useState(null);
@@ -94,10 +94,13 @@ function WalkInsTable() {
     { label: "50", value: 50 },
   ];
   const [showDot, setShowDot] = useState(false);
-  const [showRescheduleConfirmationDialogue,setShowRescheduleConfirmationDialogue] = useState(false)
-  const [isCall, setIsCall] = useState(false)
-  const [selectedLead, setSelectedLead] = useState(null)
-  const [selectedWalkIn, setSelectedWalkIn] = useState(null)
+  const [
+    showRescheduleConfirmationDialogue,
+    setShowRescheduleConfirmationDialogue,
+  ] = useState(false);
+  const [isCall, setIsCall] = useState(false);
+  const [selectedLead, setSelectedLead] = useState(null);
+  const [selectedWalkIn, setSelectedWalkIn] = useState(null);
 
   useEffect(() => {
     dispatch(getWalkIns({ ...filters, pageSize: 10 }));
@@ -293,13 +296,13 @@ function WalkInsTable() {
       lead_id,
       user_id: user.user.id,
     };
-    console.log('walkin status = ', walk_in_status);
-    
+    console.log("walkin status = ", walk_in_status);
+
     if (walk_in_status === "Rescheduled") {
       // setSelectedWalkInStatus("Reschedule Walk In");
-      setIsCall(is_call)
+      setIsCall(is_call);
       setSelectedWalkIn({ walk_in_id, walk_in_status, lead_name, is_call });
-      setSelectedLead(lead)
+      setSelectedLead(lead);
       setShowRescheduleConfirmationDialogue(true);
     } else {
       setOpenToast(true);
@@ -483,14 +486,20 @@ function WalkInsTable() {
                   >
                     {/* Lead ID */}
                     <div className="w-[8%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight rounded-tl-[10px] rounded-bl-[10px] overflow-hidden">
-                      <span className="truncate w-full text-center px-1 flex justify-left">
+                      <span
+                        className="truncate w-full text-center px-1 flex justify-left"
+                        title={walkIn.lead_id}
+                      >
                         {truncateWithEllipsis(walkIn.lead_id, 8)}
                       </span>
                     </div>
 
                     {/* Name */}
                     <div className="w-[12.5%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden">
-                      <span className="truncate w-full text-center px-1 flex justify-left">
+                      <span
+                        className="truncate w-full text-center px-1 flex justify-left"
+                        title={formatName(walkIn.lead.name)}
+                      >
                         {truncateWithEllipsis(
                           formatName(walkIn.lead.name),
                           15
@@ -500,14 +509,22 @@ function WalkInsTable() {
 
                     {/* Phone */}
                     <div className="w-[10%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden">
-                      <span className="truncate w-full text-center px-1 flex justify-left">
+                      <span
+                        className="truncate w-full text-center px-1 flex justify-left"
+                        title={getLast10Digits(walkIn?.lead?.phone)}
+                      >
                         {getLast10Digits(walkIn?.lead?.phone) || ""}
                       </span>
                     </div>
 
                     {/* Assigned To */}
                     <div className="w-[10.5%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden">
-                      <span className="truncate w-full text-center px-1 flex justify-left">
+                      <span
+                        className="truncate w-full text-center px-1 flex justify-left"
+                        title={formatName(
+                          walkIn.lead?.LeadAssignments?.[0]?.AssignedTo?.name
+                        )}
+                      >
                         {formatName(
                           walkIn.lead?.LeadAssignments?.[0]?.AssignedTo?.name
                         ) || ""}
@@ -516,7 +533,12 @@ function WalkInsTable() {
 
                     {/* Walk-in/Call Date Time */}
                     <div className="w-[15%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden">
-                      <span className="truncate w-full text-center px-1 flex justify-left">
+                      <span
+                        className="truncate w-full text-center px-1 flex justify-left"
+                        title={moment(walkIn.walk_in_date_time)
+                          .utcOffset(330)
+                          .format("DD MMM, YYYY hh:mm A")}
+                      >
                         {moment(walkIn.walk_in_date_time)
                           .utcOffset(330)
                           .format("DD MMM, YYYY hh:mm A")}
@@ -525,7 +547,16 @@ function WalkInsTable() {
 
                     {/* Rescheduled Date Time */}
                     <div className="w-[15%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden">
-                      <span className="truncate w-full text-center px-1 flex justify-left">
+                      <span
+                        className="truncate w-full text-center px-1 flex justify-left"
+                        title={
+                          walkIn.is_rescheduled
+                            ? moment(walkIn.rescheduled_date_time)
+                                .utcOffset(330)
+                                .format("DD MMM, YYYY hh:mm A")
+                            : ""
+                        }
+                      >
                         {walkIn.is_rescheduled
                           ? moment(walkIn.rescheduled_date_time)
                               .utcOffset(330)
@@ -537,11 +568,17 @@ function WalkInsTable() {
                     {/* Status */}
                     <div className="w-[13%] flex justify-left items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden">
                       {user.user.role === ROLE_EMPLOYEE ? (
-                        <div className={`${!isConfirmationDialogueOpened && 'relative'} w-full`}>
-                          {/* Blinking text overlay only for Pending status */}
+                        <div
+                          className={`${
+                            !isConfirmationDialogueOpened && "relative"
+                          } w-full`}
+                        >
                           {walkIn.walk_in_status === "Pending" && (
                             <span
-                              className={`${!isConfirmationDialogueOpened && 'absolute left-1 top-1'} truncate pointer-events-none`}
+                              className={`${
+                                !isConfirmationDialogueOpened &&
+                                "absolute left-1 top-1"
+                              } truncate pointer-events-none`}
                               style={{
                                 color: "#D18C31",
                                 animation: "blink 1.5s ease-in-out infinite",
@@ -550,7 +587,6 @@ function WalkInsTable() {
                               Pending
                             </span>
                           )}
-                          {/* Always visible select dropdown */}
                           <select
                             className="w-full px-1 py-1 text-xs font-normal inter-inter leading-tight bg-transparent border-none outline-none appearance-none cursor-pointer focus:outline-none focus:ring-0 focus:border-transparent pr-6 truncate"
                             value={walkIn.walk_in_status || "Upcoming"}
@@ -577,15 +613,11 @@ function WalkInsTable() {
                                   ? "transparent"
                                   : "inherit",
                             }}
+                            title={walkIn.walk_in_status}
                           >
                             {walkIn.walk_in_status !== "Rescheduled" && (
                               <option
                                 value="Upcoming"
-                                style={{
-                                  color: "#46464680",
-                                  cursor: "pointer",
-                                  backgroundColor: "#F2F7FE",
-                                }}
                                 disabled
                                 className="truncate inter-inter"
                               >
@@ -594,44 +626,24 @@ function WalkInsTable() {
                             )}
                             <option
                               value="Rescheduled"
-                              style={{
-                                color: "#464646",
-                                cursor: "pointer",
-                                backgroundColor: "#F2F7FE",
-                              }}
                               className="truncate inter-inter"
                             >
                               Rescheduled
                             </option>
                             <option
                               value="Completed"
-                              style={{
-                                color: "#464646",
-                                cursor: "pointer",
-                                backgroundColor: "#F2F7FE",
-                              }}
                               className="truncate inter-inter"
                             >
                               Completed
                             </option>
                             <option
                               value="Cancelled"
-                              style={{
-                                color: "#464646",
-                                cursor: "pointer",
-                                backgroundColor: "#F2F7FE",
-                              }}
                               className="truncate inter-inter"
                             >
                               Cancel
                             </option>
                             <option
                               value="Pending"
-                              style={{
-                                color: "#46464680",
-                                cursor: "pointer",
-                                backgroundColor: "#F2F7FE",
-                              }}
                               disabled
                               className="truncate inter-inter"
                             >
@@ -640,24 +652,21 @@ function WalkInsTable() {
                           </select>
                         </div>
                       ) : (
-                        <>
-                          <span
-                            className="truncate w-full inter-inter text-center px-1 flex justify-left"
-                            style={{
-                              color:
-                                status === "Pending" ? "#D18C31" : "inherit",
-                              animation:
-                                status === "Pending"
-                                  ? "blink 1.5s ease-in-out infinite"
-                                  : "none",
-                            }}
-                          >
-                            {status}
-                          </span>
-                        </>
+                        <span
+                          className="truncate w-full inter-inter text-center px-1 flex justify-left"
+                          style={{
+                            color: status === "Pending" ? "#D18C31" : "inherit",
+                            animation:
+                              status === "Pending"
+                                ? "blink 1.5s ease-in-out infinite"
+                                : "none",
+                          }}
+                          title={status}
+                        >
+                          {status}
+                        </span>
                       )}
 
-                      {/* Blink animation style */}
                       <style jsx>{`
                         @keyframes blink {
                           50% {
@@ -669,7 +678,10 @@ function WalkInsTable() {
 
                     {/* Notes */}
                     <div className="w-[16%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight rounded-tr-[10px] rounded-br-[10px] overflow-hidden">
-                      <span className="truncate w-full text-center px-1 flex justify-left">
+                      <span
+                        className="truncate w-full text-center px-1 flex justify-left"
+                        title={formatSentence(walkIn.note)}
+                      >
                         {truncateWithEllipsis(
                           formatSentence(walkIn.note),
                           25

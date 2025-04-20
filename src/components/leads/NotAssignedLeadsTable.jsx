@@ -82,10 +82,10 @@ function NotAssignedLeadsTable({
             key={index}
             style={{
               boxShadow: `7px 2px 16px 0px rgba(0, 0, 0, 0.05) inset, 
-        27px 7px 28px 0px rgba(0, 0, 0, 0.05) inset, 
-        62px 16px 38px 0px rgba(0, 0, 0, 0.03) inset, 
-        110px 29px 45px 0px rgba(0, 0, 0, 0.04) inset, 
-        172px 46px 50px 0px rgba(0, 0, 0, 0.05) inset`,
+      27px 7px 28px 0px rgba(0, 0, 0, 0.05) inset, 
+      62px 16px 38px 0px rgba(0, 0, 0, 0.03) inset, 
+      110px 29px 45px 0px rgba(0, 0, 0, 0.04) inset, 
+      172px 46px 50px 0px rgba(0, 0, 0, 0.05) inset`,
               backgroundColor: "rgba(216, 232, 255, 1)",
             }}
           >
@@ -112,6 +112,7 @@ function NotAssignedLeadsTable({
             {/* Lead ID */}
             <div
               className="w-[15%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
+              title={`${lead.id}`}
               onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
             >
               <span className="truncate px-1 w-full text-center flex justify-left">
@@ -122,6 +123,7 @@ function NotAssignedLeadsTable({
             {/* Name */}
             <div
               className="w-[20%] px-1 flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
+              title={`${lead.name}`}
               onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
             >
               <span className="truncate w-full text-center flex justify-left">
@@ -132,6 +134,7 @@ function NotAssignedLeadsTable({
             {/* Phone */}
             <div
               className="w-[25%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
+              title={`${lead.phone}`}
               onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
             >
               <span className="truncate w-full text-center flex justify-left">
@@ -142,6 +145,7 @@ function NotAssignedLeadsTable({
             {/* Source */}
             <div
               className="w-[20%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
+              title={`${lead.lead_source || "Not Available"}`}
               onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
             >
               <span className="truncate w-full text-center flex justify-left">
@@ -154,6 +158,9 @@ function NotAssignedLeadsTable({
             {/* Imported On */}
             <div
               className="w-[15%] flex flex-col justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight rounded-br-lg rounded-tr-lg overflow-hidden"
+              title={`${moment(lead.createdAt)
+                .utcOffset(330)
+                .format("DD MMM, YY hh:mm:ss a")}`}
               onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
             >
               <span className="truncate w-full text-center flex justify-left">

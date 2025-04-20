@@ -257,28 +257,46 @@ function VerificationTable({ leads, filters }) {
               }}
             >
               {/* Lead ID */}
-              <div className="w-[8%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight rounded-tl-[10px] rounded-bl-[10px] overflow-hidden" onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}>
+              <div
+                className="w-[8%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight rounded-tl-[10px] rounded-bl-[10px] overflow-hidden"
+                onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
+                title={`${lead.id}`}
+              >
                 <span className="truncate w-full text-center flex justify-left">
                   {truncateWithEllipsis(lead.id, 8)}
                 </span>
               </div>
 
               {/* Name */}
-              <div className="w-[12.5%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden" onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}>
+              <div
+                className="w-[12.5%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
+                onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
+                title={`${lead.name}`}
+              >
                 <span className="truncate w-full flex justify-left">
                   {truncateWithEllipsis(formatName(lead.name), 15)}
                 </span>
               </div>
 
               {/* Phone */}
-              <div className="w-[12.5%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden" onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}>
+              <div
+                className="w-[12.5%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
+                onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
+                title={`${lead.phone}`}
+              >
                 <span className="truncate w-full text-center flex justify-left">
                   {getLast10Digits(lead.phone)}
                 </span>
               </div>
 
               {/* Emp Name */}
-              <div className="w-[12.5%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden" onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}>
+              <div
+                className="w-[12.5%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
+                onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
+                title={`${
+                  lead?.LeadAssignments[0]?.AssignedTo?.name || "Not Assigned"
+                }`}
+              >
                 <span className="truncate w-full text-center flex justify-left">
                   {truncateWithEllipsis(
                     formatName(lead?.LeadAssignments[0]?.AssignedTo?.name),
@@ -288,14 +306,26 @@ function VerificationTable({ leads, filters }) {
               </div>
 
               {/* Source */}
-              <div className="w-[10.5%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden" onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}>
+              <div
+                className="w-[10.5%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
+                onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
+                title={`${lead.lead_source || "Not Available"}`}
+              >
                 <span className="truncate w-full text-center flex justify-left">
-                  {truncateWithEllipsis(formatName(lead.lead_source) , 10) || "Not Available"}
+                  {truncateWithEllipsis(formatName(lead.lead_source), 10) ||
+                    "Not Available"}
                 </span>
               </div>
 
               {/* Status */}
-              <div className="w-[20%] flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden pr-8">
+              <div
+                className="w-[20%] flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden pr-8"
+                title={`Current Status: ${
+                  lead?.last_updated_status || "Not Updated"
+                }\nActivity Status: ${
+                  lead?.Activities[0]?.activity_status || "No Activity"
+                }`}
+              >
                 {/* Dot */}
                 <div className="flex-shrink-0 mr-2">
                   <svg width="6" height="6" viewBox="0 0 8 8" fill="none">
@@ -314,7 +344,7 @@ function VerificationTable({ leads, filters }) {
                   </svg>
                 </div>
 
-                {/* Select Dropdown */}
+                {/* Dropdown */}
                 <select
                   className="w-full px-1 py-1 pl-0 text-xs font-normal inter-inter leading-tight bg-transparent border border-none outline-none appearance-none cursor-pointer focus:outline-none focus:ring-0 focus:border-transparent pr-6 truncate"
                   value={
@@ -323,31 +353,12 @@ function VerificationTable({ leads, filters }) {
                       : lead?.Activities[0]?.activity_status || ""
                   }
                   style={{
-                    // color:
-                    //   optionColors.find(
-                    //     (option) =>
-                    //       option.optionName ===
-                    //       (lead?.last_updated_status === "Others"
-                    //         ? lead.last_updated_status
-                    //         : lead?.Activities[0]?.activity_status || "")
-                    //   )?.optionColor || "#32086d",
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23${
-                      // optionColors
-                      //   .find(
-                      //     (option) =>
-                      //       option.optionName ===
-                      //       (lead?.last_updated_status === "Others"
-                      //         ? lead.last_updated_status
-                      //         : lead?.Activities[0]?.activity_status || "")
-                      //   )
-                      //   ?.optionColor?.replace("#", "") || "32086d"
-                      "464646"
-                    }'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E")`,
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23464646'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E")`,
                     backgroundPosition: "right 8px center",
                     backgroundRepeat: "no-repeat",
                     backgroundSize: "14px",
                     zIndex: isConfirmationDialogueOpened && -1,
-                    paddingLeft:'5px'
+                    paddingLeft: "5px",
                   }}
                   onChange={(e) => handleLeadStatusChange(e, lead)}
                   disabled={lead?.verification_status === REJECTED}
@@ -369,8 +380,14 @@ function VerificationTable({ leads, filters }) {
               </div>
 
               {/* Verification Status */}
-              <div className="w-[18%] flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden">
-                {/* Colored dot */}
+              <div
+                className="w-[18%] flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
+                title={`Verification Status: ${
+                  lead?.verification_status || "Not Verified"
+                }\nVerified By: ${
+                  lead?.verified_by || "N/A"
+                }\nVerification Date: ${lead?.verification_date || "N/A"}`}
+              >
                 <div className="flex-shrink-0 mr-2">
                   <svg width="6" height="6" viewBox="0 0 8 8" fill="none">
                     <path
@@ -386,33 +403,17 @@ function VerificationTable({ leads, filters }) {
                   </svg>
                 </div>
 
-                {/* Select or Static Text */}
                 {user.user.role !== ROLE_EMPLOYEE ? (
                   <select
                     className="w-full px-1 pl-0 py-1 text-xs font-normal inter-inter leading-tight bg-transparent border-none outline-none appearance-none cursor-pointer focus:outline-none focus:ring-0 focus:border-transparent pr-6 truncate"
                     value={lead?.verification_status || ""}
                     style={{
-                      // color:
-                      //   optionColors.find(
-                      //     (option) =>
-                      //       option.optionName ===
-                      //       (lead?.verification_status || "")
-                      //   )?.optionColor || "#32086d",
-                      backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23${
-                        // optionColors
-                        //   .find(
-                        //     (option) =>
-                        //       option.optionName ===
-                        //       (lead?.verification_status || "")
-                        //   )
-                        //   ?.optionColor?.replace("#", "") || "32086d"
-                        "464646"
-                      }'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E")`,
+                      backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23464646'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E")`,
                       backgroundPosition: "right 8px center",
                       backgroundRepeat: "no-repeat",
                       backgroundSize: "14px",
                       zIndex: isConfirmationDialogueOpened && -1,
-                      paddingLeft:'5px'
+                      paddingLeft: "5px",
                     }}
                     onChange={(e) => handleVerificationStatusChange(e, lead)}
                     disabled={user.user.role === ROLE_EMPLOYEE}
@@ -432,27 +433,10 @@ function VerificationTable({ leads, filters }) {
                     )}
                   </select>
                 ) : (
-                  <span
-                    className="truncate w-full text-left"
-                    style={{
-                      color:
-                        // optionColors.find(
-                        //   (item) =>
-                        //     item.optionName === lead?.verification_status
-                        // )?.optionColor || "#000",
-                        "#2B323B"
-                    }}
-                  >
-                    {terminologiesMap.get(lead?.verification_status) ||
-                      lead?.verification_status ||
-                      ""}
+                  <span className="truncate w-full text-center flex justify-left">
+                    {lead?.verification_status}
                   </span>
                 )}
-              </div>
-
-              {/* Actions */}
-              <div className="w-[6%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight rounded-br-[10px] rounded-tr-[10px] overflow-hidden pl-8">
-                <ViewIcon onClick={() => handleClickOnView(lead.id)} />
               </div>
             </div>
           ))}

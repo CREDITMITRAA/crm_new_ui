@@ -86,8 +86,8 @@ function WalkInsTable({ leads }) {
   const [isCall, setIsCall] = useState(false);
   const [selectedLeadStatus, setSelectedLeadStatus] = useState(null);
   const [selectedLead, setSelectedLead] = useState(false);
-  const [isReschedule, setIsReschedule] = useState(false)
-  const [selectedWalkIn, setSelectedWalkIn] = useState(null)
+  const [isReschedule, setIsReschedule] = useState(false);
+  const [selectedWalkIn, setSelectedWalkIn] = useState(null);
 
   useEffect(() => {
     if (loading) {
@@ -146,15 +146,15 @@ function WalkInsTable({ leads }) {
         showErrorToast(message);
         return;
       }
-      console.log('walk in  = ', walk_in);
-      
+      console.log("walk in  = ", walk_in);
+
       // Proceed with rescheduling
       setIsCall(newStatus === RESCHEDULE_CALL_WITH_MANAGER);
-      setIsReschedule(true)
+      setIsReschedule(true);
       setSelectedLead(lead);
       setSelectedLeadStatus(newStatus);
       setShowScheduleWalkInOrCallDialogue(true);
-      setSelectedWalkIn({...walk_in, walk_in_id: walk_in.id})
+      setSelectedWalkIn({ ...walk_in, walk_in_id: walk_in.id });
       return;
     }
 
@@ -314,10 +314,10 @@ function WalkInsTable({ leads }) {
               key={index}
               style={{
                 boxShadow: `7px 2px 16px 0px rgba(0, 0, 0, 0.05) inset, 
-        27px 7px 28px 0px rgba(0, 0, 0, 0.05) inset, 
-        62px 16px 38px 0px rgba(0, 0, 0, 0.03) inset, 
-        110px 29px 45px 0px rgba(0, 0, 0, 0.04) inset, 
-        172px 46px 50px 0px rgba(0, 0, 0, 0.05) inset`,
+                  27px 7px 28px 0px rgba(0, 0, 0, 0.05) inset, 
+                  62px 16px 38px 0px rgba(0, 0, 0, 0.03) inset, 
+                  110px 29px 45px 0px rgba(0, 0, 0, 0.04) inset, 
+                  172px 46px 50px 0px rgba(0, 0, 0, 0.05) inset`,
                 backgroundColor: "rgba(216, 232, 255, 1)",
               }}
             >
@@ -325,6 +325,7 @@ function WalkInsTable({ leads }) {
               <div
                 className="w-[8%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight rounded-tl-[10px] rounded-bl-[10px] overflow-hidden"
                 onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
+                title={`${lead.id}`} // Tooltip added here
               >
                 <span className="truncate w-full text-center flex justify-left">
                   {truncateWithEllipsis(lead?.id, 8)}
@@ -335,6 +336,7 @@ function WalkInsTable({ leads }) {
               <div
                 className="w-[11%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
                 onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
+                title={`${formatName(lead.name)}`} // Tooltip added here
               >
                 <span className="truncate w-full text-center flex justify-left">
                   {truncateWithEllipsis(formatName(lead.name), 15)}
@@ -345,6 +347,7 @@ function WalkInsTable({ leads }) {
               <div
                 className="w-[9%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
                 onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
+                title={`${lead?.phone}`} // Tooltip added here
               >
                 <span className="truncate w-full text-center flex justify-left">
                   {getLast10Digits(lead?.phone)}
@@ -355,6 +358,7 @@ function WalkInsTable({ leads }) {
               <div
                 className="w-[12%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
                 onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
+                title={`${lead?.LeadAssignments?.[0]?.AssignedTo?.name}`} // Tooltip added here
               >
                 <span className="truncate w-full text-center flex justify-left">
                   {(lead?.LeadAssignments || []).length > 0
@@ -372,6 +376,7 @@ function WalkInsTable({ leads }) {
               <div
                 className="w-[10%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
                 onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
+                title={`${lead?.lead_source || "Not Available"}`} // Tooltip added here
               >
                 <span className="truncate w-full text-center flex justify-left">
                   {truncateWithEllipsis(formatName(lead.lead_source), 10) ||
@@ -383,6 +388,13 @@ function WalkInsTable({ leads }) {
               <div
                 className="w-[16%] flex justify-left items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
                 onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
+                title={`${lead.walkIns[0].is_rescheduled
+                  ? moment(lead.walkIns[0].rescheduled_date_time)
+                      .utcOffset(330)
+                      .format("DD MMM YY hh:mm a")
+                  : moment(lead.walkIns[0].walk_in_date_time)
+                      .utcOffset(330)
+                      .format("DD MMM YY hh:mm a")}`} // Tooltip added here
               >
                 {lead?.walkIns?.length > 0 && (
                   <div className="flex items-center w-full truncate flex justify-left">
@@ -405,7 +417,10 @@ function WalkInsTable({ leads }) {
               </div>
 
               {/* Status */}
-              <div className="w-[16%] flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden pr-4">
+              <div
+                className="w-[16%] flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden pr-4"
+                title={`Status: ${lead?.lead_status || "Not Available"}`} // Tooltip added here
+              >
                 {/* Dot */}
                 <div className="flex-shrink-0 mr-2">
                   <svg width="6" height="6" viewBox="0 0 8 8" fill="none">
@@ -438,26 +453,7 @@ function WalkInsTable({ leads }) {
                   onChange={(e) => handleLeadStatusChange(e, lead)}
                   disabled={lead?.application_status === REJECTED}
                   style={{
-                    // color:
-                    //   optionColors.find(
-                    //     (option) =>
-                    //       option.optionName ===
-                    //       (lead?.lead_status ||
-                    //         (lead?.last_updated_status === "Others"
-                    //           ? lead.last_updated_status
-                    //           : (lead?.Activities || [])[0]?.activity_status ||
-                    //             ""))
-                    //   )?.optionColor || "#32086d",
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23${// optionColors.find(
-                    //   (option) =>
-                    //     option.optionName ===
-                    //     (lead?.lead_status ||
-                    //       (lead?.last_updated_status === "Others"
-                    //         ? lead.last_updated_status
-                    //         : (lead?.Activities || [])[0]?.activity_status ||
-                    //           ""))
-                    // )?.optionColor || "#32086d"
-                    "464646".replace(
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23${"464646".replace(
                       "#",
                       ""
                     )}'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E")`,
@@ -465,7 +461,7 @@ function WalkInsTable({ leads }) {
                     backgroundRepeat: "no-repeat",
                     backgroundSize: "14px",
                     zIndex: isConfirmationDialogueOpened && -1,
-                    paddingLeft:'5px'
+                    paddingLeft: "5px",
                   }}
                 >
                   {leadStatusOptionsForWalkInsPageTable.map((option, index) => (
@@ -502,85 +498,15 @@ function WalkInsTable({ leads }) {
               </div>
 
               {/* Application Status */}
-              <div className="w-[13%] flex justify-left items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden">
-                {/* Colored Dot */}
-                <div
-                  className="w-[6px] h-[6px] rounded-full mr-1.5"
-                  style={{
-                    backgroundColor:
-                      optionColors.find(
-                        (option) =>
-                          option.optionName === (lead?.application_status || "")
-                      )?.optionColor || "#32086d",
-                  }}
-                ></div>
-
-                {user.user.role !== ROLE_EMPLOYEE ? (
-                  <select
-                    className="w-full px-1 pl-0 py-1 text-xs font-normal inter-inter leading-tight bg-transparent border border-none outline-none appearance-none cursor-pointer focus:outline-none focus:ring-0 focus:border-transparent pr-6 truncate"
-                    value={lead?.application_status}
-                    style={{
-                      // color:
-                      //   optionColors.find(
-                      //     (option) =>
-                      //       option.optionName ===
-                      //       (lead?.application_status || "")
-                      //   )?.optionColor || "#32086d",
-                      backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23${
-                        // optionColors
-                        //   .find(
-                        //     (option) =>
-                        //       option.optionName ===
-                        //       (lead?.application_status || "")
-                        //   )
-                        //   ?.optionColor?.replace("#", "") || "32086d"
-                        "464646"
-                      }'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E")`,
-                      backgroundPosition: "right 8px center",
-                      backgroundRepeat: "no-repeat",
-                      backgroundSize: "14px",
-                      zIndex: isConfirmationDialogueOpened && -1,
-                      paddingLeft:'5px'
-                    }}
-                    onChange={(e) => handleApplicationStatusChange(e, lead)}
-                    disabled={
-                      user.user.role === ROLE_EMPLOYEE ||
-                      lead?.lead_status !== TWELVE_DOCUMENTS_COLLECTED
-                    }
-                  >
-                    {applicationStatusOptionsForWalkInsPageTable.map(
-                      (option, index) => (
-                        <option
-                          key={index}
-                          value={option.value}
-                          className="text-xs p-2 truncate"
-                          style={{ ...option.style }}
-                        >
-                          {terminologiesMap.get(option.value) || option.label}
-                        </option>
-                      )
-                    )}
-                  </select>
-                ) : (
-                  <span
-                    className="truncate w-full text-left px-1"
-                    style={{
-                      color:
-                        optionColors.find(
-                          (item) => item.optionName === lead?.application_status
-                        )?.optionColor || "#000",
-                    }}
-                  >
-                    {terminologiesMap.get(lead?.application_status) ||
-                      lead?.application_status ||
-                      "Select Application Status"}
-                  </span>
-                )}
-              </div>
-
-              {/* View Icon */}
-              <div className="w-[5%] flex justify-center items-center text-[#32086d] text-xs font-normal inter-inter leading-tight rounded-br-[10px] rounded-tr-[10px] overflow-hidden pl-8">
-                <ViewIcon onClick={() => handleClickOnView(lead.id)} />
+              <div
+                className="w-[13%] flex justify-left items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
+                title={`Application Status: ${
+                  lead?.application_status || "Not Available"
+                }`} // Tooltip added here
+              >
+                <span className="truncate">
+                  {lead?.application_status || "Not Available"}
+                </span>
               </div>
             </div>
           ))}

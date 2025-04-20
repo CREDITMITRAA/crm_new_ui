@@ -33,7 +33,7 @@ function RecentTasksTable() {
   const dispatch = useDispatch();
   const { tasks, pagination, statusUpdateLoading, statusUpdateError, loading } =
     useSelector((state) => state.tasks);
-    const {isConfirmationDialogueOpened} = useSelector((state)=>state.ui)
+  const { isConfirmationDialogueOpened } = useSelector((state) => state.ui);
   const { user, role } = useSelector((state) => state.auth);
   const [filters, setFilters] = useState({
     pageSize: 10,
@@ -410,14 +410,20 @@ function RecentTasksTable() {
                     }}
                   >
                     {/* Lead ID */}
-                    <div className="w-[8%] h-full flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight">
+                    <div
+                      className="w-[8%] h-full flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight"
+                      title={`${task.lead_id}`}
+                    >
                       <span className="truncate w-full px-1 py-0.5">
                         {truncateWithEllipsis(task.lead_id, 8)}
                       </span>
                     </div>
 
                     {/* Name */}
-                    <div className="w-[10.5%] h-full flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight">
+                    <div
+                      className="w-[10.5%] h-full flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight"
+                      title={`${formatName(task.Lead?.name)}`}
+                    >
                       <span className="truncate w-full px-1 py-0.5">
                         {truncateWithEllipsis(
                           formatName(task.Lead?.name),
@@ -427,14 +433,20 @@ function RecentTasksTable() {
                     </div>
 
                     {/* Phone */}
-                    <div className="w-[10%] h-full flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight">
+                    <div
+                      className="w-[10%] h-full flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight"
+                      title={`${task.Lead?.phone}`}
+                    >
                       <span className="truncate w-full px-1 py-0.5">
                         {getLast10Digits(task.Lead?.phone) || ""}
                       </span>
                     </div>
 
                     {/* Assigned To */}
-                    <div className="w-[12.5%] h-full flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight">
+                    <div
+                      className="w-[12.5%] h-full flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight"
+                      title={`${task.Lead?.LeadAssignments?.[0]?.AssignedTo?.name}`}
+                    >
                       <span className="truncate w-full px-1 py-0.5">
                         {truncateWithEllipsis(
                           formatName(
@@ -447,7 +459,12 @@ function RecentTasksTable() {
                     </div>
 
                     {/* Task Type */}
-                    <div className="w-[17%] h-full flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight">
+                    <div
+                      className="w-[17%] h-full flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight"
+                      title={`${terminologiesMap.get(
+                        task.activity_status
+                      )}`}
+                    >
                       <span className="truncate w-full px-1 py-0.5">
                         {truncateWithEllipsis(
                           terminologiesMap.get(task.activity_status),
@@ -457,7 +474,10 @@ function RecentTasksTable() {
                     </div>
 
                     {/* Note */}
-                    <div className="w-[19%] h-full flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight">
+                    <div
+                      className="w-[19%] h-full flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight"
+                      title={`${task.description}`}
+                    >
                       <span className="truncate w-full px-1 py-0.5">
                         {truncateWithEllipsis(
                           formatSentence(task.description),
@@ -467,7 +487,16 @@ function RecentTasksTable() {
                     </div>
 
                     {/* Task Date */}
-                    <div className="w-[15%] h-full flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight">
+                    <div
+                      className="w-[15%] h-full flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight"
+                      title={`${
+                        task.follow_up
+                          ? moment(task.follow_up)
+                              .utcOffset(330)
+                              .format("DD MMM, YYYY hh:mm A")
+                          : "-"
+                      }`}
+                    >
                       <span className="truncate w-full px-1 py-0.5">
                         {task.follow_up
                           ? moment(task.follow_up)
@@ -478,25 +507,21 @@ function RecentTasksTable() {
                     </div>
 
                     {/* Task Status */}
-                    <div className="w-[8%] h-full flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight">
+                    <div
+                      className="w-[8%] h-full flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight"
+                      title={`${task.task_status}`}
+                    >
                       {user.user.role === ROLE_EMPLOYEE ? (
-                        <div className={`${!isConfirmationDialogueOpened && 'relative'} w-full`}>
-                          {/* Blinking text overlay only for Pending status */}
-                          {task.task_status === "Pending" && (
-                            <span
-                              className={`${!isConfirmationDialogueOpened && 'absolute left-1 top-0.5'} truncate pointer-events-none`}
-                              style={{
-                                color: "#D18C31",
-                                animation: "blink 1.5s ease-in-out infinite",
-                                display: isConfirmationDialogueOpened && 'none'
-                              }}
-                            >
-                              Pending
-                            </span>
-                          )}
-                          {/* Always visible select dropdown */}
+                        <div className="relative w-full">
+                          {/* Blinking text overlay for Pending */}
+                          {task.task_status === "Pending" &&
+                            !isConfirmationDialogueOpened && (
+                              <span className="absolute left-1 top-1 truncate text-[#D18C31] pointer-events-none animate-blink z-10">
+                                Pending
+                              </span>
+                            )}
                           <select
-                            className="w-full px-1 py-0.5 text-xs font-normal inter-inter leading-tight bg-transparent border-none outline-none appearance-none cursor-pointer truncate"
+                            className="w-full px-1 py-0.5 text-xs font-normal inter-inter leading-tight bg-transparent border-none outline-none appearance-none cursor-pointer truncate relative z-0"
                             value={task.task_status}
                             onChange={(e) =>
                               handleStatusChange(
@@ -509,77 +534,45 @@ function RecentTasksTable() {
                             }
                             style={{
                               color:
-                                task.task_status === "Pending"
+                                task.task_status === "Pending" &&
+                                !isConfirmationDialogueOpened
                                   ? "transparent"
                                   : "inherit",
-                              border: "none",
-                              backgroundColor: "transparent",
-                              outline: "none",
-                              fontSize: "inherit",
-                              cursor: "pointer",
                             }}
                           >
-                            <option
-                              value="Upcoming"
-                              style={{
-                                color: "#46464680",
-                                cursor: "pointer",
-                                backgroundColor: "#F2F7FE",
-                              }}
-                              disabled
-                              className="truncate"
-                            >
+                            <option value="Upcoming" disabled>
                               Upcoming
                             </option>
-                            <option
-                              value="Pending"
-                              style={{
-                                color: "#46464680",
-                                cursor: "pointer",
-                                backgroundColor: "#F2F7FE",
-                              }}
-                              disabled
-                              className="truncate"
-                            >
+                            <option value="Pending" disabled>
                               Pending
                             </option>
-                            <option
-                              value="Completed"
-                              style={{
-                                color: "#464646",
-                                cursor: "pointer",
-                                backgroundColor: "#F2F7FE",
-                              }}
-                              className="truncate"
-                            >
-                              Completed
-                            </option>
+                            <option value="Completed">Completed</option>
                           </select>
                         </div>
                       ) : (
-                        <>
-                          <span
-                            className="truncate w-full px-1 py-0.5"
-                            style={{
-                              color:
-                                status === "Pending" ? "#D18C31" : "inherit",
-                              animation:
-                                status === "Pending"
-                                  ? "blink 1.5s ease-in-out infinite"
-                                  : "none",
-                            }}
-                          >
-                            {status}
-                          </span>
-                        </>
+                        <span
+                          className="truncate w-full px-1 py-0.5"
+                          style={{
+                            color: status === "Pending" ? "#D18C31" : "inherit",
+                            animation:
+                              status === "Pending"
+                                ? "blink 1.5s ease-in-out infinite"
+                                : "none",
+                          }}
+                        >
+                          {status}
+                        </span>
                       )}
-
-                      {/* Blink animation style */}
+                      {/* Blink keyframes */}
                       <style jsx>{`
                         @keyframes blink {
                           50% {
                             opacity: 0;
                           }
+                        }
+
+                        .animate-blink {
+                          animation: blink 1.5s ease-in-out infinite;
                         }
                       `}</style>
                     </div>

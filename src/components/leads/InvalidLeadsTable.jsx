@@ -114,7 +114,10 @@ function InvalidLeadsTable({
               className="w-[10%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
               onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
             >
-              <span className="truncate px-1 w-full text-center flex justify-left">
+              <span
+                className="truncate px-1 w-full text-center flex justify-left"
+                title={lead.id}
+              >
                 {lead.id}
               </span>
             </div>
@@ -124,7 +127,10 @@ function InvalidLeadsTable({
               className="w-[16%] flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
               onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
             >
-              <span className="truncate w-full flex justify-left">
+              <span
+                className="truncate w-full flex justify-left"
+                title={formatName(lead.name)}
+              >
                 {truncateWithEllipsis(formatName(lead.name), 15)}
               </span>
             </div>
@@ -134,7 +140,10 @@ function InvalidLeadsTable({
               className="w-[16%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
               onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
             >
-              <span className="truncate w-full text-center flex justify-left">
+              <span
+                className="truncate w-full text-center flex justify-left"
+                title={lead.phone}
+              >
                 {lead.phone}
               </span>
             </div>
@@ -144,7 +153,10 @@ function InvalidLeadsTable({
               className="w-[28%] flex justify-center items-center text-[#2B323B] text-xs font-semibold inter-inter leading-tight overflow-hidden"
               onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
             >
-              <span className="truncate w-full text-center flex justify-left">
+              <span
+                className="truncate w-full text-center flex justify-left"
+                title={lead.reason}
+              >
                 {lead.reason}
               </span>
             </div>
@@ -154,7 +166,10 @@ function InvalidLeadsTable({
               className="w-[13%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
               onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
             >
-              <span className="truncate w-full text-center flex justify-left">
+              <span
+                className="truncate w-full text-center flex justify-left"
+                title={formatName(lead.lead_source) || "Not Available"}
+              >
                 {formatName(lead.lead_source)
                   ? truncateWithEllipsis(formatName(lead.lead_source), 10)
                   : truncateWithEllipsis("Not Available", 10)}
@@ -166,14 +181,16 @@ function InvalidLeadsTable({
               className="w-[13%] flex flex-col justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight rounded-br-lg rounded-tr-lg overflow-hidden"
               onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
             >
-              <span className="truncate w-full text-center flex justify-left">
+              <span
+                className="truncate w-full text-center flex justify-left"
+                title={moment(lead.createdAt)
+                  .utcOffset(330)
+                  .format("DD MMM, YY hh:mm a")}
+              >
                 {moment(lead.createdAt)
                   .utcOffset(330)
                   .format("DD MMM, YY hh:mm a")}
               </span>
-              {/* <span className="truncate w-full text-center flex justify-left">
-                {moment(lead.createdAt).utcOffset(330).format("hh:mm:ss A")}
-              </span> */}
             </div>
           </div>
         ))}
