@@ -38,7 +38,7 @@ function EmployeeCard({ employee, onClick, selectedEmployee }) {
           <div className="w-12 h-12 rounded-[100px] border-2 border-[#464646] flex justify-center items-center overflow-hidden">
             <img
               className="w-full h-full rounded-full object-cover"
-              src={ProfileImage}
+              src={employee.profile_image_url || ProfileImage}
               alt="Profile"
             />
           </div>

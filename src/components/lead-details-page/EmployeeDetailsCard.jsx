@@ -149,7 +149,7 @@ function EmployeeDetailsCard() {
       <div className="w-full bg-[#E9F3FF] h-full rounded-2xl shadow-lg flex flex-col justify-center items-center px-[0.625rem] pb-[0.938rem]">
         {/* profile avatar */}
         <div className="pt-[0.938rem] mx-auto">
-          <div className="w-[6.25rem] h-[6.25rem] bg-[#ba8bfc] rounded-full border-4 border-[#229d00] flex justify-center items-center">
+          <div className={`w-[6.25rem] h-[6.25rem] bg-[#ba8bfc] rounded-full border-4 ${lead.is_rejected ? 'border-[#CF2525BA]' : 'border-[#229d00]'} flex justify-center items-center`}>
             <img
               className="w-[5rem] h-[5.625rem]"
               src={

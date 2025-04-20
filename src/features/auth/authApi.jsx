@@ -18,3 +18,12 @@ export async function updatedPasswordApi(payload){
   const response = await PrivateAxios.post("/api/auth/update-password", payload)
   return response
 }
+
+export async function updateProfileImageUrlApi(userId, payload){
+  console.log('user id = ', userId);
+  
+  const response = await PrivateAxios.put(`/api/users/update-profile-image-url/${userId}`, {...payload})
+  return response
+}
+
+

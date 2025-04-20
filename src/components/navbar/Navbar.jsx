@@ -87,6 +87,7 @@ function Navbar() {
       setShouldSnackbarCloseOnClickOfOutside(true);
     }
   }
+  console.log("online users with details = ", onlineUsersWithDetails);
 
   return (
     <>
@@ -98,48 +99,42 @@ function Navbar() {
               <>
                 {onlineUsersWithDetails.map((user, index) => (
                   <div
-                  key={user.id}
-                  className="relative"
-                  style={{
-                    position: "absolute",
-                    right: `${index * 20}px`,
-                    zIndex: onlineUsersWithDetails.length - index,
-                  }}
-                >
-                  {/* Avatar circle with hover group */}
-                  <div className="relative inline-block group">
-                    <div className="relative">
-                      <div
-                        className={`w-[30px] h-[30px] rounded-full flex items-center justify-center text-white font-medium ${getUserColor(
-                          user.id
-                        )}`}
-                      >
-                        {getInitials(user.name)}
+                    key={user.id}
+                    className="absolute top-[60%] -translate-y-1/2"
+                    style={{
+                      right: `${index * 20}px`,
+                      zIndex: onlineUsersWithDetails.length - index,
+                    }}
+                  >
+                    {/* Avatar circle with hover group */}
+                    <div className="relative inline-block group">
+                      <div className="relative">
+                        {user.profile_image_url ? (
+                          <img
+                            src={user.profile_image_url}
+                            alt={user.name}
+                            className="w-[30px] h-[30px] rounded-full object-cover"
+                          />
+                        ) : (
+                          <div
+                            className={`w-[30px] h-[30px] rounded-full flex items-center justify-center text-white font-medium ${getUserColor(
+                              user.id
+                            )}`}
+                          >
+                            {getInitials(user.name)}
+                          </div>
+                        )}
+                        <div className="w-2.5 h-2.5 absolute bottom-0 left-0 bg-[#7BB7A6] rounded-full border border-white" />
                       </div>
-                      <div className="w-2.5 h-2.5 absolute bottom-0 left-0 bg-[#7BB7A6] rounded-full border border-white" />
-                    </div>
-                
-                    {/* Tooltip that only shows when hovering the circle */}
-                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-10 pointer-events-none">
-                      {user.name}
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-0 border-b-4 border-solid border-l-transparent border-r-transparent border-b-gray-800" />
+
+                      {/* Tooltip */}
+                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-10 pointer-events-none">
+                        {user.name}
+                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-0 border-b-4 border-solid border-l-transparent border-r-transparent border-b-gray-800" />
+                      </div>
                     </div>
                   </div>
-                </div>
                 ))}
-                {/* If you want to keep the "+X more" indicator, uncomment this and adjust positioning */}
-                {/* {remainingCount > 0 && (
-          <div
-            className="absolute right-[140px] bg-purple-100 text-[#4300A0] text-xs font-semibold rounded-full w-6 h-6 flex items-center justify-center group"
-            style={{ zIndex: onlineUsersWithDetails.length + 1 }}
-          >
-            +{remainingCount}
-            <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-              {remainingCount} more online
-              <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-0 border-b-4 border-solid border-l-transparent border-r-transparent border-b-gray-800" />
-            </div>
-          </div>
-        )} */}
               </>
             ) : (
               <div className="text-sm text-gray-500">
@@ -150,7 +145,6 @@ function Navbar() {
             )}
           </div>
         )}
-
         {/* Current User */}
         {/* {currentUser?.user && (
           <div className="relative mr-2 group">
@@ -170,9 +164,9 @@ function Navbar() {
 
         {/* Notification Button */}
         {role === ROLE_EMPLOYEE && (
-          <button 
-          className="button-hover-shadow rounded-full flex items-center justify-center w-[2.25rem] h-[2.25rem] mr-[1.25rem] button-hover-shadow cursor-pointer"
-          style={{backgroundColor:'unset', borderRadius: '50%'}}
+          <button
+            className="button-hover-shadow rounded-full flex items-center justify-center w-[2.25rem] h-[2.25rem] mr-[1.25rem] button-hover-shadow cursor-pointer"
+            style={{ backgroundColor: "unset", borderRadius: "50%" }}
           >
             <NotificationIcon className="text-[#464646]" />
           </button>
@@ -181,9 +175,12 @@ function Navbar() {
         {/* Profile Button */}
         <button
           className="button-hover-shadow rounded-full flex items-center justify-center w-[2.25rem] h-[2.25rem] cursor-pointer mx-2 "
-          style={{backgroundColor:'unset', borderRadius: '50%'}}
+          style={{ backgroundColor: "unset", borderRadius: "50%" }}
         >
-          <ProfileIcon className="text-[#4300A0]" onClick={() => setShowProfile(!showProfile)}/>
+          <ProfileIcon
+            className="text-[#4300A0]"
+            onClick={() => setShowProfile(!showProfile)}
+          />
         </button>
 
         {/* Profile Component */}
@@ -194,8 +191,9 @@ function Navbar() {
         )}
 
         {currentUser?.user.role === ROLE_ADMIN && (
-          <button className="w-[2.25rem] h-[2.25rem] rounded-full flex justify-center items-center button-hover-shadow"
-          style={{backgroundColor:'unset', borderRadius: '50%'}}
+          <button
+            className="w-[2.25rem] h-[2.25rem] rounded-full flex justify-center items-center button-hover-shadow"
+            style={{ backgroundColor: "unset", borderRadius: "50%" }}
           >
             {/* <CreateBackupButton onClick={() => handleClickOnCreateBackup()} /> */}
             <CreateBackupIcon onClick={() => handleClickOnCreateBackup()} />

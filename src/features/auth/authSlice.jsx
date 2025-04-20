@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { jwtDecode } from "jwt-decode";
 import { loginUser, logoutUser } from "./authApi";
-import { updatePassword } from "./authThunks";
+import { updatePassword, updateProfileImageUrl } from "./authThunks";
 import { showInteractiveNotification } from "../interactive-notifications/interactiveNotificationsSlice";
 import last_login_ago_video from '../../assets/videos/interactive-notification-videos/last_login_ago.mp4'
 
@@ -15,6 +15,7 @@ const authSlice = createSlice({
     loading: false,
     error: null,
     role: initialUser?.user.role || null,
+    profile_image_url: initialUser?.user.profile_image_url || null
   },
   reducers: {
     resetError:(state,action)=>{
@@ -31,6 +32,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.user = action.payload;
         state.role = action.payload.user.role;
+        state.profile_image_url = action.payload.user.profile_image_url
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
@@ -51,6 +53,19 @@ const authSlice = createSlice({
       .addCase(updatePassword.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(updateProfileImageUrl.pending, (state,action)=>{
+        state.loading=true
+      })
+      .addCase(updateProfileImageUrl.fulfilled, (state, action) => {
+        console.log('response from thunk = ', action.payload.data);
+      
+        state.loading = false;
+        state.profile_image_url = action.payload.data
+      })               
+      .addCase(updateProfileImageUrl.rejected, (state, action)=>{
+        state.loading=false
+        state.error=action.payload
       })
   },
 });

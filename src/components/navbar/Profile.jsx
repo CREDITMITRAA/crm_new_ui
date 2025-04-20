@@ -4,13 +4,19 @@ import DesignationIcon from "../icons/DesignationIcon";
 import ProfileImage from "../../assets/images/profile_image.png";
 import UpdatePasswordButton from "../common/UpdatePasswordButton";
 import SubmitButton from "../common/SubmitButton";
-import { updatePassword } from "../../features/auth/authThunks";
+import {
+  updatePassword,
+  updateProfileImageUrl,
+} from "../../features/auth/authThunks";
 import Snackbar from "../common/snackbars/Snackbar";
 import { setIsProfileDialogueOpened } from "../../features/ui/uiSlice";
+import { fetchUserProfileImages } from "../../features/users/usersApi";
 
 export default function Profile({ onClose }) {
   const dispatch = useDispatch();
-  const { user, loading, error } = useSelector((state) => state.auth);
+  const { user, loading, error, profile_image_url } = useSelector(
+    (state) => state.auth
+  );
   const popoverRef = useRef(null);
   const [showUpdatePasswordSection, setShowUpdatePasswordSection] =
     useState(false);
@@ -23,9 +29,14 @@ export default function Profile({ onClose }) {
     shouldSnackbarCloseOnClickOfOutside,
     setShouldSnackbarCloseOnClickOfOutside,
   ] = useState(true);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [profileImageUrls, setProfileImageUrls] = useState([]);
+  const [profileImageUrl, setProfileImageUrl] = useState([]);
 
   useEffect(() => {
+    setProfileImageUrl(profile_image_url);
     dispatch(setIsProfileDialogueOpened(true));
+    getProfileImageUrls();
     return () => {
       dispatch(setIsProfileDialogueOpened(false));
     };
@@ -54,7 +65,7 @@ export default function Profile({ onClose }) {
     } else {
       setShouldSnackbarCloseOnClickOfOutside(true);
       setToastStatusType("SUCCESS");
-      setToastMessage("Password Updated");
+      setToastMessage("Profile Updated");
       setToastStatusMessage("Success...");
       setApiPayload({}); // Reset the form
       setShowUpdatePasswordSection(false); // Hide the update password section
@@ -70,8 +81,22 @@ export default function Profile({ onClose }) {
     }
   }, [error]);
 
+  useEffect(() => {
+    setProfileImageUrl(profile_image_url);
+  }, [profile_image_url]);
+
   function handleSubmit() {
     dispatch(updatePassword({ ...apiPayload, userId: user.user.id }));
+  }
+
+  async function getProfileImageUrls() {
+    try {
+      const response = await fetchUserProfileImages();
+      console.log(response);
+      setProfileImageUrls(response);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   return (
@@ -80,7 +105,11 @@ export default function Profile({ onClose }) {
       className="w-[28rem] h-max shadow-2xl shadow-[0_35px_60px_-15px_rgba(0,0,0,0.5)] rounded-2xl bg-white pb-1 absolute top-full right-0 z-50"
     >
       {/* Top Section with Gradient */}
-      <div className="w-full h-[5.625rem] rounded-t-2xl bg-gradient-to-r from-white to-[#214768] relative z-[1000]">
+      <div
+        className={`w-full h-[5.625rem] rounded-t-2xl bg-gradient-to-r from-white to-[#214768] ${
+          !showEditDialog && "relative z-[1000]"
+        }`}
+      >
         <div className="text-white text-xl font-semibold absolute right-5 top-8">
           {user.user.name}
         </div>
@@ -91,12 +120,32 @@ export default function Profile({ onClose }) {
           </div>
         </div>
         {/* Profile Picture */}
-        <div className="absolute left-10 top-8 w-20 h-20">
+        <div className="absolute left-10 top-8 w-20 h-20 relative">
           <img
-            src={ProfileImage}
+            src={profileImageUrl || ProfileImage}
             alt="Profile"
             className="w-full h-full rounded-full"
           />
+          <div
+            className="absolute h-5 w-5 right-0 bottom-2 cursor-pointer"
+            onClick={() => setShowEditDialog(true)}
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle cx="10" cy="10" r="10" fill="#214768" />
+              <path
+                d="M11.6658 6.66737L13.3325 8.33403M10.5547 14.4451H14.9991M6.11024 12.2229L5.55469 14.4451L7.77691 13.8896L14.2136 7.45292C14.4219 7.24456 14.5389 6.96199 14.5389 6.66737C14.5389 6.37274 14.4219 6.09018 14.2136 5.88181L14.118 5.78626C13.9097 5.57795 13.6271 5.46094 13.3325 5.46094C13.0378 5.46094 12.7553 5.57795 12.5469 5.78626L6.11024 12.2229Z"
+                stroke="white"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </div>
         </div>
       </div>
 
@@ -168,12 +217,63 @@ export default function Profile({ onClose }) {
       {/* Snackbar */}
       <Snackbar
         isOpen={openToast}
-        onClose={() => setOpenToast(false)}
+        onClose={() => {
+          if (showEditDialog) {
+            setShowEditDialog(false);
+          }
+          setOpenToast(false);
+        }}
         status={toastStatusMessage}
         message={toastMessage}
         statusType={toastStatusType}
         shouldCloseOnClickOfOutside={shouldSnackbarCloseOnClickOfOutside}
       />
+      {showEditDialog && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          onClick={() => setShowEditDialog(false)} // CLOSE on backdrop click
+        >
+          <div
+            className="bg-[#E6F4FF] pl-5 p-2 pt-3 rounded-lg shadow-xl w-80 h-max min-h-60"
+            onClick={(e) => e.stopPropagation()} // PREVENT closing when clicking inside the modal
+          >
+            <div className="flex flex-wrap">
+              {profileImageUrls.length > 0 ? (
+                <>
+                  {profileImageUrls.map((url, index) => (
+                    <div
+                      key={index}
+                      className={`w-[18%] aspect-square rounded-full mb-1 cursor-pointer hover:border border-black ${
+                        index === 0 || index % 4 || 5 !== 0 ? "mr-1" : ""
+                      }`}
+                      onClick={() => {
+                        dispatch(
+                          updateProfileImageUrl({
+                            userId: user.user.id,
+                            payload: {
+                              profile_image_url: url.profile_image_urls,
+                            },
+                          })
+                        );
+                        setShowEditDialog(false); // Optional: close after selection
+                      }}
+                    >
+                      <img
+                        src={url.profile_image_urls}
+                        alt=""
+                        style={{ height: "100%", width: "100%" }}
+                        className="rounded-full"
+                      />
+                    </div>
+                  ))}
+                </>
+              ) : (
+                <div>Currently no pics available</div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}      
     </div>
   );
 }
