@@ -46,10 +46,10 @@ const CustomYAxisTick = ({ x, y, payload }) => (
     y={y}
     dy="0.32em"
     textAnchor="end"
-    fill="#32086D"
+    fill="#214768"
     className="text-[10px] leading-5"
   >
-    <tspan className="text-[#32086D]">{payload.value}</tspan>
+    <tspan className="text-[#214768]">{payload.value}</tspan>
   </text>
 );
 
@@ -184,14 +184,17 @@ const PerformanceChart = () => {
     const activeBarCount = Object.values(activeBadges).filter(Boolean).length;
 
     return {
-      barSize: dataLength <= 5 ? 30 : 15,
-      barCategoryGap: dataLength <= 5 ? "30%" : "15%",
-      barGap: activeBarCount > 1 ? (dataLength <= 5 ? 15 : 0) : 0,
+      barSize: dataLength <= 5 ? 15 : Math.max(10, 30 - dataLength), // Dynamic sizing
+      barCategoryGap: dataLength <= 5 ? "20%" : "10%", // Reduced gaps
+      barGap: 0, // Always use 0 gap between bars of same category
       margin: {
         top: 20,
         right: 20,
-        left: dataLength <= 5 ? 100 : 60,
-        bottom: 40,
+        left: 0, // Reduced left margin
+        bottom: 80,
+      },
+      padding: {
+        bottom: 10,
       },
     };
   }, [transformedData.length, activeBadges]);
@@ -289,8 +292,7 @@ const PerformanceChart = () => {
     );
   }
 
-  console.log('original data = ', originalData);
-  
+  console.log("original data = ", originalData);
 
   // if (
   //   isEmpty(originalData.approved_for_walk_ins) &&
@@ -353,7 +355,7 @@ const PerformanceChart = () => {
           />
         </div>
       </div>
-      <div className="w-full bg-[#F0F6FF] p-4 rounded-2xl shadow-xl mt-1.5">
+      <div className="w-full h-[500px] bg-[#F0F6FF] p-4 rounded-2xl shadow-xl mt-1.5">
         {/* Header Section */}
         <div className="flex justify-between items-center">
           <span className="text-black text-base font-semibold poppins-thin leading-tight">
@@ -387,17 +389,15 @@ const PerformanceChart = () => {
         </div>
 
         {/* Bar Chart Section */}
-        {
-          isEmpty(originalData.approved_for_walk_ins) &&
-          isEmpty(originalData.walkins_scheduled_today) &&
-          isEmpty(originalData.walkins_today) ?
-          (
-            <div className="w-full h-[20rem] flex justify-center items-center">
-              <EmptyDataMessageIcon size={100} />
-            </div>
-          ) :
+        {isEmpty(originalData.approved_for_walk_ins) &&
+        isEmpty(originalData.walkins_scheduled_today) &&
+        isEmpty(originalData.walkins_today) ? (
+          <div className="w-full h-[20rem] flex justify-center items-center">
+            <EmptyDataMessageIcon size={100} />
+          </div>
+        ) : (
           !isConfirmationDialogueOpened && (
-            <ResponsiveContainer width="100%" height={500}>
+            <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={transformedData}
                 margin={chartConfig.margin}
@@ -405,7 +405,13 @@ const PerformanceChart = () => {
                 barGap={chartConfig.barGap}
               >
                 <defs>
-                  <linearGradient id="callsGradient" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient
+                    id="callsGradient"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
                     <stop offset="0%" stopColor="#7BB7A6" />
                     <stop offset="100%" stopColor="#7BB7A6" />
                   </linearGradient>
@@ -430,29 +436,29 @@ const PerformanceChart = () => {
                     <stop offset="100%" stopColor="#9ECF4F" />
                   </linearGradient>
                 </defs>
-  
+
                 <XAxis
                   dataKey="name"
                   tick={<CustomTick />}
                   interval={0}
                   scale="point"
-                  padding={{ left: 40, right: 40 }}
+                  padding={{ left: 50, right: 10, bottom: 10 }} // Reduced padding
                 />
-  
+
                 <YAxis
-                  width={chartConfig.margin.left - 20}
-                  tickCount={10}
-                  domain={[0, "dataMax"]}
+                  width={80} // Fixed width instead of dynamic calculation
+                  tickCount={6} // Reduced tick count for cleaner look
+                  domain={[0, "auto"]} // Let Recharts determine the best domain
                   allowDecimals={false}
                   tick={<CustomYAxisTick />}
-                  padding={{ top: 10, bottom: 10 }}
+                  padding={{ bottom: 10 }}
                 />
-  
+
                 <Tooltip
                   content={<CustomTooltip activeBadges={activeBadges} />}
                   cursor={{ fill: "transparent" }}
                 />
-  
+
                 {activeBadges.approved && (
                   <Bar
                     dataKey="interested"
@@ -480,7 +486,7 @@ const PerformanceChart = () => {
               </BarChart>
             </ResponsiveContainer>
           )
-        }
+        )}
       </div>
     </div>
   );
