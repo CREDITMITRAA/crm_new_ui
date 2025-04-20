@@ -231,7 +231,10 @@ function AssignedLeadsTable({
                 }`}
                 onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
               >
-                <span className="truncate px-1 w-full text-center flex justify-left">
+                <span
+                  className="truncate px-1 w-full text-center flex justify-left"
+                  title={lead.id}
+                >
                   {truncateWithEllipsis(lead.id, 5)}
                   {lead.is_reassigned && <ReAssignedIcon size={14} />}
                 </span>
@@ -242,7 +245,10 @@ function AssignedLeadsTable({
                 className="w-[11%] poppins-thin px-1 flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
                 onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
               >
-                <span className="truncate w-full text-center flex justify-left">
+                <span
+                  className="truncate w-full text-center flex justify-left"
+                  title={formatName(lead.name)}
+                >
                   {truncateWithEllipsis(formatName(lead.name), 15)}
                 </span>
               </div>
@@ -252,7 +258,10 @@ function AssignedLeadsTable({
                 className="w-[10%] inter-inter flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden px-1"
                 onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
               >
-                <span className="truncate w-full text-center flex justify-left">
+                <span
+                  className="truncate w-full text-center flex justify-left"
+                  title={getLast10Digits(lead.phone)}
+                >
                   {getLast10Digits(lead.phone)}
                 </span>
               </div>
@@ -262,7 +271,16 @@ function AssignedLeadsTable({
                 className="w-[13%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden px-1"
                 onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
               >
-                <span className="truncate w-full text-center flex justify-left">
+                <span
+                  className="truncate w-full text-center flex justify-left"
+                  title={
+                    role === ROLE_EMPLOYEE
+                      ? terminologiesMap.get(lead?.leadStatus)
+                      : terminologiesMap.get(
+                          lead?.last_updated_status || lead?.lead_status
+                        )
+                  }
+                >
                   {role === ROLE_EMPLOYEE
                     ? truncateWithEllipsis(
                         terminologiesMap.get(lead?.leadStatus),
@@ -282,12 +300,22 @@ function AssignedLeadsTable({
                 className="w-[10%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden px-1"
                 onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
               >
-                <span className="truncate w-full text-center flex justify-left">
-                  {role === ROLE_EMPLOYEE
-                    ? truncateWithEllipsis(formatName(lead.leadSource), 10)
-                    : truncateWithEllipsis(formatName(lead.lead_source), 10)
-                    ? truncateWithEllipsis(formatName(lead.lead_source), 10)
-                    : truncateWithEllipsis("Not Available", 10)}
+                <span
+                  className="truncate w-full text-center flex justify-left"
+                  title={
+                    role === ROLE_EMPLOYEE
+                      ? formatName(lead.leadSource)
+                      : formatName(lead.lead_source || "Not Available")
+                  }
+                >
+                  {truncateWithEllipsis(
+                    formatName(
+                      role === ROLE_EMPLOYEE
+                        ? lead.leadSource
+                        : lead.lead_source || "Not Available"
+                    ),
+                    10
+                  )}
                 </span>
               </div>
 
@@ -296,19 +324,27 @@ function AssignedLeadsTable({
                 className="w-[12%] flex flex-col justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
                 onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
               >
-                {role === ROLE_EMPLOYEE ? (
-                  <span className="truncate w-full text-center flex justify-left">
-                    {moment(lead.importedOn)
-                      .utcOffset(330)
-                      .format("DD MMM YY hh:mm a")}
-                  </span>
-                ) : (
-                  <span className="truncate w-full text-center flex justify-left">
-                    {moment(lead.createdAt)
-                      .utcOffset(330)
-                      .format("DD MMM YY hh:mm a")}
-                  </span>
-                )}
+                <span
+                  className="truncate w-full text-center flex justify-left"
+                  title={
+                    role === ROLE_EMPLOYEE
+                      ? moment(lead.importedOn)
+                          .utcOffset(330)
+                          .format("DD MMM YY hh:mm a")
+                      : moment(lead.createdAt)
+                          .utcOffset(330)
+                          .format("DD MMM YY hh:mm a")
+                  }
+                >
+                  {role === ROLE_EMPLOYEE
+                    ? moment(lead.importedOn)
+                        .utcOffset(330)
+                        .format("DD MMM YY hh:mm a")
+                    : moment(lead.createdAt)
+                        .utcOffset(330)
+                        .format("DD MMM YY hh:mm a")}
+                </span>
+
                 {/* <span className="truncate w-full text-center flex justify-left">
                   {moment(lead.createdAt).utcOffset(330).format("hh:mm:ss A")}
                 </span> */}
@@ -319,11 +355,17 @@ function AssignedLeadsTable({
                 className="w-[13%] flex flex-col justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
                 onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
               >
-                <span className="truncate w-full text-center flex justify-left">
+                <span
+                  className="truncate w-full text-center flex justify-left"
+                  title={moment(lead.updatedAt)
+                    .utcOffset(330)
+                    .format("DD MMM, YY hh:mm a")}
+                >
                   {moment(lead.updatedAt)
                     .utcOffset(330)
                     .format("DD MMM, YY hh:mm a")}
                 </span>
+
                 {/* <span className="truncate w-full text-center flex justify-left">
                   {moment(lead.updatedAt).utcOffset(330).format("hh:mm:ss A")}
                 </span> */}
@@ -337,7 +379,14 @@ function AssignedLeadsTable({
                     navigate(`/lead-details-page/${lead.id}`)
                   }
                 >
-                  <span className="truncate w-full text-center flex justify-left">
+                  <span
+                    className="truncate w-full text-center flex justify-left"
+                    title={
+                      lead.LeadAssignments?.length > 0
+                        ? formatName(lead.LeadAssignments[0]?.AssignedTo?.name)
+                        : "Not Assigned"
+                    }
+                  >
                     {lead.LeadAssignments?.length > 0
                       ? truncateWithEllipsis(
                           formatName(lead.LeadAssignments[0]?.AssignedTo?.name),
@@ -353,17 +402,31 @@ function AssignedLeadsTable({
                 className="w-[13%] flex flex-col justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
                 onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
               >
-                <span className="truncate w-full text-center flex justify-left">
+                <span
+                  className="truncate w-full text-center flex justify-left"
+                  title={
+                    role === ROLE_EMPLOYEE
+                      ? moment(lead.assignedAt)
+                          .utcOffset(330)
+                          .format("DD MMM, YY hh:mm a")
+                      : lead.LeadAssignments?.length > 0
+                      ? moment(lead.LeadAssignments[0]?.updatedAt)
+                          .utcOffset(330)
+                          .format("DD MMM, YY hh:mm a")
+                      : "Not Assigned"
+                  }
+                >
                   {role === ROLE_EMPLOYEE
                     ? moment(lead.assignedAt)
                         .utcOffset(330)
                         .format("DD MMM, YY hh:mm a")
-                    : lead.LeadAssignments && lead.LeadAssignments.length > 0
-                    ? moment(lead?.LeadAssignments[0]?.updatedAt)
+                    : lead.LeadAssignments?.length > 0
+                    ? moment(lead.LeadAssignments[0]?.updatedAt)
                         .utcOffset(330)
                         .format("DD MMM, YY hh:mm a")
                     : "Not Assigned"}
                 </span>
+
                 {/* <span className="truncate w-full text-center flex justify-left">
                   {role === ROLE_EMPLOYEE
                     ? moment(lead.assignedAt)
