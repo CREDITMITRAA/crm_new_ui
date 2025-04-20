@@ -256,6 +256,7 @@ function AddEmployeeDialogue({ onClose, employee }) {
                 buttonFontSize="10px"
                 buttonPadding="0rem 0.5rem"
                 optionsBackgroundColor="#F2F7FE"
+                size="sm"
               />
             </div>
           </div>
@@ -335,7 +336,7 @@ function AddEmployeeDialogue({ onClose, employee }) {
               Date of join
             </div>
             <div className="w-full h-[30px] relative mt-[0.313rem]">
-            <input
+              <input
                 type="date"
                 placeholder="Enter the date of join"
                 name="date_of_join"
