@@ -33,6 +33,7 @@ import EmptyDataMessageIcon from "../icons/EmptyDataMessageIcon";
 import { useNavigate } from "react-router-dom";
 import ScheduleWalkInOrCallDialogue from "../common/dialogues/ScheduleWalkInOrCallDialogue";
 import { getVerificationLeads } from "../../features/verification/verificationThunks";
+import CallIcon from "../icons/CallIcon";
 
 function WalkInsTable() {
   const navigate = useNavigate();
@@ -372,7 +373,9 @@ function WalkInsTable() {
               showFilter={showFilter}
             />
             {showDot && <ClearButton onClick={() => handleResetFilters()} />}
-            {role !== ROLE_EMPLOYEE && <ExportButton onClick={() => handleExportLeads()} />}
+            {role !== ROLE_EMPLOYEE && (
+              <ExportButton onClick={() => handleExportLeads()} />
+            )}
           </div>
         </div>
       </div>
@@ -542,6 +545,11 @@ function WalkInsTable() {
                         {moment(walkIn.walk_in_date_time)
                           .utcOffset(330)
                           .format("DD MMM, YYYY hh:mm A")}
+                          {walkIn.is_call && (
+                          <span className="">
+                            <CallIcon size={14} />
+                          </span>
+                        )}
                       </span>
                     </div>
 
@@ -562,6 +570,11 @@ function WalkInsTable() {
                               .utcOffset(330)
                               .format("DD MMM, YYYY hh:mm A")
                           : ""}
+                        {!walkIn.is_call && walkIn.is_rescheduled && (
+                          <span className="">
+                            <CallIcon size={14} />
+                          </span>
+                        )}
                       </span>
                     </div>
 
@@ -620,7 +633,10 @@ function WalkInsTable() {
                                 value="Upcoming"
                                 disabled
                                 className="truncate inter-inter"
-                                style={{color:'#464646',backgroundColor:'#F2F7FE'}}
+                                style={{
+                                  color: "#464646",
+                                  backgroundColor: "#F2F7FE",
+                                }}
                               >
                                 Upcoming
                               </option>
@@ -628,21 +644,30 @@ function WalkInsTable() {
                             <option
                               value="Rescheduled"
                               className="truncate inter-inter"
-                              style={{color:'#464646',backgroundColor:'#F2F7FE'}}
+                              style={{
+                                color: "#464646",
+                                backgroundColor: "#F2F7FE",
+                              }}
                             >
                               Rescheduled
                             </option>
                             <option
                               value="Completed"
                               className="truncate inter-inter"
-                              style={{color:'#464646',backgroundColor:'#F2F7FE'}}
+                              style={{
+                                color: "#464646",
+                                backgroundColor: "#F2F7FE",
+                              }}
                             >
                               Completed
                             </option>
                             <option
                               value="Cancelled"
                               className="truncate inter-inter"
-                              style={{color:'#464646',backgroundColor:'#F2F7FE'}}
+                              style={{
+                                color: "#464646",
+                                backgroundColor: "#F2F7FE",
+                              }}
                             >
                               Cancel
                             </option>
@@ -650,7 +675,10 @@ function WalkInsTable() {
                               value="Pending"
                               disabled
                               className="truncate inter-inter"
-                              style={{color:'#464646',backgroundColor:'#F2F7FE'}}
+                              style={{
+                                color: "#464646",
+                                backgroundColor: "#F2F7FE",
+                              }}
                             >
                               Pending
                             </option>

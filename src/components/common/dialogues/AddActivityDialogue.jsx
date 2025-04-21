@@ -183,7 +183,6 @@ function AddActivityDialogue({
         if(fromActivityLog){
           let followUpDate = formatDateTime(taskDate, hour, minute, period);
           payload.followUp = followUpDate;
-          setOpenToast(true)
         }
         payload.userId = user.user.id;
         payload.leadId = lead.id || leadId;
@@ -196,7 +195,7 @@ function AddActivityDialogue({
       }
   
       console.log("Dispatching with payload:", payload); // Log the payload
-  
+      setOpenToast(true)
       const result = await dispatch(addActivity(payload));
       console.log("Dispatch result:", result); // Log the result
   
