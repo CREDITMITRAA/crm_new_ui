@@ -1,13 +1,15 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "../components/navbar/Navbar";
 import Sidebar from "../components/sidebar/Sidebar";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { setHeight } from "../features/ui/uiSlice";
 
 function RootLayout({ children }) {
   const dispatch = useDispatch()
   const {isConfirmationDialogueOpened} = useSelector((state)=>state.ui)
+  const contentRef = useRef();
+  const location = useLocation()
 
   useEffect(()=>{
     function updateHeight(){
@@ -22,6 +24,12 @@ function RootLayout({ children }) {
 
     return () => window.removeEventListener("resize", updateHeight);
   },[dispatch])
+
+  useEffect(() => {
+    if (contentRef.current) {
+      contentRef.current.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [location.pathname]);
 
   return (
     <div className="flex h-screen w-screen text-black">
@@ -40,7 +48,7 @@ function RootLayout({ children }) {
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex-grow overflow-auto h-max mt-16 p-2.5 pr-3.5">
+        <div ref={contentRef}  className="flex-grow overflow-auto h-max mt-16 p-2.5 pr-3.5">
           <Outlet />
         </div>
       </div>
