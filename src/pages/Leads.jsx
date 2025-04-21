@@ -179,7 +179,7 @@ function Leads() {
               "pageSize",
               "totalPages",
               "total",
-              // "assigned_to",
+              "assigned_to",
             ].includes(key);
       
         // Only include if not empty and not in excluded keys
@@ -322,7 +322,7 @@ function Leads() {
     }
   }
 
-  function handleResetFilters() {
+  function handleResetFilters(tableType) {
     let initialFilters = {
       pageSize: 10,
       ...(role === ROLE_EMPLOYEE && {
@@ -334,7 +334,8 @@ function Leads() {
     setResetFilters(true);
     setSelectedEmployeeName(null);
     setAreAllLeadsSelected(false);
-    setShowNotAssignedTable(false);
+    // setShowNotAssignedTable(false);
+    setTableType(tableType)
     setSelectedLeadIds([]);
     setAssignedEmployee(null);
     setShowDot(false);
@@ -810,7 +811,7 @@ function Leads() {
       }
     } else {
       setTableType(value);
-      handleResetFilters()
+      handleResetFilters(value)
     }
   }
 
@@ -890,7 +891,7 @@ function Leads() {
                 name="Assigned"
                 onClick={() => {
                   setTableType(ASSIGNED_TABLE);
-                  handleResetFilters();
+                  handleResetFilters(ASSIGNED_TABLE);
                   setShowNotAssignedTable(false);
                   setShowFilter(false);
                 }}
@@ -903,7 +904,7 @@ function Leads() {
                 isActive={tableType === NOT_ASSIGNED_TABLE}
                 onClick={() => {
                   setTableType(NOT_ASSIGNED_TABLE);
-                  handleResetFilters();
+                  handleResetFilters(NOT_ASSIGNED_TABLE);
                   setShowNotAssignedTable(true);
                   setFilters((prev) => ({
                     ...prev,
@@ -957,7 +958,7 @@ function Leads() {
               showDot={showDot}
               showFilter={showFilter}
             />
-            {showDot && <ClearButton onClick={() => handleResetFilters()} />}
+            {showDot && <ClearButton onClick={() => handleResetFilters(tableType)} />}
             {tableType === ASSIGNED_TABLE && (
               <ExportButton onClick={() => handleExportLeads()} />
             )}
