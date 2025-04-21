@@ -16,6 +16,7 @@ import onlinseUsersReducer from '../features/online-users/onlineUserSlice'
 import notificationsReducer from '../features/notifications/notificationSlice'
 import chartReducer from '../features/charts/chartsSlice'
 import interactiveNotificationsReducer from '../features/interactive-notifications/interactiveNotificationsSlice'
+import quoteDialogueSliceReducer from "../features/quote-dialogue/quoteDialogueSlice"
 
 const store = configureStore({
     reducer:{
@@ -35,7 +36,8 @@ const store = configureStore({
         onlineUsers: onlinseUsersReducer,
         notifications: notificationsReducer,
         charts: chartReducer,
-        interactiveNotifications : interactiveNotificationsReducer
+        interactiveNotifications : interactiveNotificationsReducer,
+        quoteDialogue: quoteDialogueSliceReducer
     }
 })
 

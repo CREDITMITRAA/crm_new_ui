@@ -6,6 +6,7 @@ import SubmitButton from "./SubmitButton";
 import { useDispatch, useSelector } from "react-redux";
 import { login, resetError } from "../../features/auth/authSlice";
 import { useNavigate } from "react-router-dom";
+import { showQuoteDialogue } from "../../features/quote-dialogue/quoteDialogueSlice";
 
 function SignInForm() {
   const dispatch = useDispatch();
@@ -18,7 +19,8 @@ function SignInForm() {
 
   useEffect(() => {
     if (user) {
-      navigate("/dashboard");
+      // navigate("/dashboard");
+      dispatch(showQuoteDialogue(navigate));
     }
   }, [user, navigate]);
 
@@ -151,7 +153,12 @@ function MainContent({
       )}
 
       {/* Sign In Button */}
-      <button className="mt-6 cursor-pointer" tabIndex={4} onClick={handleSubmit} style={{backgroundColor:'unset', margin:'none', padding:'unset'}}>
+      <button
+        className="mt-6 cursor-pointer"
+        tabIndex={4}
+        onClick={handleSubmit}
+        style={{ backgroundColor: "unset", margin: "none", padding: "unset" }}
+      >
         <SignInButton />
       </button>
     </>

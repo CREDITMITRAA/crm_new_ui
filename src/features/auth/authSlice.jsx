@@ -15,7 +15,8 @@ const authSlice = createSlice({
     loading: false,
     error: null,
     role: initialUser?.user.role || null,
-    profile_image_url: initialUser?.user.profile_image_url || null
+    profile_image_url: initialUser?.user.profile_image_url || null,
+    last_login_ago: null,
   },
   reducers: {
     resetError:(state,action)=>{
@@ -29,10 +30,13 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(login.fulfilled, (state, action) => {
+        console.log('payload = ', action.payload);
+        
         state.loading = false;
-        state.user = action.payload;
+        state.user = action.payload.user;
         state.role = action.payload.user.role;
         state.profile_image_url = action.payload.user.profile_image_url
+        state.last_login_ago = action.payload.last_login_ago
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
@@ -78,14 +82,14 @@ export const login = createAsyncThunk(
       localStorage.setItem("token", token);
       const user = jwtDecode(token);
 
-      if(last_login_ago === "less than an hour ago"){
-        thunkAPI.dispatch(showInteractiveNotification({
-          show:true,
-          videoSrc:last_login_ago_video,
-          message:"Missed having you here! Hope all is well with you!"
-        }))
-      }
-      return user;
+      // if(last_login_ago === "less than an hour ago"){
+      //   thunkAPI.dispatch(showInteractiveNotification({
+      //     show:true,
+      //     videoSrc:last_login_ago_video,
+      //     message:"Missed having you here! Hope all is well with you!"
+      //   }))
+      // }
+      return {user, last_login_ago};
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response.data);
     }
