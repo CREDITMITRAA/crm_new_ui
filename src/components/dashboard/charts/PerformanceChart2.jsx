@@ -41,24 +41,41 @@ const CustomYAxisTick = ({ x, y, payload }) => (
 );
 
 const CombinedBar = (props) => {
-  const { x, y, width, height, data, activeBadges } = props;
+  const { x, y, width, height, data, activeBadges, maxValue } = props;
 
   // Calculate max value only from active badges with non-zero values
-  const maxValue = Math.max(
-    ...[
-      activeBadges.calls_done && data.callsDone > 0 ? data.callsDone : 0,
-      activeBadges.connected && data.connected > 0 ? data.connected : 0,
-      activeBadges.interested && data.interested > 0 ? data.interested : 0,
-    ].filter((val) => val > 0),
-    0
-  );
+  console.log('active badges = ', activeBadges, ' data = ', data);
+  
+  // const maxValue = Math.max(
+  //   ...[
+  //     activeBadges.calls_done && data.callsDone > 0 ? data.callsDone : 0,
+  //     activeBadges.connected && data.connected > 0 ? data.connected : 0,
+  //     activeBadges.interested && data.interested > 0 ? data.interested : 0,
+  //   ].filter((val) => val > 0),
+  //   0
+  // );
 
   if (maxValue === 0) return null;
+  console.log('max value = ', maxValue);
+  
 
   // Calculate heights and positions
-  const callsDoneHeight = activeBadges.calls_done ? (data.callsDone / maxValue) * height : 0;
-  const connectedHeight = activeBadges.connected ? (data.connected / maxValue) * height : 0;
-  const interestedHeight = activeBadges.interested ? (data.interested / maxValue) * height : 0;
+  const callsDoneHeight = activeBadges.calls_done
+    ? (data.callsDone / maxValue) * height
+    : 0;
+  const connectedHeight = activeBadges.connected
+    ? (data.connected / maxValue) * height
+    : 0;
+  const interestedHeight = activeBadges.interested
+    ? (data.interested / maxValue) * height
+    : 0;
+
+    console.log('call done height = ', callsDoneHeight);
+    console.log('connected height = ', connectedHeight);
+    console.log('interested height = ', interestedHeight);
+    
+    
+    
 
   const callsDoneY = y + height - callsDoneHeight;
   const connectedY = y + height - connectedHeight;
@@ -80,7 +97,11 @@ const CombinedBar = (props) => {
   const ShadowGradient = ({ id }) => (
     <linearGradient id={id} x1="0" x2="0" y1="0" y2="1">
       <stop offset="0%" stopColor="#000000" stopOpacity={shadowOpacity} />
-      <stop offset="80%" stopColor="#000000" stopOpacity={shadowOpacity * 0.3} />
+      <stop
+        offset="80%"
+        stopColor="#000000"
+        stopOpacity={shadowOpacity * 0.3}
+      />
       <stop offset="100%" stopColor="#000000" stopOpacity="0" />
     </linearGradient>
   );
@@ -249,15 +270,19 @@ const PerformanceChartHorizontal = (
       dispatch(getChartDataByChartType({ ...filters }));
       const filteredFilters = Object.keys(filters)?.reduce((acc, key) => {
         const value = filters[key];
-        if (!["date", "date_time_range"].includes(key) && value != null && value !== "") {
+        if (
+          !["date", "date_time_range"].includes(key) &&
+          value != null &&
+          value !== ""
+        ) {
           acc[key] = value;
         }
         return acc;
       }, {});
       setShowDot(Object.keys(filteredFilters).length > 0);
       isEmpty(originalData.calls_done) &&
-    isEmpty(originalData.connected_calls) &&
-    isEmpty(originalData.interested)
+        isEmpty(originalData.connected_calls) &&
+        isEmpty(originalData.interested_leads);
     }, 500);
 
     return () => clearTimeout(timeout);
@@ -269,9 +294,10 @@ const PerformanceChartHorizontal = (
       setExportData(false);
     }
   }, [exportData]);
+  
+
 
   const handleBadgeClick = (badgeType) => {
-    console.log("clicked on badge");
     setActiveBadges((prev) => ({
       ...prev,
       [badgeType]: !prev[badgeType],
@@ -313,6 +339,9 @@ const PerformanceChartHorizontal = (
       ...new Set([
         ...(originalData.calls_done || []).map((item) => item?.created_by),
         ...(originalData.connected_calls || []).map((item) => item?.created_by),
+        ...(originalData.interested_leads || []).map(
+          (item) => item?.created_by
+        ),
         ...(originalData.walkins_scheduled_today || []).map(
           (item) => item?.created_by
         ),
@@ -328,10 +357,7 @@ const PerformanceChartHorizontal = (
         name: usersMap.get(userId) || `User ${userId}`,
         callsDone: getCountByUserId(originalData.calls_done, userId),
         connected: getCountByUserId(originalData.connected_calls, userId),
-        interested: getCountByUserId(
-          originalData.approved_for_walk_ins,
-          userId
-        ),
+        interested: getCountByUserId(originalData.interested_leads, userId),
         walkinsScheduled: getCountByUserId(
           originalData.walkins_scheduled_today,
           userId
@@ -340,6 +366,17 @@ const PerformanceChartHorizontal = (
       };
     });
   }, [originalData, usersMap]);
+
+  const maxValue = useMemo(() => {
+    return Math.max(
+      ...transformedData.flatMap(item => [
+        item.callsDone,
+        item.connected,
+        item.interested
+      ]),
+      1 // Ensure we don't divide by zero
+    );
+  }, [transformedData]);
 
   const chartConfig = useMemo(() => {
     const dataLength = transformedData.length;
@@ -495,7 +532,9 @@ const PerformanceChartHorizontal = (
               filters.hasOwnProperty("date_time_range")) && (
               <ClearButton onClick={() => handleResetFilters()} />
             )}
-            {role !== ROLE_EMPLOYEE && <ExportButton onClick={() => setExportData(true)} />}
+            {role !== ROLE_EMPLOYEE && (
+              <ExportButton onClick={() => setExportData(true)} />
+            )}
           </div>
         </div>
         <div
@@ -512,7 +551,7 @@ const PerformanceChartHorizontal = (
           />
         </div>
       </div>
-      
+
       {/* Modified chart container to handle empty state */}
       <div className="w-full bg-[#F0F6FF] rounded-2xl p-4 shadow-xl mt-1.5">
         <div className="flex justify-between items-center mb-6">
@@ -546,7 +585,7 @@ const PerformanceChartHorizontal = (
 
         {isEmpty(originalData.calls_done) &&
         isEmpty(originalData.connected_calls) &&
-        isEmpty(originalData.interested) ? (
+        isEmpty(originalData.interested_leads) ? (
           <div className="w-full h-[20rem] flex justify-center items-center">
             <EmptyDataMessageIcon size={100} />
           </div>
@@ -555,6 +594,7 @@ const PerformanceChartHorizontal = (
             <BarChart
               data={transformedData}
               margin={{ top: 20, right: 20, left: 20, bottom: 80 }}
+              key={Object.values(activeBadges).join("-")} // Force re-render when badges change
             >
               <XAxis
                 dataKey="name"
@@ -582,6 +622,7 @@ const PerformanceChartHorizontal = (
                       {...props}
                       data={props.payload}
                       activeBadges={activeBadges}
+                      maxValue={maxValue}
                     />
                   ) : null;
                 }}
@@ -592,7 +633,7 @@ const PerformanceChartHorizontal = (
         ) : null}
       </div>
     </div>
-  )
+  );
 };
 
 export default PerformanceChartHorizontal;
