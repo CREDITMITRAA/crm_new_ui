@@ -3,6 +3,7 @@ import {
   activityOptions,
   CALL_BACK,
   FOLLOW_UP,
+  getActivityOptions,
   SCHEDULED_CALL_WITH_MANAGER,
   terminologiesMap,
   VERIFICATION_1,
@@ -34,6 +35,9 @@ function AddActivityDialogue({
   setToastStatusType,
   setToastStatusMessage,
   setToastMessage,
+  fromActivityLog=false,
+  leadId,
+  leadName
 }) {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
@@ -66,7 +70,7 @@ function AddActivityDialogue({
   const [hour, setHour] = useState(12);
   const [minute, setMinute] = useState("00");
   const [period, setPeriod] = useState("AM");
-  const baseOptions = activityOptions;
+  const baseOptions = getActivityOptions(fromActivityLog);
 
   useEffect(() => {
     console.log(
@@ -94,9 +98,11 @@ function AddActivityDialogue({
       // );
     }
     return () => {
-      dispatch(setIsConfirmationDialogueOpened(false));
-      dispatch(setIsAddActivityDialogueOpened(false));
-      onActivityAdded();
+      if(!fromActivityLog){
+        dispatch(setIsConfirmationDialogueOpened(false));
+        dispatch(setIsAddActivityDialogueOpened(false));
+        onActivityAdded();
+      }
     };
   }, []);
 
@@ -160,47 +166,47 @@ function AddActivityDialogue({
   }
 
   async function handleSubmit() {
+    console.log("Submit button clicked");
     let payload = {};
-    if (fromTable) {
-      payload.userId = user.user.id;
-      payload.leadId = selectedLead.id;
-      payload.lead_name = selectedLead.name;
-      payload.activity_status = selectedStatus;
-      if (taskForStatuses.includes(selectedStatus)) {
-        console.log(taskDate, hour, minute, period);
-
-        let followUpDate = formatDateTime(taskDate, hour, minute, period);
-        payload.followUp = followUpDate;
-      }
-    } else {
-      payload.userId = user.user.id;
-      payload.leadId = lead.id;
-      payload.lead_name = lead.name;
-      payload.activity_status = selectedStatus;
-    }
-
-    if (description) {
-      payload.description = description;
-    }
-
-    setOpenToast(true);
-
+    
     try {
+      if (fromTable) {
+        payload.userId = user.user.id;
+        payload.leadId = selectedLead.id;
+        payload.lead_name = selectedLead.name;
+        payload.activity_status = selectedStatus;
+        if (taskForStatuses.includes(selectedStatus)) {
+          let followUpDate = formatDateTime(taskDate, hour, minute, period);
+          payload.followUp = followUpDate;
+        }
+      } else {
+        if(fromActivityLog){
+          let followUpDate = formatDateTime(taskDate, hour, minute, period);
+          payload.followUp = followUpDate;
+          setOpenToast(true)
+        }
+        payload.userId = user.user.id;
+        payload.leadId = lead.id || leadId;
+        payload.lead_name = lead.name || leadName;
+        payload.activity_status = selectedStatus;
+      }
+  
+      if (description) {
+        payload.description = description;
+      }
+  
+      console.log("Dispatching with payload:", payload); // Log the payload
+  
       const result = await dispatch(addActivity(payload));
+      console.log("Dispatch result:", result); // Log the result
+  
       if (addActivity.fulfilled.match(result)) {
         console.log("Activity added successfully");
-        // onActivityAdded(); // Call the callback
       } else if (addActivity.rejected.match(result)) {
         console.error("Error adding activity:", result.error);
-        setToastStatusMessage("Error...");
-        setToastStatusType("ERROR");
-        setToastMessage("Failed to add acitivity !");
       }
     } catch (error) {
-      setToastStatusMessage("Error...");
-      setToastStatusType("ERROR");
-      setToastMessage("Failed to add acitivity !");
-      console.error("Error adding activity:", error);
+      console.error("Error in handleSubmit:", error);
     }
   }
 
@@ -301,24 +307,26 @@ function AddActivityDialogue({
                 defaultSelectedOptionIndex={
                   fromTable
                     ? 0
-                    : [
-                        ...baseOptions,
-                        ...(selectedLead?.Activities?.[0]?.docs_collected ||
-                        selectedLead?.Activities?.[0]?.docsCollected ||
-                        !isEmpty(payslips) ||
-                        !isEmpty(bureaus) ||
-                        !isEmpty(loanReports) ||
-                        !isEmpty(creditReports)
-                          ? [
-                              {
-                                label: terminologiesMap.get(VERIFICATION_1),
-                                value: VERIFICATION_1,
-                              },
-                            ]
-                          : []),
-                      ]?.findIndex(
-                        (activity) => activity.value === selectedActivityStatus
-                      ) || 0
+                    : fromActivityLog
+                      ? 0 // Force index 0 when fromActivityLog is true
+                      : [
+                          ...baseOptions,
+                          ...(selectedLead?.Activities?.[0]?.docs_collected ||
+                          selectedLead?.Activities?.[0]?.docsCollected ||
+                          !isEmpty(payslips) ||
+                          !isEmpty(bureaus) ||
+                          !isEmpty(loanReports) ||
+                          !isEmpty(creditReports)
+                            ? [
+                                {
+                                  label: terminologiesMap.get(VERIFICATION_1),
+                                  value: VERIFICATION_1,
+                                },
+                              ]
+                            : []),
+                        ]?.findIndex(
+                          (activity) => activity.value === selectedActivityStatus
+                        ) || 0
                 }
                 backgroundColor="bg-[#F2F7FE]"
                 buttonWidth="max-content"

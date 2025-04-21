@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchAllActivityLogs } from "./activityLogsApi";
+import { addActivityLogNoteApi, fetchAllActivityLogs } from "./activityLogsApi";
 
 export const getAllActivityLogs = createAsyncThunk(
     "activityLogs/getAllActivityLogs",
@@ -9,6 +9,18 @@ export const getAllActivityLogs = createAsyncThunk(
             return data
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response?.data || "Failed to fetch activity logs");
+        }
+    }
+)
+
+export const addActivityLogNote = createAsyncThunk(
+    "activityLogs/addActivityLogNote",
+    async (payload, thunkAPI) => {
+        try {
+            const data = await addActivityLogNoteApi(payload)
+            return data
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response?.data || "Failed to add activity log note !");
         }
     }
 )

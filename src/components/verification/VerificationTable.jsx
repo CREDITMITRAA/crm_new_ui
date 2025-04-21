@@ -70,6 +70,7 @@ function VerificationTable({ leads, filters }) {
   const [isCall, setIsCall] = useState(false);
   const [selectedLeadStatus, setSelectedLeadStatus] = useState(null);
   const [selectedLead, setSelectedLead] = useState(false);
+  const [selectedLeadName, setSelectedLeadName] = useState(null)
 
   useEffect(() => {
     if (scheduleWalkInLoading) {
@@ -177,8 +178,9 @@ function VerificationTable({ leads, filters }) {
     }
   }
 
-  function handleClickOnView(leadId) {
+  function handleClickOnView(leadId, leadName) {
     setSelectedLeadId(leadId);
+    setSelectedLeadName(leadName)
     setShowActivityLogsInCommonDialogue(true);
   }
 
@@ -441,7 +443,7 @@ function VerificationTable({ leads, filters }) {
 
               {/* Actions */}
               <div className="w-[6%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight rounded-br-[10px] rounded-tr-[10px] overflow-hidden pl-8">
-                 <ViewIcon onClick={() => handleClickOnView(lead.id)} />
+                 <ViewIcon onClick={() => handleClickOnView(lead.id, lead.name)} />
                </div>
             </div>
           ))}
@@ -494,6 +496,7 @@ function VerificationTable({ leads, filters }) {
           onClose={() => setShowActivityLogsInCommonDialogue(false)}
           leadId={selectedLeadId}
           fromTable={true}
+          leadName={selectedLeadName}
         />
       )}
       {showScheduleWalkInOrCallDialogue && (

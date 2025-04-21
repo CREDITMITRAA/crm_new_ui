@@ -10,6 +10,7 @@ import {
   REJECTED,
   RESCHEDULE_CALL_WITH_MANAGER,
   RESCHEDULE_WALK_IN,
+  RESCHEDULED_FOR_WALK_IN,
   ROLE_ADMIN,
   ROLE_EMPLOYEE,
   SCHEDULED_CALL_WITH_MANAGER,
@@ -88,6 +89,7 @@ function WalkInsTable({ leads }) {
   const [selectedLead, setSelectedLead] = useState(false);
   const [isReschedule, setIsReschedule] = useState(false);
   const [selectedWalkIn, setSelectedWalkIn] = useState(null);
+  const [selectedLeadName, setSelectedLeadName] = useState(null)
 
   useEffect(() => {
     if (loading) {
@@ -237,8 +239,9 @@ function WalkInsTable({ leads }) {
     }
   }
 
-  function handleClickOnView(leadId) {
+  function handleClickOnView(leadId, leadName) {
     setSelectedLeadId(leadId);
+    setSelectedLeadName(leadName)
     setShowActivityLogsInCommonDialogue(true);
   }
 
@@ -419,7 +422,7 @@ function WalkInsTable({ leads }) {
               {/* Status */}
               <div
                 className="w-[16%] flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden pr-4"
-                title={`Status: ${terminologiesMap.get(lead?.lead_status) || "Not Available"}`} // Tooltip added here
+                title={`Status: ${terminologiesMap.get(lead?.last_updated_status) || "Not Available"}`} // Tooltip added here
               >
                 {/* Dot */}
                 <div className="flex-shrink-0 mr-2">
@@ -430,11 +433,12 @@ function WalkInsTable({ leads }) {
                         optionColors.find(
                           (option) =>
                             option.optionName ===
-                            (lead?.lead_status ||
-                              (lead?.last_updated_status === "Others"
-                                ? lead.last_updated_status
-                                : (lead?.Activities || [])[0]
-                                    ?.activity_status || ""))
+                            // (lead?.lead_status ||
+                            //   (lead?.last_updated_status === "Others"
+                            //     ? lead.last_updated_status
+                            //     : (lead?.Activities || [])[0]
+                            //         ?.activity_status || ""))
+                            lead.last_updated_status
                         )?.optionColor || "#46AACA"
                       }
                     />
@@ -444,12 +448,13 @@ function WalkInsTable({ leads }) {
                 {/* Select */}
                 <select
                   className="w-full px-1 py-1 pl-0 text-xs font-normal inter-inter leading-tight bg-transparent border border-none outline-none appearance-none cursor-pointer focus:outline-none focus:ring-0 focus:border-transparent pr-6 truncate"
-                  value={
-                    lead?.lead_status ||
-                    (lead?.last_updated_status === "Others"
-                      ? lead.last_updated_status
-                      : (lead?.Activities || [])[0]?.activity_status || "")
-                  }
+                  // value={
+                  //   lead?.lead_status ||
+                  //   (lead?.last_updated_status === "Others"
+                  //     ? lead.last_updated_status
+                  //     : (lead?.Activities || [])[0]?.activity_status || "")
+                  // }
+                  value={lead.last_updated_status || lead.verification_status}
                   onChange={(e) => handleLeadStatusChange(e, lead)}
                   disabled={lead?.application_status === REJECTED}
                   style={{
@@ -474,7 +479,7 @@ function WalkInsTable({ leads }) {
                       {terminologiesMap.get(option.value) || option.label}
                     </option>
                   ))}
-                  {lead.lead_status === "Scheduled For Walk-In" && (
+                  {lead.last_updated_status === "Scheduled For Walk-In" && (
                     <option
                       value="Scheduled For Walk-In"
                       disabled
@@ -484,7 +489,7 @@ function WalkInsTable({ leads }) {
                         "Scheduled For Walk-In"}
                     </option>
                   )}
-                  {lead.lead_status === "Scheduled Call With Manager" && (
+                  {lead.last_updated_status === "Scheduled Call With Manager" && (
                     <option
                       value="Scheduled Call With Manager"
                       disabled
@@ -492,6 +497,16 @@ function WalkInsTable({ leads }) {
                     >
                       {terminologiesMap.get("Scheduled Call With Manager") ||
                         "Scheduled Call With Manager"}
+                    </option>
+                  )}
+                  {lead.last_updated_status === RESCHEDULED_FOR_WALK_IN && (
+                    <option
+                      value={RESCHEDULED_FOR_WALK_IN}
+                      disabled
+                      className="truncate"
+                    >
+                      {terminologiesMap.get(RESCHEDULED_FOR_WALK_IN) ||
+                        RESCHEDULED_FOR_WALK_IN}
                     </option>
                   )}
                 </select>
@@ -580,7 +595,7 @@ function WalkInsTable({ leads }) {
 
               {/* View Icon */}
               <div className="w-[5%] flex justify-center items-center text-[#32086d] text-xs font-normal inter-inter leading-tight rounded-br-[10px] rounded-tr-[10px] overflow-hidden pl-8">
-                 <ViewIcon onClick={() => handleClickOnView(lead.id)} />
+                 <ViewIcon onClick={() => handleClickOnView(lead.id, lead.name)} />
               </div>
             </div>
           ))}
@@ -633,6 +648,7 @@ function WalkInsTable({ leads }) {
           onClose={() => setShowActivityLogsInCommonDialogue(false)}
           leadId={selectedLeadId}
           fromTable={true}
+          leadName={selectedLeadName}
         />
       )}
       {showScheduleWalkInOrCallDialogue && (

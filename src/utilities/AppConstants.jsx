@@ -250,3 +250,28 @@ export const companyCategoriesMap = new Map([
   [4, "CAT C"],
   [5, "CAT D"]
 ])
+
+export const getActivityOptions = (fromActivityLog = false) => {
+  if (fromActivityLog) {
+    return [
+      { label: "Select Status", value: "" },
+      { label: terminologiesMap.get(FOLLOW_UP), value: FOLLOW_UP },
+      { label: terminologiesMap.get(CALL_BACK), value: CALL_BACK },
+    ];
+  }
+
+  return [
+    { label: "Select Status", value: "" },
+    { label: terminologiesMap.get(INTERESTED), value: INTERESTED },
+    { label: terminologiesMap.get(FOLLOW_UP), value: FOLLOW_UP },
+    { label: terminologiesMap.get(CALL_BACK), value: CALL_BACK },
+    { label: terminologiesMap.get(RNR_RING_NO_RESPONSE), value: RNR_RING_NO_RESPONSE },
+    { label: terminologiesMap.get(SWITCHED_OFF), value: SWITCHED_OFF },
+    { label: terminologiesMap.get(BUSY), value: BUSY },
+    { label: terminologiesMap.get(NOT_INTERESTED), value: NOT_INTERESTED },
+    { label: terminologiesMap.get(NOT_WORKING_NOT_REACHABLE), value: NOT_WORKING_NOT_REACHABLE },
+    { label: terminologiesMap.get(NOT_POSSIBLE), value: NOT_POSSIBLE },
+    { label: terminologiesMap.get(SCHEDULED_CALL_WITH_MANAGER), value: SCHEDULED_CALL_WITH_MANAGER },
+    { label: terminologiesMap.get(OTHERS), value: OTHERS },
+  ];
+};

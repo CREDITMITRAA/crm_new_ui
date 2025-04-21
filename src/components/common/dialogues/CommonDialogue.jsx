@@ -5,8 +5,13 @@ import { getAllActivityLogs } from "../../../features/activity-logs/activityLogs
 import ActivityLogsContainer from "../../activity-log/ActivityLogsContainer";
 import { resetActivityLogs } from "../../../features/activity-logs/activityLogsSlice";
 import { setIsConfirmationDialogueOpened } from "../../../features/ui/uiSlice";
+import AddActivityDialogue from "./AddActivityDialogue";
+import Snackbar from "../snackbars/Snackbar";
+import AddNoteDialogue from "./AddNoteDialogue";
+import PrimaryButton from "../PrimaryButton";
+import PopupButton from "../PopupButton";
 
-function CommonDialogue({ onClose, leadId, fromTable=false }) {
+function CommonDialogue({ onClose, leadId, fromTable = false, leadName }) {
   const dispatch = useDispatch();
   const {
     activityLogs = {},
@@ -18,6 +23,10 @@ function CommonDialogue({ onClose, leadId, fromTable=false }) {
   );
 
   const { users } = useSelector((state) => state.users);
+  const { loading: activitiesLoading, error: activitiesError } = useSelector(
+    (state) => state.activities
+  );
+  const { lead } = useSelector((state) => state.leads);
   const dialogueRef = useRef(null);
   const containerRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -25,20 +34,30 @@ function CommonDialogue({ onClose, leadId, fromTable=false }) {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [activityLogsToShow, setActivityLogsToShow] = useState([]);
+  const [showAddActivityDialogue, setShowAddActivityDialogue] = useState(false);
+  const [openToast, setOpenToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState(null);
+  const [toastStatusMessage, setToastStatusMessage] = useState(null);
+  const [toastStatusType, setToastStatusType] = useState(null);
+  const [
+    shouldSnackbarCloseOnClickOfOutside,
+    setShouldSnackbarCloseOnClickOfOutside,
+  ] = useState(true);
+  const [showAddNoteDialogue, setShowAddNoteDialogue] = useState(false);
 
   // Calculate pageSize based on container height
   useEffect(() => {
-    dispatch(setIsConfirmationDialogueOpened(true))
+    dispatch(setIsConfirmationDialogueOpened(true));
     if (containerRef.current) {
       const containerHeight = containerRef.current.clientHeight;
       const itemHeight = 50; // Approximate height of each item
       const calculatedPageSize = Math.ceil(containerHeight / itemHeight) + 2; // Add buffer
       setPageSize(calculatedPageSize);
     }
-    return ()=>{
-        dispatch(resetActivityLogs())
-        dispatch(setIsConfirmationDialogueOpened(false))
-    }
+    return () => {
+      dispatch(resetActivityLogs());
+      dispatch(setIsConfirmationDialogueOpened(false));
+    };
   }, []);
 
   useEffect(() => {
@@ -58,13 +77,22 @@ function CommonDialogue({ onClose, leadId, fromTable=false }) {
     setIsOpen(true);
 
     function handleClickOutside(e) {
-      if (dialogueRef.current && !dialogueRef.current.contains(e.target)) {
+      if (
+        dialogueRef.current &&
+        !dialogueRef.current.contains(e.target) &&
+        !showAddActivityDialogue &&
+        !showAddNoteDialogue
+      ) {
         onClose();
       }
     }
 
     function handleEscapeKey(e) {
-      if (e.key === "Escape") {
+      if (
+        e.key === "Escape" &&
+        !showAddActivityDialogue &&
+        !showAddNoteDialogue
+      ) {
         onClose();
       }
     }
@@ -75,13 +103,64 @@ function CommonDialogue({ onClose, leadId, fromTable=false }) {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleEscapeKey);
     };
-  }, [onClose]);
+  }, [onClose, showAddActivityDialogue, showAddNoteDialogue]);
+
+  useEffect(() => {
+    if (activitiesLoading) {
+      setToastStatusType("INFO");
+      setToastMessage("Adding activity...");
+      setToastStatusMessage("In Progress...");
+      setShouldSnackbarCloseOnClickOfOutside(true);
+    } else {
+      setToastStatusType("SUCCESS");
+      setToastMessage("Activity added...");
+      setToastStatusMessage("Success...");
+      setShouldSnackbarCloseOnClickOfOutside(true);
+    }
+  }, [activitiesLoading]);
+
+  useEffect(() => {
+    if (activitiesError) {
+      setToastStatusType("ERROR");
+      setToastMessage(activitiesError.message);
+      setToastStatusMessage("Error...");
+      setShouldSnackbarCloseOnClickOfOutside(true);
+    }
+  }, [activitiesError]);
+
+  useEffect(() => {
+    if (loading) {
+      setToastStatusType("INFO");
+      setToastMessage("Adding activity note...");
+      setToastStatusMessage("In Progress...");
+      setShouldSnackbarCloseOnClickOfOutside(true);
+    } else {
+      setToastStatusType("SUCCESS");
+      setToastMessage("Activity note added...");
+      setToastStatusMessage("Success...");
+      setShouldSnackbarCloseOnClickOfOutside(true);
+    }
+  }, [loading]);
+
+  useEffect(() => {
+    if (error) {
+      setToastStatusType("ERROR");
+      setToastMessage(error.message);
+      setToastStatusMessage("Error...");
+      setShouldSnackbarCloseOnClickOfOutside(true);
+    }
+  }, [error]);
 
   const userMap = useMemo(() => {
-    return new Map(users.map((user) => [user.id, { 
-      name: user.name, 
-      role_id: user.role_id 
-    }]));
+    return new Map(
+      users.map((user) => [
+        user.id,
+        {
+          name: user.name,
+          role_id: user.role_id,
+        },
+      ])
+    );
   }, [users]);
 
   const loadMore = () => {
@@ -155,8 +234,28 @@ function CommonDialogue({ onClose, leadId, fromTable=false }) {
           <div className="text-[#214768] text-base font-semibold poppins-thin leading-tight">
             Activity Logs
           </div>
-          <div className="cursor-pointer" onClick={onClose}>
-            <CloseIcon />
+          <div className="flex">
+            <div className="mr-3">
+              <PopupButton
+                name="Create Task"
+                onClick={() => setShowAddActivityDialogue(true)}
+                className="border-solid border-[#214768]"
+                borderColor="#214768"
+                textColor="#214768"
+              />
+            </div>
+            <div className="mr-3" onClick={() => setShowAddNoteDialogue(true)}>
+              <PopupButton
+                name="Add Note"
+                onClick={() => setShowAddNoteDialogue(true)}
+                className="border-solid border-[#214768]"
+                borderColor="#214768"
+                textColor="#214768"
+              />
+            </div>
+            <div className="flex justify-center items-center cursor-pointer" onClick={onClose}>
+              <CloseIcon />
+            </div>
           </div>
         </div>
 
@@ -174,6 +273,39 @@ function CommonDialogue({ onClose, leadId, fromTable=false }) {
           {loading && <div className="text-center py-4">Loading...</div>}
         </div>
       </div>
+      {showAddActivityDialogue && (
+        <AddActivityDialogue
+          onClose={() => setShowAddActivityDialogue(false)}
+          // selectedLead={lead}
+          fromTable={false}
+          onActivityAdded={() => {}}
+          fromActivityLog={true}
+          setOpenToast={setOpenToast}
+          openToast={openToast}
+          setToastStatusType={setToastStatusType}
+          setToastStatusMessage={setToastStatusMessage}
+          setToastMessage={setToastMessage}
+          leadId={leadId}
+          leadName={leadName}
+        />
+      )}
+      {showAddNoteDialogue && (
+        <AddNoteDialogue
+          onClose={() => setShowAddNoteDialogue(false)}
+          fromActivityLog={true}
+          setOpenToast={setOpenToast}
+          leadId={leadId}
+          leadName={leadName}
+        />
+      )}
+      <Snackbar
+        isOpen={openToast}
+        onClose={() => setOpenToast(false)}
+        status={toastStatusMessage}
+        message={toastMessage}
+        statusType={toastStatusType}
+        shouldCloseOnClickOfOutside={shouldSnackbarCloseOnClickOfOutside}
+      />
     </div>
   );
 }

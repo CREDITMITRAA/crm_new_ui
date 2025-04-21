@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getAllActivityLogs } from "./activityLogsThunks";
+import { addActivityLogNote, getAllActivityLogs } from "./activityLogsThunks";
 
 const initialState = {
   activityLogsEmployeeWise: [],
@@ -38,7 +38,17 @@ const activityLogsSlice = createSlice({
       .addCase(getAllActivityLogs.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
+      .addCase(addActivityLogNote.pending, (state,action)=>{
+        state.loading = true
+      })
+      .addCase(addActivityLogNote.fulfilled, (state,action)=>{
+        state.loading = false
+      })
+      .addCase(addActivityLogNote.rejected, (state,action)=>{
+        state.loading = false
+        state.error = null
+      })
   },
 });
 

@@ -42,6 +42,7 @@ function AssignedLeadsTable({
     setShowActivityLogsInCommonDialogue,
   ] = useState(false);
   const [selectedLeadId, setSelectedLeadId] = useState(null);
+  const [selectedLeadName, setSelectedLeadName] = useState(null)
   const [showAddActivityDialogue, setShowAddActivityDialogue] = useState(false);
   const [selectedLead, setSelectedLead] = useState(null);
   const [openToast, setOpenToast] = useState(false);
@@ -76,8 +77,9 @@ function AssignedLeadsTable({
     }
   }, [error]);
 
-  function handleClickOnView(leadId) {
+  function handleClickOnView(leadId, leadName) {
     setSelectedLeadId(leadId);
+    setSelectedLeadName(leadName)
     setShowActivityLogsInCommonDialogue(true);
   }
 
@@ -460,7 +462,7 @@ function AssignedLeadsTable({
                     size={16}
                   />
                 )}
-                <ViewIcon onClick={() => handleClickOnView(lead.id)} />
+                <ViewIcon onClick={() => handleClickOnView(lead.id, lead.name)} />
               </div>
             </div>
           ))}
@@ -470,6 +472,7 @@ function AssignedLeadsTable({
             onClose={() => setShowActivityLogsInCommonDialogue(false)}
             leadId={selectedLeadId}
             fromTable={true}
+            leadName={selectedLeadName}
           />
         )}
       </div>
