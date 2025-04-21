@@ -508,6 +508,11 @@ function WalkInsTable({ leads }) {
                   {lead?.application_status || "Not Available"}
                 </span>
               </div>
+
+              {/* View Icon */}
+              <div className="w-[5%] flex justify-center items-center text-[#32086d] text-xs font-normal inter-inter leading-tight rounded-br-[10px] rounded-tr-[10px] overflow-hidden pl-8">
+                 <ViewIcon onClick={() => handleClickOnView(lead.id)} />
+              </div>
             </div>
           ))}
         </div>

@@ -438,6 +438,11 @@ function VerificationTable({ leads, filters }) {
                   </span>
                 )}
               </div>
+
+              {/* Actions */}
+              <div className="w-[6%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight rounded-br-[10px] rounded-tr-[10px] overflow-hidden pl-8">
+                 <ViewIcon onClick={() => handleClickOnView(lead.id)} />
+               </div>
             </div>
           ))}
         </div>
