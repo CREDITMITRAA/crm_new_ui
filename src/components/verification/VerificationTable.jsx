@@ -321,9 +321,9 @@ function VerificationTable({ leads, filters }) {
               <div
                 className="w-[20%] flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden pr-8"
                 title={`Current Status: ${
-                  lead?.last_updated_status || "Not Updated"
+                  terminologiesMap.get(lead?.last_updated_status) || "Not Updated"
                 }\nActivity Status: ${
-                  lead?.Activities[0]?.activity_status || "No Activity"
+                  terminologiesMap.get(lead?.Activities[0]?.activity_status) || "No Activity"
                 }`}
               >
                 {/* Dot */}
@@ -383,10 +383,10 @@ function VerificationTable({ leads, filters }) {
               <div
                 className="w-[18%] flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
                 title={`Verification Status: ${
-                  lead?.verification_status || "Not Verified"
+                  terminologiesMap.get(lead?.verification_status) || "Not Verified"
                 }\nVerified By: ${
                   lead?.verified_by || "N/A"
-                }\nVerification Date: ${lead?.verification_date || "N/A"}`}
+                }\nVerification Date: ${terminologiesMap.get(lead?.verification_date) || "N/A"}`}
               >
                 <div className="flex-shrink-0 mr-2">
                   <svg width="6" height="6" viewBox="0 0 8 8" fill="none">
@@ -434,7 +434,7 @@ function VerificationTable({ leads, filters }) {
                   </select>
                 ) : (
                   <span className="truncate w-full text-center flex justify-left">
-                    {lead?.verification_status}
+                    {terminologiesMap.get(lead?.verification_status)}
                   </span>
                 )}
               </div>
