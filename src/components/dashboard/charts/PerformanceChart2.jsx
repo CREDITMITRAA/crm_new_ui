@@ -257,6 +257,10 @@ const PerformanceChartHorizontal = (
   const [showFilter, setShowFilter] = useState(false);
   const [showDot, setShowDot] = useState(false);
   const [exportData, setExportData] = useState(false);
+  const [sortConfig, setSortConfig] = useState({
+    key: 'callsDone',
+    direction: 'desc',
+  });
 
   useEffect(() => {
     const today = new Date();
@@ -302,6 +306,7 @@ const PerformanceChartHorizontal = (
       ...prev,
       [badgeType]: !prev[badgeType],
     }));
+    requestSort(badgeType)
   };
 
   function handleDateChange(fieldName, data) {
@@ -352,20 +357,31 @@ const PerformanceChartHorizontal = (
       ]),
     ];
 
-    return allUserIds.map((userId) => {
-      return {
-        name: usersMap.get(userId) || `User ${userId}`,
-        callsDone: getCountByUserId(originalData.calls_done, userId),
-        connected: getCountByUserId(originalData.connected_calls, userId),
-        interested: getCountByUserId(originalData.interested_leads, userId),
-        walkinsScheduled: getCountByUserId(
-          originalData.walkins_scheduled_today,
-          userId
-        ),
-        walkinsToday: getCountByUserId(originalData.walkins_today, userId),
-      };
+    return allUserIds.map((userId) => ({
+      name: usersMap.get(userId) || `User ${userId}`,
+      callsDone: getCountByUserId(originalData.calls_done, userId),
+      connected: getCountByUserId(originalData.connected_calls, userId),
+      interested: getCountByUserId(originalData.interested_leads, userId),
+      walkinsScheduled: getCountByUserId(originalData.walkins_scheduled_today, userId),
+      walkinsToday: getCountByUserId(originalData.walkins_today, userId),
+    })).sort((a, b) => {
+      if (a[sortConfig.key] < b[sortConfig.key]) {
+        return sortConfig.direction === 'asc' ? -1 : 1;
+      }
+      if (a[sortConfig.key] > b[sortConfig.key]) {
+        return sortConfig.direction === 'asc' ? 1 : -1;
+      }
+      return 0;
     });
   }, [originalData, usersMap]);
+
+  const requestSort = (key) => {
+    let direction = 'desc';
+    if (sortConfig.key === key && sortConfig.direction === 'desc') {
+      direction = 'asc';
+    }
+    setSortConfig({ key, direction });
+  };
 
   const maxValue = useMemo(() => {
     return Math.max(
@@ -592,7 +608,7 @@ const PerformanceChartHorizontal = (
         ) : !isConfirmationDialogueOpened ? (
           <ResponsiveContainer width="100%" height={500}>
             <BarChart
-              data={transformedData}
+              data={transformedData.sort((a,b)=>b-a)}
               margin={{ top: 20, right: 20, left: 20, bottom: 80 }}
               key={Object.values(activeBadges).join("-")} // Force re-render when badges change
             >
