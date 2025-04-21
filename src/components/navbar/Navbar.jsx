@@ -100,7 +100,7 @@ function Navbar() {
                 {onlineUsersWithDetails.map((user, index) => (
                   <div
                     key={user.id}
-                    className="absolute top-[60%] -translate-y-1/2"
+                    className={`absolute ${user.profile_image_url ? 'top-[60%]' : 'top-[50%]'} -translate-y-1/2`}
                     style={{
                       right: `${index * 20}px`,
                       zIndex: onlineUsersWithDetails.length - index,
