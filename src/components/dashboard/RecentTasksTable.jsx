@@ -540,13 +540,13 @@ function RecentTasksTable() {
                                   : "inherit",
                             }}
                           >
-                            <option value="Upcoming" disabled>
+                            <option value="Upcoming" disabled style={{color:'#464646',backgroundColor:'#F2F7FE'}}>
                               Upcoming
                             </option>
-                            <option value="Pending" disabled>
+                            <option value="Pending" disabled style={{color:'#464646',backgroundColor:'#F2F7FE'}}>
                               Pending
                             </option>
-                            <option value="Completed">Completed</option>
+                            <option value="Completed" style={{color:'#464646',backgroundColor:'#F2F7FE'}}>Completed</option>
                           </select>
                         </div>
                       ) : (

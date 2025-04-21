@@ -620,6 +620,7 @@ function WalkInsTable() {
                                 value="Upcoming"
                                 disabled
                                 className="truncate inter-inter"
+                                style={{color:'#464646',backgroundColor:'#F2F7FE'}}
                               >
                                 Upcoming
                               </option>
@@ -627,18 +628,21 @@ function WalkInsTable() {
                             <option
                               value="Rescheduled"
                               className="truncate inter-inter"
+                              style={{color:'#464646',backgroundColor:'#F2F7FE'}}
                             >
                               Rescheduled
                             </option>
                             <option
                               value="Completed"
                               className="truncate inter-inter"
+                              style={{color:'#464646',backgroundColor:'#F2F7FE'}}
                             >
                               Completed
                             </option>
                             <option
                               value="Cancelled"
                               className="truncate inter-inter"
+                              style={{color:'#464646',backgroundColor:'#F2F7FE'}}
                             >
                               Cancel
                             </option>
@@ -646,6 +650,7 @@ function WalkInsTable() {
                               value="Pending"
                               disabled
                               className="truncate inter-inter"
+                              style={{color:'#464646',backgroundColor:'#F2F7FE'}}
                             >
                               Pending
                             </option>
