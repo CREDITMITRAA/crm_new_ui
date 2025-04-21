@@ -218,6 +218,7 @@ function ActivityLog({ setShowActivityLog, showActivityLog, leadId }) {
                   backgroundColor="#C7D4E4"
                 />
               </div>
+              <div className="h-9">
               <DateButton
                 onClick={() => setIsPickerOpen(!isPickerOpen)}
                 onDateChange={(data) => handleDateChange(data)}
@@ -225,6 +226,7 @@ function ActivityLog({ setShowActivityLog, showActivityLog, leadId }) {
                 buttonBackgroundColor="bg-[#C7D4E4]"
               showBoxShadow={true}
               />
+              </div>
               <FilterButton
                 onClick={() => setShowFilter(!showFilter)}
                 showDot={showDot}
