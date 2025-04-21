@@ -275,7 +275,7 @@ function ActivityLogsContainerEmployeeWise({
                                         <span className="text-[#114F00] text-xs font-semibold poppins-thin">
                                           {" to "}
                                           {log.activity_type ===
-                                          "LEAD_ASSIGNMENT"
+                                          "LEAD_ASSIGNMENT" || "APPLICATION_STATUS_UPDATE" || "VERIFICATION_STATUS_UPDATE" || "LEAD_STATUS_UPDATE"
                                             ? terminologiesMap.get(afterTo) ||
                                               afterTo
                                             : afterTo}
