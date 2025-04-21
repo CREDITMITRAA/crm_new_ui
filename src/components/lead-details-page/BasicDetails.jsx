@@ -53,6 +53,12 @@ const basicDetailsCards = [
     isEditable: true,
     fieldName: "lead_source",
   },
+  {
+    icon: <SourceIcon />,
+    name: "Bureau Score",
+    isEditable: true,
+    fieldName: "bureau",
+  },
 ];
 
 function BasicDetails() {
@@ -82,7 +88,16 @@ function BasicDetails() {
     }
     
     // Get the current value from the lead object
-    const currentValue = lead[fieldName];
+    let currentValue = null;
+    let bureau_name = null
+    let bureau_score = null
+    if(fieldName == "bureau"){
+      bureau_name = lead.bereau_name
+      bureau_score = lead.bereau_score
+      currentValue = {bureau_name, bureau_score}
+    }else{
+      currentValue = lead[fieldName]
+    }
     
     // Function to compare values deeply
     const isValueChanged = (newVal, oldVal) => {
@@ -90,6 +105,15 @@ function BasicDetails() {
             if (newVal.length !== oldVal.length) return true;
             return newVal.some((item, index) => item !== oldVal[index]);
         }
+        
+        // Handle bureau object comparison
+        if (fieldName === "bureau" && typeof newVal === 'object' && typeof oldVal === 'object') {
+            return (
+                newVal.bereau_name !== oldVal?.bureau_name ||
+                newVal.bereau_score !== oldVal?.bureau_score
+            );
+        }
+        
         return newVal !== oldVal;
     };
     
@@ -99,10 +123,17 @@ function BasicDetails() {
             let updatedPayload = { ...prev };
     
             if (fieldName === "alternate_phones") {
-                // Ensure we're working with an array and filter out empty values
                 const phonesArray = Array.isArray(value) ? value : [value];
                 const cleanedPhones = phonesArray.filter(phone => phone && phone.trim() !== "");
                 updatedPayload.alternate_phones = [...new Set(cleanedPhones)];
+            } else if (fieldName === "bureau") {
+                // Only include changed bureau fields
+                if (value.bureau_name !== lead?.bereau_name) {
+                    updatedPayload.bereau_name = value.bureau_name;
+                }
+                if (value.bureau_score !== lead?.bereau_score) {
+                    updatedPayload.bereau_score = value.bureau_score;
+                }
             } else {
                 updatedPayload[fieldName] = value;
             }
@@ -110,7 +141,7 @@ function BasicDetails() {
             return updatedPayload;
         });
     
-        setToastMessage("Updating lead details...");
+setToastMessage("Updating lead details...");
         setToastStatusMessage("In Progress...");
         setToastStatusType("INFO");
         setOpenToast(true);
