@@ -86,7 +86,7 @@ function ActivityLogsContainerEmployeeWise({
         onClick={toggleAllItems}
       >
         <div className="justify-start text-slate-800 text-xs font-medium font-Poppins">
-          {allExpanded ? "Collapse" : "Expand"}
+          {allExpanded ? "Collapse all" : "Expand all"}
         </div>
       </div>
       {/* Iterate over date groups */}

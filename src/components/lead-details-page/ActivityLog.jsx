@@ -263,6 +263,7 @@ function ActivityLog({ setShowActivityLog, showActivityLog, leadId }) {
             <ActivityLogsContainer
               activityLogs={activityLogsToShow}
               userMap={userMap}
+              setShowActivityLog={setShowActivityLog}
             />
           </div>
         ) : (

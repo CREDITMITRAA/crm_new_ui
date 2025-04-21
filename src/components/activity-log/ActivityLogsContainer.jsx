@@ -8,14 +8,16 @@ import LeadNavigationIcon from "../icons/LeadNavigationIcon";
 import { terminologiesMap } from "../../utilities/AppConstants";
 import { useSelector } from "react-redux";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function ActivityLogsContainer({
   activityLogs = [],
   userMap,
   fromTable = false,
+  setShowActivityLog
 }) {
   console.log("user map = ", userMap);
-
+  const navigate = useNavigate()
   const { isConfirmationDialogueOpened } = useSelector((state) => state.ui);
   const [expandedItems, setExpandedItems] = useState({});
 
@@ -26,6 +28,19 @@ function ActivityLogsContainer({
       [key]: !prev[key],
     }));
   };
+
+  function handleNavigate(leadId){
+    console.log('current location = ', location.pathname);
+    const path = location.pathname
+    const extracted = "/" + path.split("/")[1]
+    console.log('extracted = ', extracted);
+    
+    if(extracted === "/lead-details-page"){
+      setShowActivityLog(false)
+    }else{
+      navigate(`/lead-details-page/${leadId}`)
+    }
+  }
 
   return (
     <div className="flex flex-col bg-[#E8EFF8] rounded-2xl px-4 py-4">
@@ -154,8 +169,8 @@ function ActivityLogsContainer({
                                         <div className="text-[#425565] text-xs font-normal poppins-thin">
                                           {formatName(logs[0].lead_name)}
                                         </div>
-                                        <div className="w-5 h-5 flex items-center justify-center">
-                                          <LeadNavigationIcon />
+                                        <div className="w-5 h-5 flex items-center justify-center cursor-pointer">
+                                          <LeadNavigationIcon color="#214768" onClick={()=>handleNavigate(leadId)}/>
                                         </div>
                                       </div>
                                       {/* <div
