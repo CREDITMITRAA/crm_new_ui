@@ -34,7 +34,7 @@ function SingleDetailCard({
   const genderOptions = [
     { label: "Male", value: "male" },
     { label: "Female", value: "female" },
-    { label: "Transgender", value: "transgender" },
+    { label: "Others", value: "others" },
   ];
 
   const companyCategoryOptions = [

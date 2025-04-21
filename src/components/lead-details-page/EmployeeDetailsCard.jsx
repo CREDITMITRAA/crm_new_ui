@@ -251,7 +251,7 @@ function EmployeeDetailsCard() {
               ))}
             </select>
           ) : (
-            <div className="w-full bg-[#D9E4F2] h-full flex items-center justify-between border px-3 py-2 rounded-md text-[#464646]">
+            <div className="w-full bg-[#D9E4F2] h-full flex items-center justify-between border border-[#6b7280] px-3 py-2 rounded-md text-[#464646]">
               {terminologiesMap.get(
                 leadBukcet === WALK_INS
                   ? lead.last_updated_status || lead.verification_status
