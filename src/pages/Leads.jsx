@@ -959,7 +959,7 @@ function Leads() {
               showFilter={showFilter}
             />
             {showDot && <ClearButton onClick={() => handleResetFilters(tableType)} />}
-            {tableType === ASSIGNED_TABLE && (
+            {role !== ROLE_EMPLOYEE && tableType === ASSIGNED_TABLE && (
               <ExportButton onClick={() => handleExportLeads()} />
             )}
             {selectedLeadIds.length > 0 && role === ROLE_ADMIN && (

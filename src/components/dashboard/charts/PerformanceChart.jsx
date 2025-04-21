@@ -338,7 +338,7 @@ const PerformanceChart = () => {
               filters.hasOwnProperty("date_time_range")) && (
               <ClearButton onClick={() => handleResetFilters()} />
             )}
-            <ExportButton onClick={() => setExportData(true)} />
+            {role !== ROLE_EMPLOYEE && <ExportButton onClick={() => setExportData(true)} />}
           </div>
         </div>
         <div

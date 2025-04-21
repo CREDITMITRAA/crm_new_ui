@@ -299,7 +299,7 @@ function RecentTasksTable() {
               showFilter={showFilter}
             />
             {showDot && <ClearButton onClick={() => handleResetFilters()} />}
-            <ExportButton onClick={() => handleExportLeads()} />
+            {role !== ROLE_EMPLOYEE && <ExportButton onClick={() => handleExportLeads()} />}
           </div>
         </div>
       </div>

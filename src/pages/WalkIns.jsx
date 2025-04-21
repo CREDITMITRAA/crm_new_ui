@@ -302,7 +302,7 @@ function WalkIns() {
               showFilter={showFilter}
             />
             {showDot && <ClearButton onClick={() => handleResetFilters()} />}
-            <ExportButton onClick={() => handleExportLeads()} />
+            {role !== ROLE_EMPLOYEE && <ExportButton onClick={() => handleExportLeads()} />}
             {/* <DeleteButton /> */}
           </div>
         </div>
