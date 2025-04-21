@@ -7,9 +7,12 @@ import UploadPayslipButton from "../common/UploadPayslipButton";
 import {
   activityOptions,
   CREDIT_BUREAU,
+  LEADS,
   PAYSLIP,
+  SCHEDULED_FOR_WALK_IN,
   terminologiesMap,
   VERIFICATION_1,
+  WALK_INS,
 } from "../../utilities/AppConstants";
 import { uploadLeadDocument } from "../../features/lead-documents/leadDocumentsThunks";
 import Snackbar from "../common/snackbars/Snackbar";
@@ -49,7 +52,20 @@ function EmployeeDetailsCard() {
   ] = useState(true);
   const [selectedActivityStatus, setSelectedActivityStatus] = useState(null);
   const [showAddActivityDialogue, setShowAddActivityDialogue] = useState(false);
+  const [leadBukcet, setLeadBucket] = useState(LEADS);
   console.log("activity status recent = ", recentActivity?.activity_status);
+
+  useEffect(() => {
+    console.log("LEAD FROM STORE = ", lead);
+    setLeadBucket(
+      lead.last_updated_status === SCHEDULED_FOR_WALK_IN ||
+        lead.verification_status === SCHEDULED_FOR_WALK_IN
+        ? WALK_INS
+        : lead.lead_status === VERIFICATION_1
+        ? VERIFICATION_1
+        : LEADS
+    );
+  }, [lead]);
 
   useEffect(() => {
     if (recentActivity?.activity_status) {
@@ -149,7 +165,11 @@ function EmployeeDetailsCard() {
       <div className="w-full bg-[#E9F3FF] h-full rounded-2xl shadow-lg flex flex-col justify-center items-center px-[0.625rem] pb-[0.938rem]">
         {/* profile avatar */}
         <div className="pt-[0.938rem] mx-auto">
-          <div className={`w-[6.25rem] h-[6.25rem] bg-[#ba8bfc] rounded-full border-4 ${lead.is_rejected ? 'border-[#CF2525BA]' : 'border-[#229d00]'} flex justify-center items-center`}>
+          <div
+            className={`w-[6.25rem] h-[6.25rem] bg-[#ba8bfc] rounded-full border-4 ${
+              lead.is_rejected ? "border-[#CF2525BA]" : "border-[#229d00]"
+            } flex justify-center items-center`}
+          >
             <img
               className="w-[5rem] h-[5.625rem]"
               src={
@@ -202,55 +222,69 @@ function EmployeeDetailsCard() {
             }
           /> */}
 
-          <select
-            className="w-full bg-[#D9E4F2] h-full flex items-center justify-between border px-3 py-2 rounded-md text-[#464646] cursor-pointer"
-            value={recentActivity?.activity_status || ""}
-            onChange={(e) =>
-              handleSelectActivity("activity_status", e.target.value)
-            }
-          >
-            {[
-              ...activityOptions,
-              ...(lead?.Activities?.[0]?.docs_collected ||
-              !isEmpty(payslips) ||
-              !isEmpty(bureaus) ||
-              !isEmpty(loanReports) ||
-              !isEmpty(creditReports)
-                ? [
-                    {
-                      label: terminologiesMap.get(VERIFICATION_1),
-                      value: VERIFICATION_1,
-                    },
-                  ]
-                : []),
-            ].map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+          {leadBukcet === LEADS ? (
+            <select
+              className="w-full bg-[#D9E4F2] h-full flex items-center justify-between border px-3 py-2 rounded-md text-[#464646] cursor-pointer"
+              value={recentActivity?.activity_status || ""}
+              onChange={(e) =>
+                handleSelectActivity("activity_status", e.target.value)
+              }
+            >
+              {[
+                ...activityOptions,
+                ...(lead?.Activities?.[0]?.docs_collected ||
+                !isEmpty(payslips) ||
+                !isEmpty(bureaus) ||
+                !isEmpty(loanReports) ||
+                !isEmpty(creditReports)
+                  ? [
+                      {
+                        label: terminologiesMap.get(VERIFICATION_1),
+                        value: VERIFICATION_1,
+                      },
+                    ]
+                  : []),
+              ].map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <div className="w-full bg-[#D9E4F2] h-full flex items-center justify-between border px-3 py-2 rounded-md text-[#464646]">
+              {terminologiesMap.get(
+                leadBukcet === WALK_INS
+                  ? lead.last_updated_status || lead.verification_status
+                  : leadBukcet === VERIFICATION_1
+                  ? lead.lead_status
+                  : null
+              )}
+            </div>
+          )}
         </div>
 
         {/* notes container */}
-        <div className="w-full bg-[#214768]/20 rounded-[10px] border border-[#214768] mt-[0.625rem] p-[0.938rem]">
-          <ul className="list-disc pl-0 text-black text-sm font-normal inter-inter leading-[30px]">
-            {recentActivityNotes.map((item, index) => (
-              <li
-                key={index}
-                title={item.description} // Tooltip for full text on hover
-                className="relative flex items-center before:content-['•'] before:mr-2 before:text-black truncate hover:overflow-visible hover:whitespace-normal hover:bg-white hover:p-1 hover:rounded transition-all duration-200 cursor-pointer"
-                style={{
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  maxWidth: "100%", // Ensures ellipsis applies properly
-                }}
-              >
-                {item.description}
-              </li>
-            ))}
-          </ul>
-        </div>
+        {recentActivityNotes?.length > 0 && (
+          <div className="w-full bg-[#214768]/20 rounded-[10px] border border-[#214768] mt-[0.625rem] p-[0.938rem]">
+            <ul className="list-disc pl-0 text-black text-sm font-normal inter-inter leading-[30px]">
+              {recentActivityNotes.map((item, index) => (
+                <li
+                  key={index}
+                  title={item.description} // Tooltip for full text on hover
+                  className="relative flex items-center before:content-['•'] before:mr-2 before:text-black truncate hover:overflow-visible hover:whitespace-normal hover:bg-white hover:p-1 hover:rounded transition-all duration-200 cursor-pointer"
+                  style={{
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    maxWidth: "100%", // Ensures ellipsis applies properly
+                  }}
+                >
+                  {item.description}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {/* upload buttons container */}
         <div className="w-full flex justify-between gap-1 mt-[0.625rem]">
@@ -278,16 +312,12 @@ function EmployeeDetailsCard() {
           onClose={() => setShowAddActivityDialogue(false)}
           selectedActivityStatus={selectedActivityStatus}
           selectedLead={lead}
-          onActivityAdded={() =>
-          {
+          onActivityAdded={() => {
             dispatch(
               getRecentActivityNotesByLeadId({ leadId: lead.id, limit: 3 })
-            )
-            dispatch(
-              getRecentActivity({leadId:lead.id})
-            )
-          }
-          }
+            );
+            dispatch(getRecentActivity({ leadId: lead.id }));
+          }}
           setShowAddActivityDialogue={setShowAddActivityDialogue}
           setOpenToast={setOpenToast}
           openToast={openToast}

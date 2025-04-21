@@ -56,6 +56,7 @@ export const WALK_INS = "Walk-Ins"
 export const EMPLOYEES = "Employees"
 export const NOT_CONTACTED = "Not Contacted"
 export const APPLICATION_CLOSED = "Closed"
+export const RESCHEDULED_FOR_WALK_IN = "Re-Scheduled For Walk-In"
 
 export const terminologiesMap = new Map([
   [NOT_CONTACTED, 'Unattended'],
@@ -90,7 +91,8 @@ export const terminologiesMap = new Map([
   [CLOSED, "Application Closed"],
   [LOGIN, LOGIN],
   [WALK_INS, "Appointments"],
-  [LEADS, "Pipeline Entries"]
+  [LEADS, "Pipeline Entries"],
+  [RESCHEDULED_FOR_WALK_IN, "Appointment Rescheduled"]
 ])
 
 export const verificationStatusOptions = [
