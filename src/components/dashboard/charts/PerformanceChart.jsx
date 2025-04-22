@@ -384,21 +384,21 @@ const PerformanceChart = () => {
           {/* Status Badges */}
           <div className="flex gap-2">
             <ChartStatusBadge
-              text="Approved for walk-in"
+              text="Paperwork verified"
               dotColor={"#9ECF4F"}
               bgColor={"#EAF0F8"}
               isActive={activeBadges.approved}
               onClick={() => handleBadgeClick("approved")}
             />
             <ChartStatusBadge
-              text="Walk-Ins Today"
+              text="Appointments today"
               dotColor={"#547494"}
               bgColor={"#EAF0F8"}
               isActive={activeBadges.walkinsToday}
               onClick={() => handleBadgeClick("walkinsToday")}
             />
             <ChartStatusBadge
-              text="Walk-Ins Scheduled Today"
+              text="Appointments scheduled Today"
               dotColor={"#7BB7A6"}
               bgColor={"#EAF0F8"}
               isActive={activeBadges.walkinsScheduled}

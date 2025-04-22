@@ -14,6 +14,7 @@ const initialPayload = {
   emi: "",
   outstanding: "",
   emi_date: "",
+  loan_disbursal_date: "",
 };
 
 function LoanReport() {
@@ -301,6 +302,112 @@ function LoanReport() {
               placeholder="Enter outstanding amount"
               className="w-full h-[30px] bg-[#D9E4F2] rounded-md px-2 border border-none text-[#214768] text-[10px] inter-inter"
             />
+          </div>
+
+          {/* loan disbursal date */}
+          <div>
+            <div className="text-[#214768] text-[0.625rem] font-semibold poppins-thin leading-tight mb-[0.313rem]">
+              Loan Disbursal Date
+            </div>
+            <div className="relative">
+              <input
+                type="date"
+                name="loan_disbursal_date"
+                value={payload.loan_disbursal_date}
+                onChange={handleInputChange}
+                className="w-full h-[30px] bg-[#D9E4F2] rounded-md px-2 border border-none text-[#214768] text-[10px] inter-inter
+                [&::-webkit-calendar-picker-indicator]:!opacity-0
+                [&::-webkit-calendar-picker-indicator]:!absolute
+                [&::-webkit-calendar-picker-indicator]:!left-0
+                [&::-webkit-calendar-picker-indicator]:!w-full
+                [&::-webkit-calendar-picker-indicator]:!h-full
+                [&::-webkit-calendar-picker-indicator]:!cursor-pointer"
+              />
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M8 2V5"
+                    stroke="#153E5C"
+                    strokeWidth="1.5"
+                    strokeMiterlimit="10"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M16 2V5"
+                    stroke="#153E5C"
+                    strokeWidth="1.5"
+                    strokeMiterlimit="10"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M3.5 9.09H20.5"
+                    stroke="#153E5C"
+                    strokeWidth="1.5"
+                    strokeMiterlimit="10"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M21 8.5V17C21 20 19.5 22 16 22H8C4.5 22 3 20 3 17V8.5C3 5.5 4.5 3.5 8 3.5H16C19.5 3.5 21 5.5 21 8.5Z"
+                    stroke="#153E5C"
+                    strokeWidth="1.5"
+                    strokeMiterlimit="10"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M15.6947 13.7002H15.7037"
+                    stroke="#153E5C"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M15.6947 16.7002H15.7037"
+                    stroke="#153E5C"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M11.9955 13.7002H12.0045"
+                    stroke="#153E5C"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M11.9955 16.7002H12.0045"
+                    stroke="#153E5C"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M8.29431 13.7002H8.30329"
+                    stroke="#153E5C"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M8.29431 16.7002H8.30329"
+                    stroke="#153E5C"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
       </div>

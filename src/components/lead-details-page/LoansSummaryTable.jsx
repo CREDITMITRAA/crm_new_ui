@@ -104,6 +104,7 @@ function LoansSummaryTable() {
               "Loan Amount",
               "EMI",
               "EMI Date",
+              "Loan Disbursal Date",
               "Outstanding",
               ...(user.user.role !== ROLE_EMPLOYEE ? ["Actions"] : []),
             ].map((header, index) => (
@@ -130,6 +131,7 @@ function LoansSummaryTable() {
                 Number(loanReport.loan_amount).toFixed(0),
                 Number(loanReport.emi).toFixed(0),
                 loanReport.emi_date ? moment(loanReport.emi_date).format("DD-MM-YYYY") : '-',
+                loanReport.loan_disbursal_date ? moment(loanReport.loan_disbursal_date).format("DD-MM-YYYY") : '-',
                 Number(loanReport.outstanding).toFixed(0),
               ].map((text, colIndex) => (
                 <div
@@ -137,7 +139,7 @@ function LoansSummaryTable() {
                   className={`flex-1 px-3 py-2.5 bg-[#D8E8FF] text-[#464646] text-xs border-l border-[#E9F3FF] ${
                     colIndex === 0 ? "border-l-0" : ""
                   } ${
-                    colIndex >= 2 && colIndex !== 4 ? "text-right" : "text-center"
+                    (colIndex >= 2 && colIndex !== 4 && colIndex !== 5) ? "text-right flex justify-end items-center" : "text-center flex justify-center items-center "
                   }`}
                 >
                   {text}
@@ -164,7 +166,7 @@ function LoansSummaryTable() {
               <div className="text-[#214768] text-xs font-semibold">Total</div>
             </div>
 
-            {[totalLoanAmount, totalEmi, "", totalOutstanding].map(
+            {[totalLoanAmount, totalEmi, "", "", totalOutstanding].map(
               (total, index) => (
                 <div
                   key={index}

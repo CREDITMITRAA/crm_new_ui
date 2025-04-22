@@ -3,7 +3,7 @@ import CheckCheckbox from "../common/checkbox/CheckCheckbox";
 import UncheckedCheckbox from "../common/checkbox/UnCheckedCheckbox";
 import Pagination from "../common/Pagination";
 import ToggleCheckbox from "../common/checkbox/ToggleCheckbox";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import CommonDialogue from "../common/dialogues/CommonDialogue";
 import ViewIcon from "../icons/ViewIcon";
 import { useNavigate } from "react-router-dom";
@@ -91,6 +91,13 @@ function AssignedLeadsTable({
   //     getRecentActivityNotesByLeadId({ leadId: selectedLead.id, limit: 3 })
   //   );
   // }
+
+  const handleClose = useCallback(() => {
+    if (showAddActivityDialogue) {
+      setShowAddActivityDialogue(false);
+    }
+    setOpenToast(false);
+  }, [showAddActivityDialogue]);
 
   return (
     <>
@@ -503,7 +510,7 @@ function AssignedLeadsTable({
       )}
       <Snackbar
         isOpen={openToast}
-        onClose={() => setOpenToast(false)}
+        onClose={handleClose}
         status={toastStatusMessage}
         message={toastMessage}
         statusType={toastStatusType}

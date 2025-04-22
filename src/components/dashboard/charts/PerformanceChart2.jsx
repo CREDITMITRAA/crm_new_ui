@@ -223,7 +223,7 @@ const CustomTooltip = ({ active, payload, label, activeBadges }) => {
         <div className="text-[#214768] text-[10px] font-medium grid grid-cols-[auto_min-content_auto] gap-x-1 gap-y-1">
           <span>Call done</span> <span>:</span> <span>{data.callsDone}</span>
           <span>Connected</span> <span>:</span> <span>{data.connected}</span>
-          <span>Interested</span> <span>:</span> <span>{data.interested}</span>
+          <span>Active Prospect</span> <span>:</span> <span>{data.interested}</span>
         </div>
       </div>
     );
@@ -576,7 +576,7 @@ const PerformanceChartHorizontal = (
           </div>
           <div className="flex gap-4">
             <ChartStatusBadge
-              text="Interested"
+              text="Active Prospect"
               dotColor={"#9D9D9D"}
               bgColor={"#EAF0F8"}
               isActive={activeBadges.interested}

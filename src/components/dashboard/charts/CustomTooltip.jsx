@@ -21,9 +21,9 @@ function CustomTooltip({ active, payload, activeBadges }){
   
         {/* Data Items */}
         <div className="text-[#214768] text-[10px] font-medium grid grid-cols-[auto_min-content_auto] gap-x-1 gap-y-1">
-          <span>Approved for Walk-In</span> <span>:</span> <span>{data.interested}</span>
-          <span>Walk-Ins Today</span> <span>:</span> <span>{data.walkinsToday}</span>
-          <span>Walk-Ins Scheduled Today</span> <span>:</span> <span>{data.walkinsScheduled}</span>
+          <span>Paperwork verified</span> <span>:</span> <span>{data.interested}</span>
+          <span>Appointments today</span> <span>:</span> <span>{data.walkinsToday}</span>
+          <span>Appointments scheduled today</span> <span>:</span> <span>{data.walkinsScheduled}</span>
         </div>
       </div>
     );

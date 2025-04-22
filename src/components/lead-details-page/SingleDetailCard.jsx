@@ -71,10 +71,10 @@ function SingleDetailCard({
   ];
 
   const bureauNameOptions = [
-    { label: "CIBIL", value: "CIBIL" },
-    { label: "EXPERION", value: "EXPERION" },
-    { label: "CRIF", value: "CRIF" },
-    { label: "OTHERS", value: "OTHERS" }
+    { label: "TrasnUnion Cibil", value: "TrasnUnion Cibil" },
+    { label: "Experian", value: "Experian" },
+    { label: "Crif", value: "Crif" },
+    { label: "Others", value: "Others" }
   ];
 
   const getOptions = () => {
