@@ -161,36 +161,69 @@ const PerformanceChart = () => {
       ]),
     ];
 
-    return allUserIds.map((userId) => {
-      return {
-        name: usersMap.get(userId) || `User ${userId}`,
-        callsDone: getCountByUserId(originalData.calls_done, userId),
-        connected: getCountByUserId(originalData.connected_calls, userId),
-        interested: getCountByUserId(
-          originalData.approved_for_walk_ins,
-          userId
-        ),
-        walkinsScheduled: getCountByUserId(
-          originalData.walkins_scheduled_today,
-          userId
-        ),
-        walkinsToday: getCountByUserId(originalData.walkins_today, userId),
-      };
-    });
-  }, [originalData, usersMap]);
+    return allUserIds
+      .map((userId) => {
+        return {
+          name: usersMap.get(userId) || `User ${userId}`,
+          callsDone: getCountByUserId(originalData.calls_done, userId),
+          connected: getCountByUserId(originalData.connected_calls, userId),
+          interested: getCountByUserId(
+            originalData.approved_for_walk_ins,
+            userId
+          ),
+          walkinsScheduled: getCountByUserId(
+            originalData.walkins_scheduled_today,
+            userId
+          ),
+          walkinsToday: getCountByUserId(originalData.walkins_today, userId),
+        };
+      })
+      .sort((a, b) => {
+        // Sort by active badges in descending order
+        let aTotal = 0;
+        let bTotal = 0;
+        
+        if (activeBadges.approved) {
+          aTotal += a.interested;
+          bTotal += b.interested;
+        }
+        if (activeBadges.walkinsToday) {
+          aTotal += a.walkinsToday;
+          bTotal += b.walkinsToday;
+        }
+        if (activeBadges.walkinsScheduled) {
+          aTotal += a.walkinsScheduled;
+          bTotal += b.walkinsScheduled;
+        }
+        
+        return bTotal - aTotal;
+      });
+  }, [originalData, usersMap, activeBadges]);
 
   const chartConfig = useMemo(() => {
     const dataLength = transformedData.length;
     const activeBarCount = Object.values(activeBadges).filter(Boolean).length;
+    
+    // Calculate dynamic bar size based on number of users and active bars
+    let barSize;
+    if (dataLength <= 3) {
+      barSize = Math.min(40, 100 / activeBarCount); // Max 40px when very few users
+    } else if (dataLength <= 5) {
+      barSize = Math.min(30, 80 / activeBarCount);
+    } else if (dataLength <= 10) {
+      barSize = Math.min(20, 60 / activeBarCount);
+    } else {
+      barSize = Math.max(8, 40 / activeBarCount); // Minimum 8px
+    }
 
     return {
-      barSize: dataLength <= 5 ? 15 : Math.max(10, 30 - dataLength), // Dynamic sizing
-      barCategoryGap: dataLength <= 5 ? "20%" : "10%", // Reduced gaps
-      barGap: 0, // Always use 0 gap between bars of same category
+      barSize,
+      barCategoryGap: dataLength <= 5 ? "20%" : "10%",
+      barGap: 0,
       margin: {
         top: 20,
         right: 20,
-        left: 0, // Reduced left margin
+        left: 0,
         bottom: 80,
       },
       padding: {
@@ -292,20 +325,6 @@ const PerformanceChart = () => {
     );
   }
 
-  console.log("original data = ", originalData);
-
-  // if (
-  //   isEmpty(originalData.approved_for_walk_ins) &&
-  //   isEmpty(originalData.walkins_scheduled_today) &&
-  //   isEmpty(originalData.walkins_today)
-  // ) {
-  //   return (
-  //     <div className="w-full h-[20rem] bg-[#F0F6FF] flex justify-center items-center rounded-xl shadow-xl">
-  //       <EmptyDataMessageIcon size={100} />
-  //     </div>
-  //   );
-  // }
-
   return (
     <div>
       <div className="grid grid-cols-12 px-4">
@@ -321,8 +340,8 @@ const PerformanceChart = () => {
                 filters.hasOwnProperty("date_time_range")
               }
               resetFilters={resetFilters}
-              fieldName="date" // Uncomment this
-              date={filters?.date_time_range || filters?.date} // Uncomment this
+              fieldName="date"
+              date={filters?.date_time_range || filters?.date}
               buttonBackgroundColor="bg-[#C7D4E4]"
               showBoxShadow={true}
             />
@@ -367,21 +386,21 @@ const PerformanceChart = () => {
             <ChartStatusBadge
               text="Approved for walk-in"
               dotColor={"#9ECF4F"}
-              bgColor={"#EAF0F8"} //9ECF4F33
+              bgColor={"#EAF0F8"}
               isActive={activeBadges.approved}
               onClick={() => handleBadgeClick("approved")}
             />
             <ChartStatusBadge
               text="Walk-Ins Today"
               dotColor={"#547494"}
-              bgColor={"#EAF0F8"} // 54749433
+              bgColor={"#EAF0F8"}
               isActive={activeBadges.walkinsToday}
               onClick={() => handleBadgeClick("walkinsToday")}
             />
             <ChartStatusBadge
               text="Walk-Ins Scheduled Today"
               dotColor={"#7BB7A6"}
-              bgColor={"#EAF0F8"} // 7BB7A633
+              bgColor={"#EAF0F8"}
               isActive={activeBadges.walkinsScheduled}
               onClick={() => handleBadgeClick("walkinsScheduled")}
             />
@@ -442,13 +461,13 @@ const PerformanceChart = () => {
                   tick={<CustomTick />}
                   interval={0}
                   scale="point"
-                  padding={{ left: 50, right: 10, bottom: 10 }} // Reduced padding
+                  padding={{ left: 50, right: 10, bottom: 10 }}
                 />
 
                 <YAxis
-                  width={80} // Fixed width instead of dynamic calculation
-                  tickCount={6} // Reduced tick count for cleaner look
-                  domain={[0, "auto"]} // Let Recharts determine the best domain
+                  width={80}
+                  tickCount={6}
+                  domain={[0, "auto"]}
                   allowDecimals={false}
                   tick={<CustomYAxisTick />}
                   padding={{ bottom: 10 }}
