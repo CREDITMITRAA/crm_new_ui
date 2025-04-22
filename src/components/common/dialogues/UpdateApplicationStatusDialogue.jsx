@@ -5,6 +5,7 @@ import {
   FOLLOW_UP,
   REJECTED,
   SCHEDULED_CALL_WITH_MANAGER,
+  terminologiesMap,
 } from "../../../utilities/AppConstants";
 import DateButton from "../DateButton";
 import DropDown from "../dropdowns/DropDown";
@@ -159,7 +160,7 @@ function UpdateApplicationStatusDialogue({
           </div>
 
           <div className="w-full flex justify-center my-2 text-[#888888]">
-            <span>{`You are about to change application status to ${payload?.application_status}`}</span>
+            <span>{`You are about to change application status to ${terminologiesMap.get(payload?.application_status)}`}</span>
           </div>
 
           {payload?.application_status === REJECTED ? (
@@ -208,7 +209,7 @@ function UpdateApplicationStatusDialogue({
 
                 {/* Multiline Input (Textarea) */}
                 <textarea
-                  className={`border ${"border-[#214768]"} rounded-2xl p-4 bg-[#21476815] min-h-[10rem] w-full resize-none outline-none text-[#32086D] text-sm`}
+                  className={`border-[#214768] focus:border-[#214768] rounded-2xl p-4 bg-[#21476815] min-h-[10rem] w-full resize-none outline-none focus:outline-none focus:ring-0 text-[#214768] text-sm placeholder:text-[#888888]`}
                   placeholder="Write your note here..."
                   onChange={(e) => handleChange(e)}
                 />

@@ -321,8 +321,7 @@ function NormalLoginTable({ leads }) {
               <div
                 className={`w-[10%] flex justify-left items-center text-[#2B323B] text-xs font-normal inter-inter leading-none rounded-tl-[10px] rounded-bl-[10px]`}
               >
-                {/* {truncateWithEllipsis(lead?.id,8)} */}
-                00000000
+                {truncateWithEllipsis(lead?.id,8)}
               </div>
 
               {/* name */}

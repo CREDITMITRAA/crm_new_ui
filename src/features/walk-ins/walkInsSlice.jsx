@@ -26,7 +26,19 @@ const initialState = {
 const walkInsSlice = createSlice({
   name: "walkIns",
   initialState: initialState,
-  reducers: {},
+  reducers: {
+    updateLeadStatus: (state, action) => {
+      state.leads = state.leads.map(lead => 
+        lead.id === action.payload.id
+          ? {
+              ...lead,
+              application_status: action.payload.status,
+              last_updated_status: action.payload.status
+            }
+          : lead
+      );
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getWalkInsCount.pending, (state, action) => {
@@ -66,19 +78,37 @@ const walkInsSlice = createSlice({
         state.error = null;
       })
       .addCase(updateApplicationStatus.pending, (state, action) => {
-        state.loading = true;
+        state.statusUpdateLoading = true;
       })
       .addCase(updateApplicationStatus.fulfilled, (state, action) => {
-        state.loading = false;
-        state.leads = state.leads.map((lead) =>
-          lead.id === action.payload.data.data.id
-            ? action.payload.data.data
-            : lead
-        );
+        state.statusUpdateLoading = false;
+        
+        // Debugging: Log the actual values, not proxies
+        // console.log('Action payload:', JSON.parse(JSON.stringify(action.payload)));
+        
+        // // Check if payload has the expected structure
+        // if (!action.payload?.data?.data?.id) {
+        //   console.error('Invalid payload structure', action.payload);
+        //   return;
+        // }
+      
+        // const updatedLead = action.payload.data.data;
+        
+        // state.leads = state.leads.map((lead) => {
+        //   if (Number(lead.id) === Number) {
+        //     console.log('Updating lead:', lead.id, 'with:', updatedLead);
+        //     return { ...lead, ...updatedLead };
+        //   }
+        //   return lead;
+        // });
+      
+        // // Verify the update worked
+        // const afterUpdate = state.leads.find(lead => lead.id === updatedLead.id);
+        // console.log('After update:', JSON.parse(JSON.stringify(afterUpdate)));
       })
       .addCase(updateApplicationStatus.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
+        state.statusUpdateLoading = false;
+        state.statusUpdateError = action.payload;
       })
       .addCase(updateWalkInOrCallStatus.pending, (state,action)=>{
         state.statusUpdateLoading = true
@@ -109,4 +139,5 @@ const walkInsSlice = createSlice({
   },
 });
 
+export const {updateLeadStatus} = walkInsSlice.actions
 export default walkInsSlice.reducer;
