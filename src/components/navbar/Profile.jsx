@@ -163,7 +163,7 @@ export default function Profile({ onClose }) {
           { label: "Department", value: user.user.department },
           { label: "Email address", value: user.user.email },
           { label: "Address", value: user.user.address || "NA" },
-          { label: "Gender", value: "Male" },
+          { label: "Gender", value: user.user.gender || "NA" },
           { label: "Employee ID", value: user.user.employee_id || "NA" },
         ].map((item, index) => (
           <div key={index} className="mb-2 col-span-6">

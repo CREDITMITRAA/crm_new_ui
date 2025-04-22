@@ -37,7 +37,8 @@ function AddActivityDialogue({
   setToastMessage,
   fromActivityLog=false,
   leadId,
-  leadName
+  leadName,
+  prev_status=null
 }) {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
@@ -193,6 +194,7 @@ function AddActivityDialogue({
       if (description) {
         payload.description = description;
       }
+      payload.prev_status = selectedLead.leadStatus
   
       console.log("Dispatching with payload:", payload); // Log the payload
       setOpenToast(true)

@@ -57,6 +57,8 @@ export const EMPLOYEES = "Employees"
 export const NOT_CONTACTED = "Not Contacted"
 export const APPLICATION_CLOSED = "Closed"
 export const RESCHEDULED_FOR_WALK_IN = "Re-Scheduled For Walk-In"
+export const MALE = "male"
+export const FEMALE = "female"
 
 export const terminologiesMap = new Map([
   [NOT_CONTACTED, 'Unattended'],
@@ -132,6 +134,13 @@ export const userRoleOptions = [
   { label: ADMIN, value: ROLE_ADMIN, id: 1 },
   { label: MANAGER, value: ROLE_MANAGER, id: 2 },
   { label: EMPLOYEE, value: ROLE_EMPLOYEE, id: 3 },
+];
+
+export const userGenderOptions = [
+  { label: "Select Role", value: "", id: 0 },
+  { label: MALE, value: MALE, id: 1 },
+  { label: FEMALE, value: FEMALE, id: 2 },
+  // { label: EMPLOYEE, value: ROLE_EMPLOYEE, id: 3 },
 ];
 
 export const loanTypeOptions = [

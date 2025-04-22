@@ -9,7 +9,7 @@ import {
   addEmployee,
   updateEmployee,
 } from "../../features/employee/employeeThunks";
-import { userRoleOptions } from "../../utilities/AppConstants";
+import { userGenderOptions, userRoleOptions } from "../../utilities/AppConstants";
 import { setIsConfirmationDialogueOpened } from "../../features/ui/uiSlice";
 
 function AddEmployeeDialogue({ onClose, employee }) {
@@ -30,6 +30,7 @@ function AddEmployeeDialogue({ onClose, employee }) {
     employee_id: employee?.employee_id || "",
     date_of_join: employee?.date_of_join || "",
     role_id: employee?.role_id || "",
+    gender: employee?.gender || ""
   });
   const [openToast, setOpenToast] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
@@ -108,6 +109,10 @@ function AddEmployeeDialogue({ onClose, employee }) {
 
   const handleRoleChange = (fieldName, value) => {
     setFormData((prev) => ({ ...prev, role_name: value }));
+  };
+
+  const handleGenderChange = (fieldName, value) => {
+    setFormData((prev) => ({ ...prev, gender: value }));
   };
 
   const handleDateChange = (e) => {
@@ -211,7 +216,7 @@ function AddEmployeeDialogue({ onClose, employee }) {
           </div>
 
           {/* job title */}
-          <div className="flex flex-col w-full mt-[0.375rem] col-span-12">
+          <div className="flex flex-col w-full mt-[0.375rem] col-span-6">
             <div className="text-[#214768] text-[10px] font-normal poppins-thin leading-tight">
               Job Title
             </div>
@@ -223,6 +228,40 @@ function AddEmployeeDialogue({ onClose, employee }) {
                 value={formData.designation}
                 onChange={handleInputChange}
                 className="w-full h-full bg-[#21476810] rounded-md pl-3 text-[#214768] text-[10px] font-normal inter-inter placeholder-opacity-50 placeholder-[#677F94] focus:outline-none border-none"
+              />
+            </div>
+          </div>
+
+          {/* gender */}
+          <div className="flex flex-col w-full mt-[0.375rem] col-span-6">
+            <div className="text-[#214768] text-[10px] font-normal poppins-thin leading-tight">
+              Gender
+            </div>
+            <div className="w-full h-[30px] relative mt-[0.313rem]">
+              <DropDown
+                options={userGenderOptions}
+                onChange={handleGenderChange}
+                defaultSelectedOptionIndex={
+                  mode === "add"
+                    ? 0
+                    : userGenderOptions.findIndex(
+                        (userGender) => userGender.value === formData.gender
+                      )
+                }
+                buttonBackgroundColor="#21476810"
+                className="w-full h-full rounded-md"
+                fieldName="gender"
+                backgroundColor="#F2F7FE"
+                textColor="text-[#214768]"
+                buttonBorder="none"
+                buttonBorderRadius="0.4rem"
+                buttonHeight="100%"
+                optionsTextColor="#464646"
+                buttonBoxShadow="none"
+                buttonFontSize="10px"
+                buttonPadding="0rem 0.5rem"
+                optionsBackgroundColor="#F2F7FE"
+                size="sm"
               />
             </div>
           </div>
