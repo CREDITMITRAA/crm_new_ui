@@ -8,6 +8,7 @@ import {
   SCHEDULE_CALL_WITH_MANAGER,
   SCHEDULE_FOR_WALK_IN,
   SCHEDULED_CALL_WITH_MANAGER,
+  terminologiesMap,
 } from "../../../utilities/AppConstants";
 import DateButton from "../DateButton";
 import DropDown from "../dropdowns/DropDown";
@@ -25,8 +26,8 @@ import { setIsConfirmationDialogueOpened } from "../../../features/ui/uiSlice";
 import { rescheduleWalkIn } from "../../../features/walk-ins/walkInsThunks";
 
 const options = [
-  { label: SCHEDULE_FOR_WALK_IN, value: SCHEDULE_FOR_WALK_IN },
-  { label: SCHEDULE_CALL_WITH_MANAGER, value: SCHEDULE_CALL_WITH_MANAGER },
+  { label: terminologiesMap.get(SCHEDULE_FOR_WALK_IN), value: terminologiesMap.get(SCHEDULE_FOR_WALK_IN) },
+  { label: terminologiesMap.get(SCHEDULE_CALL_WITH_MANAGER), value: terminologiesMap.get(SCHEDULE_CALL_WITH_MANAGER) },
 ];
 
 function ScheduleWalkInOrCallDialogue({
@@ -255,13 +256,13 @@ function ScheduleWalkInOrCallDialogue({
       >
         <>
           <span className="text-[#214768] font-semibold leading-5 poppins-thin">
-            {isReschedule
+            {terminologiesMap.get(isReschedule
               ? isCall
                 ? RESCHEDULE_CALL_WITH_MANAGER
                 : RESCHEDULE_WALK_IN
               : isCall
               ? SCHEDULE_CALL_WITH_MANAGER
-              : SCHEDULE_FOR_WALK_IN}
+              : SCHEDULE_FOR_WALK_IN)}
           </span>
 
           {/* status and date time container */}

@@ -35,6 +35,7 @@ function FilterDialogue({
   const dispatch = useDispatch();
   const [employees, setEmployees] = useState([
     { label: "Filter by associate", value: "" },
+    { label: "Re-Assigned", value: "re_assigned" },
   ]);
   const [selectedEmployeeName, setSelectedEmployeeName] = useState(null);
   const { users, userOptions } = useSelector((state) => state.users);
@@ -75,7 +76,7 @@ function FilterDialogue({
 
   useEffect(() => {
     if (users && users.length > 0) {
-      setEmployees([{ label: "Filter by associate", value: "" }, ...userOptions]);
+      setEmployees([{ label: "Filter by associate", value: "" },{ label: "Re-Assigned", value: "re_assigned" }, ...userOptions]);
     } else {
       dispatch(getUsersNameAndId());
     }
@@ -92,7 +93,11 @@ function FilterDialogue({
     switch (name) {
       case "assigned_to":
         const user = users.find((user) => user.name === value);
-        setFilters((prev) => ({ ...prev, assigned_to: user?.id }));
+        if(value === "re_assigned"){
+          setFilters((prev) => ({ ...prev, assigned_to: value }));
+        }else{
+          setFilters((prev) => ({ ...prev, assigned_to: user?.id }));
+        }
         setSelectedEmployeeName(user?.name);
         break;
 

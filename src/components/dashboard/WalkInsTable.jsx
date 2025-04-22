@@ -570,7 +570,7 @@ function WalkInsTable() {
                               .utcOffset(330)
                               .format("DD MMM, YYYY hh:mm A")
                           : ""}
-                        {!walkIn.is_call && walkIn.is_rescheduled && (
+                        {walkIn.is_call && walkIn.is_rescheduled && (
                           <span className="">
                             <CallIcon size={14} />
                           </span>

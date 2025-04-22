@@ -230,27 +230,28 @@ export const activityOptions = [
 ];
 
 export const quotes = [
-  "Success is no accident. It’s hard work, perseverance, learning, sacrifice, and most of all, love for what you are doing.–Pelé" ,
-  "Dreams don’t work unless you do.–John C. Maxwell",
-  "The only place where success comes before work is in the dictionary.–Vidal Sassoon",
-  "Hard work beats talent when talent doesn’t work hard.–Tim Notke",
-  "There are no shortcuts to any place worth going.–Beverly Sills",
-  "Work hard in silence, let your success be the noise.–Frank Ocean",
-  "Great things come from hard work and perseverance. No excuses.–Kobe Bryant",
-  "Success is the sum of small efforts repeated day in and day out.–Robert Collier",
-  "Don’t watch the clock; do what it does—keep going.–Sam Levenson",
-  "The harder you work for something, the greater you’ll feel when you achieve it.",
-  "Believe you can, and you’re halfway there.–Theodore Roosevelt",
-  "Stay positive, work hard, and make it happen.",
-  "Your only limit is your mind. Train it to see possibilities, not obstacles.",
-  "Success is not just about making money. It’s about making a difference.",
-  "Every day may not be good, but there’s something good in every day.",
-  "Do what you love, love what you do, and success will follow.",
-  "A positive mindset brings positive things.–Philipp Reiter",
-  "Doubt kills more dreams than failure ever will.–Suzy Kassem",
-  "Your attitude determines your direction.",
-  "You are capable of more than you know. Keep going!"
-]
+  "Success is no accident. It’s hard work, perseverance, learning, sacrifice, and most of all, love for what you are doing. – Pelé",
+  "Dreams don’t work unless you do. – John C. Maxwell",
+  "The only place where success comes before work is in the dictionary. – Vidal Sassoon",
+  "Hard work beats talent when talent doesn’t work hard. – Tim Notke",
+  "There are no shortcuts to any place worth going. – Beverly Sills",
+  "Work hard in silence, let your success be the noise. – Frank Ocean",
+  "Great things come from hard work and perseverance. No excuses. – Kobe Bryant",
+  "Success is the sum of small efforts repeated day in and day out. – Robert Collier",
+  "Don’t watch the clock; do what it does—keep going. – Sam Levenson",
+  "Believe you can, and you’re halfway there. – Theodore Roosevelt",
+  "A positive mindset brings positive things. – Philipp Reiter",
+  "Doubt kills more dreams than failure ever will. – Suzy Kassem",
+  "Success usually comes to those who are too busy to be looking for it. – Henry David Thoreau",
+  "Don’t be afraid to give up the good to go for the great. – John D. Rockefeller",
+  "I’m a greater believer in luck, and I find the harder I work the more I have of it. – Thomas Jefferson",
+  "Success is not final, failure is not fatal: It is the courage to continue that counts. – Winston Churchill",
+  "Do not wait to strike till the iron is hot, but make it hot by striking. – William Butler Yeats",
+  "What you get by achieving your goals is not as important as what you become by achieving your goals. – Zig Ziglar",
+  "Start where you are. Use what you have. Do what you can. – Arthur Ashe",
+  "Positive anything is better than negative nothing. – Elbert Hubbard",
+  "Energy and persistence conquer all things. – Benjamin Franklin"
+];
 
 export const companyCategoriesMap = new Map([
   [1, "SUPER CAT"],
