@@ -537,7 +537,7 @@ function WalkInsTable() {
                     {/* Walk-in/Call Date Time */}
                     <div className="w-[15%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden">
                       <span
-                        className="truncate w-full text-center px-1 flex justify-left"
+                        className="truncate w-full text-center items-center px-1 flex justify-left"
                         title={moment(walkIn.walk_in_date_time)
                           .utcOffset(330)
                           .format("DD MMM, YYYY hh:mm A")}
@@ -556,7 +556,7 @@ function WalkInsTable() {
                     {/* Rescheduled Date Time */}
                     <div className="w-[15%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden">
                       <span
-                        className="truncate w-full text-center px-1 flex justify-left"
+                        className="truncate w-full text-center items-center px-1 flex justify-left"
                         title={
                           walkIn.is_rescheduled
                             ? moment(walkIn.rescheduled_date_time)
