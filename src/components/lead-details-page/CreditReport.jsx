@@ -114,7 +114,7 @@ function CreditReport() {
               Outstanding Amount
             </div>
             <input
-              type="text"
+              type="number"
               name="total_outstanding"
               value={payload.total_outstanding}
               onChange={handleInputChange}

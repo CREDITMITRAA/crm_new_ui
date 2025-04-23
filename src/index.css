@@ -177,3 +177,15 @@ button:hover {
 /* .recharts-wrapper {
   position: static !important;
 } */
+
+/* Hide arrows in input type number for Chrome, Safari, Edge, Opera */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Hide arrows in input type number for Firefox */
+input[type='number'] {
+  -moz-appearance: textfield;
+}

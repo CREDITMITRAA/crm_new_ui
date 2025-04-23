@@ -159,7 +159,7 @@ function LoanReport() {
               Loan Amount
             </div>
             <input
-              type="text"
+              type="number"
               name="loan_amount"
               value={payload.loan_amount}
               onChange={handleInputChange}
@@ -174,7 +174,7 @@ function LoanReport() {
               EMI
             </div>
             <input
-              type="text"
+              type="number"
               name="emi"
               value={payload.emi}
               onChange={handleInputChange}
@@ -295,7 +295,7 @@ function LoanReport() {
               Outstanding Amount
             </div>
             <input
-              type="text"
+              type="number"
               name="outstanding"
               value={payload.outstanding}
               onChange={handleInputChange}
