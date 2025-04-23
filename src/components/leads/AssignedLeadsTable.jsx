@@ -31,6 +31,7 @@ function AssignedLeadsTable({
   selectAllLeads,
   selectedLeadIds,
   handleCheckboxChange,
+  filters
 }) {
   const dispatch = useDispatch();
   const { role, user } = useSelector((state) => state.auth);
@@ -489,6 +490,7 @@ function AssignedLeadsTable({
           onActivityAdded={() => {
             dispatch(
               getLeadsByAssignedUserId({
+                ...filters,
                 userId: user.user.id,
                 page: pagination.page,
                 pageSize: pagination.pageSize,

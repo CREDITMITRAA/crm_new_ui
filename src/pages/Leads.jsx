@@ -764,6 +764,7 @@ function Leads() {
               selectAllLeads={selectAllLeads}
               selectedLeadIds={selectedLeadIds}
               handleCheckboxChange={handleCheckboxChange}
+              filters={filters}
             />
           )
         );
