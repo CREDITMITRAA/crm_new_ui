@@ -276,7 +276,7 @@ function ActivityLogsContainerEmployeeWise({
                                           {" to "}
                                           {log.activity_type ===
                                           "LEAD_ASSIGNMENT" || "APPLICATION_STATUS_UPDATE" || "VERIFICATION_STATUS_UPDATE" || "LEAD_STATUS_UPDATE"
-                                            ? terminologiesMap.get(afterTo) ||
+                                            ? afterTo ||
                                               afterTo
                                             : afterTo}
                                         </span>

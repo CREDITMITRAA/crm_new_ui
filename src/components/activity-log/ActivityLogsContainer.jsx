@@ -221,11 +221,10 @@ function ActivityLogsContainer({
                                               {" to "}
                                               {log.activity_type ===
                                               "LEAD_ASSIGNMENT" || "APPLICATION_STATUS_UPDATE" || "VERIFICATION_STATUS_UPDATE" || "LEAD_STATUS_UPDATE"
-                                                ? terminologiesMap.get(
-                                                    log.activity_desc.split(
+                                                ? log.activity_desc.split(
                                                       " to "
                                                     )[1]
-                                                  ) ||
+                                                  ||
                                                   log.activity_desc.split(
                                                     " to "
                                                   )[1]
