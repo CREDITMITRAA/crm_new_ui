@@ -247,9 +247,9 @@ function ActivityLog() {
         </>
       ) : (
         <>
-          {!isEmpty(activityLogsEmployeeWise) ? (
+          {isEmpty(activityLogsEmployeeWise) ? (
             <>
-              <div className="w-full h-[20rem] bg-white flex justify-center items-center">
+              <div className="w-full h-[20rem] bg-[#F0F6FF] flex justify-center items-center rounded-2xl">
                 <EmptyDataMessageIcon size={100} />
               </div>
             </>

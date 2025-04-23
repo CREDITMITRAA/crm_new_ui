@@ -697,9 +697,18 @@ export function truncateWithEllipsis(text, maxLength) {
   return text.substring(0, maxLength) + "...";
 }
 
-export function isEmpty(array) {
-  if (!Array.isArray(array) || array.length === 0) return true;
-  return array.every((item) => item.count === 0);
+export function isEmpty(value) {
+  if (Array.isArray(value)) {
+    return value.length === 0 || value.every(item => item.count === 0);
+  }
+
+  if (value && typeof value === 'object') {
+    const keys = Object.keys(value);
+    return keys.length === 0 || keys.every(key => value[key]?.count === 0);
+  }
+
+  // If it's neither an array nor an object, treat as empty
+  return true;
 }
 
 export function extractDate(timestamp) {
