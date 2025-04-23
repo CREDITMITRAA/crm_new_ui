@@ -31,12 +31,11 @@ const authSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         console.log('payload = ', action.payload);
-        
-        state.loading = false;
         state.user = action.payload.user;
-        state.role = action.payload.user.role;
+        state.role = action.payload.user.user.role;
         state.profile_image_url = action.payload.user.profile_image_url
         state.last_login_ago = action.payload.last_login_ago
+        state.loading = false;
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;

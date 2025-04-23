@@ -122,9 +122,9 @@ function AssignedLeadsTable({
             {/* checkbox */}
             <div
               className={`w-[${
-                role === ROLE_EMPLOYEE ? 0 : 5
+                user.user.role === ROLE_EMPLOYEE ? 0 : 5
               }%] h-9 flex justify-center items-center rounded-tl-[10px] ${
-                role === ROLE_EMPLOYEE && "hidden"
+                user.user.role === ROLE_EMPLOYEE && "hidden"
               }`}
             >
               {/* <CheckCheckbox /> */}
@@ -140,7 +140,7 @@ function AssignedLeadsTable({
             {/* lead id */}
             <div
               className={`w-[8%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight px-1 ${
-                role === ROLE_EMPLOYEE && "rounded-tl-[10px] pl-[20px]"
+                user.user.role === ROLE_EMPLOYEE && "rounded-tl-[10px] pl-[20px]"
               }`}
             >
               Lead ID
@@ -177,7 +177,7 @@ function AssignedLeadsTable({
             </div>
 
             {/* Assigned */}
-            {role !== ROLE_EMPLOYEE && (
+            {user.user.role !== ROLE_EMPLOYEE && (
               <div className="w-[10%] flex justify-left items-center text-[#214768] text-xs font-bold poppins-thin leading-tight px-1 ">
                 Assigned
               </div>
@@ -190,13 +190,13 @@ function AssignedLeadsTable({
 
             {/* View */}
             <div
-              className={`w-[${role === ROLE_EMPLOYEE ? 10 : 5}%] flex ${
-                role === ROLE_EMPLOYEE ? "justify-center" : "justify-left"
+              className={`w-[${user.user.role === ROLE_EMPLOYEE ? 10 : 5}%] flex ${
+                user.user.role === ROLE_EMPLOYEE ? "justify-center" : "justify-left"
               } items-center text-[#214768] text-xs font-bold poppins-thin leading-tight px-1 rounded-tr-[10px] ${
-                role === ROLE_EMPLOYEE && "pl-[40px]"
+                user.user.role === ROLE_EMPLOYEE && "pl-[40px]"
               }`}
             >
-              {role === ROLE_EMPLOYEE ? "Action" : "View"}
+              {user.user.role === ROLE_EMPLOYEE ? "Action" : "View"}
             </div>
           </div>
 
@@ -217,7 +217,7 @@ function AssignedLeadsTable({
               {/* Checkbox */}
               <div
                 className={`${
-                  role === ROLE_EMPLOYEE ? "w-0 hidden" : "w-[5%]"
+                  user.user.role === ROLE_EMPLOYEE ? "w-0 hidden" : "w-[5%]"
                 } h-full flex justify-center items-center `}
               >
                 <ToggleCheckbox
@@ -237,7 +237,7 @@ function AssignedLeadsTable({
               {/* Lead ID */}
               <div
                 className={`w-[8%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight  overflow-hidden px-1 ${
-                  role === ROLE_EMPLOYEE && "pl-[20px]"
+                  user.user.role === ROLE_EMPLOYEE && "pl-[20px]"
                 }`}
                 onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
               >
@@ -284,14 +284,14 @@ function AssignedLeadsTable({
                 <span
                   className="truncate w-full text-center flex justify-left"
                   title={
-                    role === ROLE_EMPLOYEE
+                    user.user.role === ROLE_EMPLOYEE
                       ? terminologiesMap.get(lead?.leadStatus)
                       : terminologiesMap.get(
                           lead?.last_updated_status || lead?.lead_status
                         )
                   }
                 >
-                  {role === ROLE_EMPLOYEE
+                  {user.user.role === ROLE_EMPLOYEE
                     ? truncateWithEllipsis(
                         terminologiesMap.get(lead?.leadStatus),
                         20
@@ -313,14 +313,14 @@ function AssignedLeadsTable({
                 <span
                   className="truncate w-full text-center flex justify-left"
                   title={
-                    role === ROLE_EMPLOYEE
+                    user.user.role === ROLE_EMPLOYEE
                       ? formatName(lead.leadSource)
                       : formatName(lead.lead_source || "Not Available")
                   }
                 >
                   {truncateWithEllipsis(
                     formatName(
-                      role === ROLE_EMPLOYEE
+                      user.user.role === ROLE_EMPLOYEE
                         ? lead.leadSource
                         : lead.lead_source || "Not Available"
                     ),
@@ -337,7 +337,7 @@ function AssignedLeadsTable({
                 <span
                   className="truncate w-full text-center flex justify-left"
                   title={
-                    role === ROLE_EMPLOYEE
+                    user.user.role === ROLE_EMPLOYEE
                       ? moment(lead.importedOn)
                           .utcOffset(330)
                           .format("DD MMM YY hh:mm a")
@@ -346,7 +346,7 @@ function AssignedLeadsTable({
                           .format("DD MMM YY hh:mm a")
                   }
                 >
-                  {role === ROLE_EMPLOYEE
+                  {user.user.role === ROLE_EMPLOYEE
                     ? moment(lead.importedOn)
                         .utcOffset(330)
                         .format("DD MMM YY hh:mm a")
@@ -382,7 +382,7 @@ function AssignedLeadsTable({
               </div>
 
               {/* Assigned */}
-              {role !== ROLE_EMPLOYEE && (
+              {user.user.role !== ROLE_EMPLOYEE && (
                 <div
                   className="w-[10%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
                   onDoubleClick={() =>
@@ -415,7 +415,7 @@ function AssignedLeadsTable({
                 <span
                   className="truncate w-full text-center flex justify-left"
                   title={
-                    role === ROLE_EMPLOYEE
+                    user.user.role === ROLE_EMPLOYEE
                       ? moment(lead.assignedAt)
                           .utcOffset(330)
                           .format("DD MMM, YY hh:mm a")
@@ -426,7 +426,7 @@ function AssignedLeadsTable({
                       : "Not Assigned"
                   }
                 >
-                  {role === ROLE_EMPLOYEE
+                  {user.user.role === ROLE_EMPLOYEE
                     ? moment(lead.assignedAt)
                         .utcOffset(330)
                         .format("DD MMM, YY hh:mm a")
@@ -453,15 +453,15 @@ function AssignedLeadsTable({
               {/* View */}
               <div
                 className={`${
-                  role === ROLE_EMPLOYEE ? "w-[10%]" : "w-[5%]"
+                  user.user.role === ROLE_EMPLOYEE ? "w-[10%]" : "w-[5%]"
                 } flex ${
-                  role === ROLE_EMPLOYEE
+                  user.user.role === ROLE_EMPLOYEE
                     ? "justify-center pl-8"
                     : "justify-left pl-2"
                 } items-center text-[#000000] text-xs font-normal inter-inter leading-tight rounded-tr-lg rounded-br-lg`}
-                style={{ paddingRight: role === ROLE_EMPLOYEE && "10px" }}
+                style={{ paddingRight: user.user.role === ROLE_EMPLOYEE && "10px" }}
               >
-                {role === ROLE_EMPLOYEE && (
+                {user.user.role === ROLE_EMPLOYEE && (
                   <CallIcon
                     onClick={() => {
                       setSelectedLead(lead);

@@ -52,12 +52,17 @@ function Leads() {
   const { user, role } = useSelector((state) => state.auth);
   const { height } = useSelector((state) => state.ui);
   const [reasons, setReasons] = useState([])
-  const [filters, setFilters] = useState(() => ({
-    ...(role === ROLE_EMPLOYEE && {
-      userId: user.user.id,
-      exclude_verification: true,
-    }),
-  }));
+  const [filters, setFilters] = useState(() => {
+    const baseFilters = {};
+    if (user?.user?.role === ROLE_EMPLOYEE) {
+      return {
+        ...baseFilters,
+        userId: user.user.id,
+        exclude_verification: true
+      };
+    }
+    return baseFilters;
+  });
   const [employees, setEmployees] = useState([]);
   const [selectedEmployeeName, setSelectedEmployeeName] = useState(null);
   const [showFilter, setShowFilter] = useState(false);
@@ -115,7 +120,7 @@ function Leads() {
   // Create debounced fetch function
   const fetchLeads = useCallback(
     debounce((filters) => {
-      if (role === ROLE_EMPLOYEE) {
+      if (user.user.role === ROLE_EMPLOYEE) {
         console.log("table type = ", tableType)
         dispatch(getLeadsByAssignedUserId(filters));
       } else if(tableType === INVALID_LEADS_TABLE) {
@@ -126,11 +131,13 @@ function Leads() {
         dispatch(getAllLeads(filters));
       }
     }, 500),
-    [dispatch, role, tableType]
+    [tableType]
   );
 
   useEffect(()=>{
-    fetchUniqueInvalidLeadsReasons()
+    {
+      role !== ROLE_EMPLOYEE && fetchUniqueInvalidLeadsReasons()
+    }
   },[])
 
   // Initial load effect
@@ -138,22 +145,33 @@ function Leads() {
     if (height > 0) {
       const newPageSize = Math.floor(height / 40);
       setPageSize(newPageSize);
-
-      // Only dispatch on initial mount
+  
+      // Only dispatch on initial mount with proper filters
       if (initialMount.current) {
-        if (role === ROLE_EMPLOYEE) {
-          dispatch(getLeadsByAssignedUserId({ pageSize: newPageSize }));
+        const initialFilters = {
+          pageSize: newPageSize,
+          ...(user?.user?.role === ROLE_EMPLOYEE && {
+            userId: user.user.id,
+            exclude_verification: true
+          })
+        };
+  
+        if (user?.user?.role === ROLE_EMPLOYEE) {
+          dispatch(getLeadsByAssignedUserId(initialFilters));
         } else {
-          dispatch(getAllLeads({ pageSize: newPageSize }));
+          dispatch(getAllLeads(initialFilters));
         }
+        
         dispatch(getAllDistinctLeadSources());
-        if (role !== ROLE_EMPLOYEE && tableType === INVALID_LEADS_TABLE) {
+        
+        if (user?.user?.role !== ROLE_EMPLOYEE && tableType === INVALID_LEADS_TABLE) {
           dispatch(getAllInvalidLeads());
         }
+        
         initialMount.current = false;
       }
     }
-  }, [dispatch, height, role]);
+  }, [height]);
 
   // Filter change effect
   useEffect(() => {
@@ -164,7 +182,7 @@ function Leads() {
         const isEmptyValue = filters[key] === "" || filters[key] == null;
         
         // Check if key should be excluded based on role
-        const shouldExcludeKey = role === ROLE_EMPLOYEE
+        const shouldExcludeKey = user.user.role === ROLE_EMPLOYEE
           ? [
               "page",
               "pageSize",
@@ -224,7 +242,7 @@ function Leads() {
     } else if (tableType === EX_EMPLOYEES_LEADS_TABLE) {
       // TO DO
     } else {
-      if (role === ROLE_EMPLOYEE) {
+      if (user.user.role === ROLE_EMPLOYEE) {
         dispatch(
           getLeadsByAssignedUserId({ ...filters, page: 1, pageSize: data })
         );
@@ -254,7 +272,7 @@ function Leads() {
     } else if (tableType === EX_EMPLOYEES_LEADS_TABLE) {
       // TO DO
     } else {
-      if (role === ROLE_EMPLOYEE) {
+      if (user.user.role === ROLE_EMPLOYEE) {
         dispatch(
           getLeadsByAssignedUserId({ ...payload, limit: payload.pageSize })
         );
@@ -281,7 +299,7 @@ function Leads() {
           pageSize: pagination.pageSize,
           page: pagination.page + 1,
         };
-        if (role === ROLE_EMPLOYEE) {
+        if (user.user.role === ROLE_EMPLOYEE) {
           dispatch(
             getLeadsByAssignedUserId({ ...payload, pageSize: payload.pageSize })
           );
@@ -311,7 +329,7 @@ function Leads() {
           pageSize: pagination.pageSize,
           page: pagination.page - 1,
         };
-        if (role === ROLE_EMPLOYEE) {
+        if (user.user.role === ROLE_EMPLOYEE) {
           dispatch(
             getLeadsByAssignedUserId({ ...payload, pageSize: payload.pageSize })
           );
@@ -325,7 +343,7 @@ function Leads() {
   function handleResetFilters(tableType) {
     let initialFilters = {
       pageSize: 10,
-      ...(role === ROLE_EMPLOYEE && {
+      ...(user.user.role === ROLE_EMPLOYEE && {
         userId: user.user.id,
         exclude_verification: true,
       }),
@@ -960,7 +978,7 @@ function Leads() {
               showFilter={showFilter}
             />
             {showDot && <ClearButton onClick={() => handleResetFilters(tableType)} />}
-            {role !== ROLE_EMPLOYEE && tableType === ASSIGNED_TABLE && (
+            {user.user.role !== ROLE_EMPLOYEE && tableType === ASSIGNED_TABLE && (
               <ExportButton onClick={() => handleExportLeads()} />
             )}
             {selectedLeadIds.length > 0 && role === ROLE_ADMIN && (
