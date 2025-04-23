@@ -498,7 +498,7 @@ const PerformanceChartHorizontal = (
 
   if (loading) {
     return (
-      <div className="w-full h-[20rem] bg-[#E8EFF8] flex justify-center items-center">
+      <div className="w-full h-[20rem] bg-[#E8EFF8] flex justify-center items-center mt-4">
         <Loader />
       </div>
     );
@@ -569,7 +569,7 @@ const PerformanceChartHorizontal = (
       </div>
 
       {/* Modified chart container to handle empty state */}
-      <div className="w-full bg-[#F0F6FF] rounded-2xl p-4 shadow-xl mt-1.5">
+      <div className="w-full bg-[#F0F6FF] h-[500px] rounded-2xl p-4 shadow-xl mt-1.5">
         <div className="flex justify-between items-center mb-6">
           <div className="text-black text-base font-semibold poppins-thin leading-tight">
             Strategic Performance Metrics
@@ -606,15 +606,15 @@ const PerformanceChartHorizontal = (
             <EmptyDataMessageIcon size={100} />
           </div>
         ) : !isConfirmationDialogueOpened ? (
-          <ResponsiveContainer width="100%" height={500}>
+          <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={transformedData.sort((a,b)=>b-a)}
-              margin={{ top: 20, right: 20, left: 20, bottom: 80 }}
+              margin={{ top: 20, right: 20, left: 0, bottom: 80 }}
               key={Object.values(activeBadges).join("-")} // Force re-render when badges change
             >
               <XAxis
                 dataKey="name"
-                padding={{ left: 10, right: 10 }}
+                padding={{ left: 10, right: 10, bottom:10 }}
                 tick={<CustomTick />}
               />
               <YAxis

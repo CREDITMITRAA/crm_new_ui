@@ -319,7 +319,7 @@ const PerformanceChart = () => {
 
   if (loading) {
     return (
-      <div className="w-full h-[20rem] bg-[#E8EFF8] flex justify-center items-center">
+      <div className="w-full h-[20rem] bg-[#E8EFF8] flex justify-center items-center mt-4">
         <Loader />
       </div>
     );

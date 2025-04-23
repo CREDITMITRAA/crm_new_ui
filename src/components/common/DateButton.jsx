@@ -129,7 +129,7 @@ function DateButton({
         zIndex: fromTable
           ? 1
           : isAddActivityDialogueOpened
-          ? 1
+          ? -1
           : isConfirmationDialogueOpened || isProfileDialogueOpened
           ? -1
           : 1,
