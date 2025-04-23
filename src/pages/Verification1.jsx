@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import ClearButton from "../components/common/ClearButton";
 import ExportButton from "../components/common/ExportButton";
 import FilterButton from "../components/common/FiltersButton";
@@ -22,10 +22,11 @@ function Verification1() {
   );
   const { users } = useSelector((state) => state.users);
   const { height } = useSelector((state) => state.ui);
-  const {user, role} = useSelector((state)=>state.auth)
-  const [filters, setFilters] = useState({ lead_status: "Verification 1",
-    ...(role === ROLE_EMPLOYEE && {assigned_to:user.user.id})
-   });
+  const { user, role } = useSelector((state) => state.auth);
+  const [filters, setFilters] = useState({ 
+    lead_status: "Verification 1",
+    ...(role === ROLE_EMPLOYEE && { assigned_to: user.user.id })
+  });
   const [pageSize, setPageSize] = useState(0);
   const [resetFilters, setResetFilters] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
@@ -34,10 +35,15 @@ function Verification1() {
   const [toastMessage, setToastMessage] = useState(null);
   const [toastStatusMessage, setToastStatusMessage] = useState(null);
   const [toastStatusType, setToastStatusType] = useState(null);
+  const [showLoader, setShowLoader] = useState(false);
   const [
     shouldSnackbarCloseOnClickOfOutside,
     setShouldSnackbarCloseOnClickOfOutside,
   ] = useState(true);
+
+  const initialLoad = useRef(true);
+  const debouncedFetchLeads = useRef(null);
+
   const fieldsToExport = [
     "id",
     "name",
@@ -50,88 +56,83 @@ function Verification1() {
     "updatedAt",
     "LeadAssignments",
   ];
+
   const paginationOptions = [
     { label: "10", value: 10 },
     { label: "20", value: 20 },
     { label: "50", value: 50 },
   ];
+
+  // Initialize debounced function
+  useEffect(() => {
+    debouncedFetchLeads.current = debounce((filters) => {
+      dispatch(getVerificationLeads(filters));
+    }, 500);
+
+    return () => {
+      debouncedFetchLeads.current.cancel();
+    };
+  }, [dispatch]);
+
+  // Main effect for initial load and page size changes
   useEffect(() => {
     if (height > 0) {
-      const pageSize = Math.floor(height / 40);
-      setPageSize(pageSize);
-      dispatch(getVerificationLeads({ ...filters, pageSize: pageSize }));
-      dispatch(getAllDistinctLeadSources());
+      const calculatedPageSize = Math.floor(height / 40);
+      setPageSize(calculatedPageSize);
+      
+      if (initialLoad.current || pageSize !== calculatedPageSize) {
+        debouncedFetchLeads.current({ ...filters, pageSize: calculatedPageSize });
+        dispatch(getAllDistinctLeadSources());
+        initialLoad.current = false;
+      }
     }
-  }, [dispatch, height]);
+  }, [dispatch, height, pageSize, filters]);
 
+  // Effect for filter changes
+  useEffect(() => {
+    if (!initialLoad.current && pageSize > 0) {
+      debouncedFetchLeads.current({ ...filters, pageSize });
+    }
+  }, [filters, pageSize]);
+
+  // Effect for showing active filters dot
   useEffect(() => {
     if (pageSize > 0) {
-      // Fetch leads with current filters and pageSize
-      fetchLeads({ ...filters, pageSize });
-  
-      // Debug: Log all filters before processing
-      console.log('All filters before filtering:', filters);
-  
-      // Determine excluded keys based on role
       const excludedKeys = role === ROLE_EMPLOYEE
         ? ["page", "pageSize", "totalPages", "total", "assigned_to"]
-        : ["page", "pageSize", "totalPages", "total",];
-  
-      // Filter out excluded keys and empty values
+        : ["page", "pageSize", "totalPages", "total"];
+
       const filteredFilters = Object.entries(filters).reduce((acc, [key, value]) => {
-        // Skip excluded keys
-        if (excludedKeys.includes(key)) {
-          console.log(`Excluding key (role-based): ${key}`);
+        if (excludedKeys.includes(key)) return acc;
+        if (value == null || value === "" || 
+            (Array.isArray(value) && value.length === 0) || 
+            (typeof value === 'object' && Object.keys(value).length === 0)) {
           return acc;
         }
-        
-        // Special debug for array values
-        if (Array.isArray(value)) {
-          console.log(`Array value detected for ${key}:`, value);
-        }
-  
-        // Check for empty values
-        const isEmpty = (
-          value == null || // null or undefined
-          value === "" || // empty string
-          (Array.isArray(value) && value.length === 0) || // empty array
-          (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0) // empty object
-        );
-  
-        if (isEmpty) {
-          console.log(`Excluding empty value for ${key}:`, value);
-          return acc;
-        }
-        
-        // Include valid key-value pair
-        console.log(`Including valid filter ${key}:`, value);
         acc[key] = value;
         return acc;
       }, {});
-  
-      // Debug: Log the final filtered filters
-      console.log('Final filtered filters:', filteredFilters);
-      
-      // Set dot visibility based on active filters
-      const hasActiveFilters = Object.keys(filteredFilters).length > 0;
-      console.log('Should show dot?', hasActiveFilters);
-      setShowDot(hasActiveFilters);
+
+      setShowDot(Object.keys(filteredFilters).length > 0);
     }
   }, [filters, pageSize, role]);
 
-  const fetchLeads = useCallback(
-    debounce((filters) => {
-      dispatch(getVerificationLeads(filters));
-    }, 500), // 500ms debounce time
-    [dispatch]
-  );
+  // Delayed loader display to prevent flashing
+  useEffect(() => {
+    let timer;
+    if (loading) {
+      timer = setTimeout(() => setShowLoader(true), 300);
+    } else {
+      setShowLoader(false);
+    }
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   function handleRowsPerChange(data) {
     dispatch(getVerificationLeads({ ...filters, page: 1, pageSize: data }));
   }
 
   function handlePageChange(data) {
-    console.log("page number = ", data);
     let payload = {
       ...filters,
       pageSize: pagination.pageSize,
@@ -153,7 +154,6 @@ function Verification1() {
 
   function handlePrevPageClick() {
     if (pagination.page > 1) {
-      // Prevent going below page 1
       let payload = {
         ...filters,
         pageSize: pagination.pageSize,
@@ -167,8 +167,8 @@ function Verification1() {
     if (showDot) {
       let initialFilters = {
         lead_status: "Verification 1",
-        ...(role === ROLE_EMPLOYEE && {assigned_to: user.user.id}),
-        pageSize: 10,
+        ...(role === ROLE_EMPLOYEE && { assigned_to: user.user.id }),
+        pageSize: pagination.pageSize || 10,
       };
       setFilters(initialFilters);
       setResetFilters(true);
@@ -185,6 +185,7 @@ function Verification1() {
     setToastStatusMessage("In Progress...");
     setShouldSnackbarCloseOnClickOfOutside(false);
     setOpenToast(true);
+    
     let response = null;
     response = await exportLeadsHandler(
       filters,
@@ -194,20 +195,21 @@ function Verification1() {
       fieldsToExport,
       setToastMessage
     );
+    
     if (response === true) {
       setToastStatusType("SUCCESS");
       setToastMessage("Leads Exported Successfully");
       setShouldSnackbarCloseOnClickOfOutside(true);
     } else if (response === false && response !== null) {
       setToastStatusType("ERROR");
-      setToastMessage("Failed to export leads !");
+      setToastMessage("Failed to export leads!");
       setShouldSnackbarCloseOnClickOfOutside(true);
     }
   }
 
   return (
     <div className="w-full">
-      {/* <!-- Cards Container --> */}
+      {/* Cards Container */}
       <div className="grid grid-cols-12 gap-2">
         <div className="row col-span-12 flex justify-between items-center">
           <div>
@@ -221,8 +223,8 @@ function Verification1() {
               showDot={showDot}
               showFilter={showFilter}
             />
-            {showDot && <ClearButton onClick={() => handleResetFilters()} />}
-            {role !== ROLE_EMPLOYEE && <ExportButton onClick={() => handleExportLeads()} />}
+            {showDot && <ClearButton onClick={handleResetFilters} />}
+            {role !== ROLE_EMPLOYEE && <ExportButton onClick={handleExportLeads} />}
           </div>
         </div>
       </div>
@@ -241,48 +243,47 @@ function Verification1() {
         />
       </div>
 
-      {/* <!-- Additional Content (Expandable) --> */}
-      {loading ? (
+      {/* Content Area */}
+      {showLoader ? (
         <div
-          className="w-full flex justify-center items-center mt-2 bg-[#E8EFF8]"
+          className="w-full flex justify-center items-center mt-2 bg-[#E8EFF8] rounded-2xl"
           style={{ height: `${height + 30}px` }}
         >
           <Loader />
         </div>
-      ) : 
-      <>
-        {
-          isEmpty(leads) ?
-          <>
+      ) : (
+        <>
+          {isEmpty(leads) ? (
             <div
-          className="w-full bg-[#F0F6FF] flex justify-center items-center mt-2 rounded-2xl"
-          style={{ height: `${height + 30}px` }}
-        >
-          <EmptyDataMessageIcon size={100}/>
-        </div>
-          </> :
-          <div className="mt-2 w-full">
-          <VerificationTable leads={leads} filters={filters}/>
-        </div>
-        }
-      </>
-      }
+              className="w-full bg-[#F0F6FF] flex justify-center items-center mt-2 rounded-2xl"
+              style={{ height: `${height + 30}px` }}
+            >
+              <EmptyDataMessageIcon size={100} />
+            </div>
+          ) : (
+            <div className="mt-2 w-full">
+              <VerificationTable leads={leads} filters={filters} />
+            </div>
+          )}
+        </>
+      )}
 
-      {!loading && !isEmpty(leads) && (
+      {!showLoader && !isEmpty(leads) && (
         <div className="mt-0.5 px-4">
           <Pagination
             total={pagination?.total}
             page={pagination?.page}
             pageSize={pagination?.pageSize}
-            onRowsPerChange={(data) => handleRowsPerChange(data)}
-            onPageChange={(data) => handlePageChange(data)}
-            onNextPageClick={(data) => handleNextPageClick(data)}
-            onPrevPageClick={(data) => handlePrevPageClick(data)}
+            onRowsPerChange={handleRowsPerChange}
+            onPageChange={handlePageChange}
+            onNextPageClick={handleNextPageClick}
+            onPrevPageClick={handlePrevPageClick}
             options={paginationOptions}
             resetFilters={resetFilters}
           />
         </div>
       )}
+
       <Snackbar
         isOpen={openToast}
         onClose={() => setOpenToast(false)}

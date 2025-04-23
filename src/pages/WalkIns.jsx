@@ -5,7 +5,7 @@ import ExportButton from "../components/common/ExportButton";
 import FilterButton from "../components/common/FiltersButton";
 import PrimaryButton from "../components/common/PrimaryButton";
 import WalkInsTable from "../components/walk-ins/WalkInsTable";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { getAllWalkInLeads } from "../features/walk-ins/walkInsThunks";
 import Pagination from "../components/common/Pagination";
 import Snackbar from "../components/common/snackbars/Snackbar";
@@ -41,10 +41,11 @@ function WalkIns() {
   } = useSelector((state) => state.walkIns);
   const { users } = useSelector((state) => state.users);
   const { height } = useSelector((state) => state.ui);
-  const {user,role} = useSelector((state)=>state.auth)
-  const [filters, setFilters] = useState({ ...defaultWalkInLeadsTableFilters,
-    ...(role === ROLE_EMPLOYEE && {assigned_to:user.user.id})
-   });
+  const { user, role } = useSelector((state) => state.auth);
+  const [filters, setFilters] = useState({ 
+    ...defaultWalkInLeadsTableFilters,
+    ...(role === ROLE_EMPLOYEE && { assigned_to: user.user.id })
+  });
   const [pageSize, setPageSize] = useState(0);
   const [resetFilters, setResetFilters] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
@@ -53,12 +54,17 @@ function WalkIns() {
   const [toastMessage, setToastMessage] = useState(null);
   const [toastStatusMessage, setToastStatusMessage] = useState(null);
   const [toastStatusType, setToastStatusType] = useState(null);
+  const [showLoader, setShowLoader] = useState(false);
   const [
     shouldSnackbarCloseOnClickOfOutside,
     setShouldSnackbarCloseOnClickOfOutside,
   ] = useState(true);
   const [showNormalLoginTable, setShowNormalLoginTable] = useState(false);
   const [tableType, setTableType] = useState("");
+
+  const initialLoad = useRef(true);
+  const debouncedFetchLeads = useRef(null);
+
   const fieldsToExport = [
     "id",
     "name",
@@ -71,99 +77,109 @@ function WalkIns() {
     "updatedAt",
     "LeadAssignments",
   ];
+
   const paginationOptions = [
     { label: "10", value: 10 },
     { label: "20", value: 20 },
     { label: "50", value: 50 },
   ];
 
+  // Initialize debounced function
+  useEffect(() => {
+    debouncedFetchLeads.current = debounce((filters) => {
+      dispatch(getAllWalkInLeads(filters));
+    }, 500);
+
+    return () => {
+      debouncedFetchLeads.current?.cancel();
+    };
+  }, [dispatch]);
+
+  // Main effect for initial load and page size changes
   useEffect(() => {
     if (height > 0) {
-      const pageSize = Math.floor(height / 40);
-      setPageSize(pageSize);
-      dispatch(getAllWalkInLeads({ ...filters, pageSize: pageSize }));
-      dispatch(getAllDistinctLeadSources());
+      const calculatedPageSize = Math.floor(height / 40);
+      setPageSize(calculatedPageSize);
+      
+      if (initialLoad.current || pageSize !== calculatedPageSize) {
+        debouncedFetchLeads.current({ ...filters, pageSize: calculatedPageSize });
+        dispatch(getAllDistinctLeadSources());
+        initialLoad.current = false;
+      }
     }
-  }, [dispatch, height]);
+  }, [dispatch, height, pageSize, filters]);
 
+  // Effect for filter changes
+  useEffect(() => {
+    if (!initialLoad.current && pageSize > 0) {
+      debouncedFetchLeads.current({ ...filters, pageSize });
+    }
+  }, [filters, pageSize]);
+
+  // Effect for showing active filters dot
   useEffect(() => {
     if (pageSize > 0) {
-      fetchLeads({ ...filters, pageSize });
-  
-      console.log('Original filters:', filters); // Debug log
-  
       const excludedKeys = role === ROLE_EMPLOYEE
-  ? [
-      "page",
-      "pageSize",
-      "totalPages",
-      "total",
-      "assigned_to", // Keep this if needed
-      ...Object.keys(defaultWalkInLeadsTableFilters).filter(k => k !== "lead_status"),
-    ]
-  : [
-      "page",
-      "pageSize",
-      "totalPages",
-      "total",
-      ...Object.keys(defaultWalkInLeadsTableFilters).filter(k => k !== "lead_status"),
-    ];
-  
-      console.log('Excluded keys:', excludedKeys); // Debug log
-  
+        ? [
+            "page",
+            "pageSize",
+            "totalPages",
+            "total",
+            "assigned_to",
+            ...Object.keys(defaultWalkInLeadsTableFilters).filter(k => k !== "lead_status"),
+          ]
+        : [
+            "page",
+            "pageSize",
+            "totalPages",
+            "total",
+            ...Object.keys(defaultWalkInLeadsTableFilters).filter(k => k !== "lead_status"),
+          ];
+
       const filteredFilters = Object.entries(filters).reduce((acc, [key, value]) => {
-        if (excludedKeys.includes(key)) {
-          console.log(`Excluding key: ${key}`); // Debug log
-          return acc;
-        }
-        
-        if (key === "application_status" && value === NORMAL_LOGIN) {
-          console.log(`Excluding normal login: ${key}`); // Debug log
-          return acc;
-        }
-        
+        if (excludedKeys.includes(key)) return acc;
+        if (key === "application_status" && value === NORMAL_LOGIN) return acc;
         if (
           value == null ||
           value === "" ||
           (Array.isArray(value) && value.length === 0) ||
           (typeof value === 'object' && Object.keys(value).length === 0)
-        ) {
-          console.log(`Excluding empty value: ${key}`); // Debug log
-          return acc;
-        }
-  
-        console.log(`Including filter: ${key} =`, value); // Debug log
+        ) return acc;
+
         acc[key] = value;
         return acc;
       }, {});
-  
-      console.log('Filtered filters:', filteredFilters); // Debug log
+
       setShowDot(Object.keys(filteredFilters).length > 0);
     }
   }, [filters, pageSize, role]);
 
+  // Effect for normal login table toggle
   useEffect(() => {
     if (showNormalLoginTable) {
-      setFilters({ ...filters, application_status: NORMAL_LOGIN });
+      setFilters(prev => ({ ...prev, application_status: NORMAL_LOGIN }));
     } else {
       const { application_status, ...rest } = filters;
       setFilters(rest);
     }
   }, [showNormalLoginTable]);
 
-  const fetchLeads = useCallback(
-    debounce((filters) => {
-      dispatch(getAllWalkInLeads(filters));
-    }, 500), // 500ms debounce time
-    [dispatch]
-  );
+  // Delayed loader display to prevent flashing
+  useEffect(() => {
+    let timer;
+    if (loading) {
+      timer = setTimeout(() => setShowLoader(true), 300);
+    } else {
+      setShowLoader(false);
+    }
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   function handleRowsPerChange(data) {
     dispatch(getAllWalkInLeads({ ...filters, page: 1, pageSize: data }));
   }
 
   function handlePageChange(data) {
-    console.log("page number = ", data);
     let payload = {
       ...filters,
       pageSize: pagination.pageSize,
@@ -185,7 +201,6 @@ function WalkIns() {
 
   function handlePrevPageClick() {
     if (pagination.page > 1) {
-      // Prevent going below page 1
       let payload = {
         ...filters,
         pageSize: pagination.pageSize,
@@ -197,19 +212,18 @@ function WalkIns() {
 
   function handleResetFilters() {
     if (showDot) {
-      if (showNormalLoginTable) {
-        setFilters({
-          ...defaultWalkInLeadsTableFilters,
-          application_status: NORMAL_LOGIN,
-        });
-      } else {
-        setFilters(defaultWalkInLeadsTableFilters);
+      const newFilters = showNormalLoginTable
+        ? { ...defaultWalkInLeadsTableFilters, application_status: NORMAL_LOGIN }
+        : { ...defaultWalkInLeadsTableFilters };
+      
+      if (role === ROLE_EMPLOYEE) {
+        newFilters.assigned_to = user.user.id;
       }
-      if(role === ROLE_EMPLOYEE){
-        setFilters((prev)=>({...prev, assigned_to:user.user.id}))
-      }
+      
+      setFilters(newFilters);
       setResetFilters(true);
       setShowDot(false);
+      
       setTimeout(() => {
         setResetFilters(false);
       }, 1000);
@@ -222,6 +236,7 @@ function WalkIns() {
     setToastStatusMessage("In Progress...");
     setShouldSnackbarCloseOnClickOfOutside(false);
     setOpenToast(true);
+    
     let response = null;
     response = await exportLeadsHandler(
       filters,
@@ -231,41 +246,40 @@ function WalkIns() {
       fieldsToExport,
       setToastMessage
     );
+    
     if (response === true) {
       setToastStatusType("SUCCESS");
       setToastMessage("Leads Exported Successfully");
       setShouldSnackbarCloseOnClickOfOutside(true);
     } else if (response === false && response !== null) {
       setToastStatusType("ERROR");
-      setToastMessage("Failed to export leads !");
+      setToastMessage("Failed to export leads!");
       setShouldSnackbarCloseOnClickOfOutside(true);
     }
   }
 
   function showTable(tableType) {
+    if (showLoader || isEmpty(leads)) return null;
+
     switch (tableType) {
       case NORMAL_LOGIN:
         return (
-          !loading && !isEmpty(leads) && (
-            <div className="mt-2">
-              <NormalLoginTable leads={leads} />
-            </div>
-          )
+          <div className="mt-2">
+            <NormalLoginTable leads={leads} />
+          </div>
         );
       default:
         return (
-          !loading && !isEmpty(leads) && (
-            <div className="mt-2">
-              <WalkInsTable leads={leads} />
-            </div>
-          )
+          <div className="mt-2">
+            <WalkInsTable leads={leads} />
+          </div>
         );
     }
   }
 
   return (
     <div className="w-full">
-      {/* <!-- Cards Container --> */}
+      {/* Cards Container */}
       <div className="grid grid-cols-12 gap-2">
         <div className="row col-span-12 flex justify-between items-center">
           <div>
@@ -301,9 +315,8 @@ function WalkIns() {
               showDot={showDot}
               showFilter={showFilter}
             />
-            {showDot && <ClearButton onClick={() => handleResetFilters()} />}
-            {role !== ROLE_EMPLOYEE && <ExportButton onClick={() => handleExportLeads()} />}
-            {/* <DeleteButton /> */}
+            {showDot && <ClearButton onClick={handleResetFilters} />}
+            {role !== ROLE_EMPLOYEE && <ExportButton onClick={handleExportLeads} />}
           </div>
         </div>
       </div>
@@ -323,40 +336,40 @@ function WalkIns() {
         />
       </div>
 
-      {showTable(tableType)}
-      {loading && (
+      {/* Content Area */}
+      {showLoader ? (
         <div
-          className={`w-full h-[${height}px] flex justify-center items-center mt-2 bg-[#E8EFF8]`}
+          className="w-full flex justify-center items-center mt-2 bg-[#E8EFF8] rounded-2xl"
           style={{ height: `${height + 30}px` }}
         >
           <Loader />
         </div>
-      )}
-
-      {isEmpty(leads) && (
+      ) : isEmpty(leads) ? (
         <div
-          className={`w-full h-[${height}px] bg-[#F0F6FF] flex justify-center items-center mt-1 rounded-2xl`}
-          style={{ height: `${height + 20}px` }}
+          className="w-full bg-[#F0F6FF] flex justify-center items-center mt-2 rounded-2xl"
+          style={{ height: `${height + 30}px` }}
         >
           <EmptyDataMessageIcon size={100} />
         </div>
+      ) : (
+        <>
+          {showTable(tableType)}
+          <div className="mt-0.5 px-4">
+            <Pagination
+              total={pagination?.total}
+              page={pagination?.page}
+              pageSize={pagination?.pageSize}
+              onRowsPerChange={handleRowsPerChange}
+              onPageChange={handlePageChange}
+              onNextPageClick={handleNextPageClick}
+              onPrevPageClick={handlePrevPageClick}
+              options={paginationOptions}
+              resetFilters={resetFilters}
+            />
+          </div>
+        </>
       )}
 
-      {!loading && !isEmpty(leads) && (
-        <div className="mt-0.5 px-4">
-          <Pagination
-            total={pagination?.total}
-            page={pagination?.page}
-            pageSize={pagination?.pageSize}
-            onRowsPerChange={(data) => handleRowsPerChange(data)}
-            onPageChange={(data) => handlePageChange(data)}
-            onNextPageClick={(data) => handleNextPageClick(data)}
-            onPrevPageClick={(data) => handlePrevPageClick(data)}
-            options={paginationOptions}
-            resetFilters={resetFilters}
-          />
-        </div>
-      )}
       <Snackbar
         isOpen={openToast}
         onClose={() => setOpenToast(false)}

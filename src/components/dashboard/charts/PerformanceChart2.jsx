@@ -609,7 +609,7 @@ const PerformanceChartHorizontal = (
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={transformedData.sort((a,b)=>b-a)}
-              margin={{ top: 20, right: 20, left: 0, bottom: 80 }}
+              margin={{ top: 20, right: 20, left: 0, bottom: 100 }}
               key={Object.values(activeBadges).join("-")} // Force re-render when badges change
             >
               <XAxis

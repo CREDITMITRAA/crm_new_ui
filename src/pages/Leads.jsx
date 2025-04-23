@@ -51,7 +51,7 @@ function Leads() {
   const { users, userOptions } = useSelector((state) => state.users);
   const { user, role } = useSelector((state) => state.auth);
   const { height } = useSelector((state) => state.ui);
-  const [reasons, setReasons] = useState([])
+  const [reasons, setReasons] = useState([]);
   const [filters, setFilters] = useState(() => {
     const baseFilters = {};
     if (user?.user?.role === ROLE_EMPLOYEE) {
@@ -93,8 +93,11 @@ function Leads() {
   ] = useState(true);
   const [tableType, setTableType] = useState(ASSIGNED_TABLE);
   const [pageSize, setPageSize] = useState(0);
+  const [showLoader, setShowLoader] = useState(false);
+  const [isInitialDataLoaded, setIsInitialDataLoaded] = useState(false);
 
-  const initialMount = useRef(true);
+  const initialLoad = useRef(true);
+  const debouncedFetchLeads = useRef(null);
 
   const fieldsToExport = [
     "id",
@@ -117,37 +120,37 @@ function Leads() {
     { label: "50", value: 50 },
   ];
 
-  // Create debounced fetch function
-  const fetchLeads = useCallback(
-    debounce((filters) => {
+  // Initialize debounced function
+  useEffect(() => {
+    debouncedFetchLeads.current = debounce((filters) => {
       if (user.user.role === ROLE_EMPLOYEE) {
-        console.log("table type = ", tableType)
         dispatch(getLeadsByAssignedUserId(filters));
-      } else if(tableType === INVALID_LEADS_TABLE) {
-        console.log("table type = ", tableType)
-        dispatch(getAllInvalidLeads(filters))
+      } else if (tableType === INVALID_LEADS_TABLE) {
+        dispatch(getAllInvalidLeads(filters));
       } else {
-        console.log("table type = ", tableType)
         dispatch(getAllLeads(filters));
       }
-    }, 500),
-    [tableType]
-  );
+    }, 500);
 
-  useEffect(()=>{
-    {
-      role !== ROLE_EMPLOYEE && fetchUniqueInvalidLeadsReasons()
+    return () => {
+      debouncedFetchLeads.current?.cancel();
+    };
+  }, [dispatch, tableType, user.user.role]);
+
+  // Track when initial data is loaded
+  useEffect(() => {
+    if (!loading && (leads.length > 0 || invalidLeads.length > 0) && !isInitialDataLoaded) {
+      setIsInitialDataLoaded(true);
     }
-  },[])
+  }, [loading, leads, invalidLeads, isInitialDataLoaded]);
 
-  // Initial load effect
+  // Main effect for initial load and page size changes
   useEffect(() => {
     if (height > 0) {
       const newPageSize = Math.floor(height / 40);
       setPageSize(newPageSize);
-  
-      // Only dispatch on initial mount with proper filters
-      if (initialMount.current) {
+
+      if (initialLoad.current) {
         const initialFilters = {
           pageSize: newPageSize,
           ...(user?.user?.role === ROLE_EMPLOYEE && {
@@ -155,77 +158,52 @@ function Leads() {
             exclude_verification: true
           })
         };
-  
-        if (user?.user?.role === ROLE_EMPLOYEE) {
-          dispatch(getLeadsByAssignedUserId(initialFilters));
-        } else {
-          dispatch(getAllLeads(initialFilters));
-        }
-        
+
+        debouncedFetchLeads.current(initialFilters);
         dispatch(getAllDistinctLeadSources());
         
         if (user?.user?.role !== ROLE_EMPLOYEE && tableType === INVALID_LEADS_TABLE) {
-          dispatch(getAllInvalidLeads());
+          dispatch(getAllInvalidLeads(initialFilters));
         }
         
-        initialMount.current = false;
+        initialLoad.current = false;
       }
     }
-  }, [height]);
+  }, [height, user?.user?.role, user?.user?.id, tableType]);
 
-  // Filter change effect
+  // Effect for filter changes and table type changes
   useEffect(() => {
-    if (pageSize > 0 && !initialMount.current) {
-      fetchLeads({ ...filters, pageSize });
-      const filteredFilters = Object.keys(filters)?.reduce((acc, key) => {
-        // Check if value is empty, null, or undefined
-        const isEmptyValue = filters[key] === "" || filters[key] == null;
-        
-        // Check if key should be excluded based on role
-        const shouldExcludeKey = user.user.role === ROLE_EMPLOYEE
-          ? [
-              "page",
-              "pageSize",
-              "totalPages",
-              "total",
-              "assigned_to",
-              "userId",
-              "exclude_verification",
-            ].includes(key)
-          : [
-              "page",
-              "pageSize",
-              "totalPages",
-              "total",
-              "assigned_to",
-            ].includes(key);
+    if (pageSize > 0 && !initialLoad.current) {
+      const fetchFilters = { ...filters, pageSize };
+      debouncedFetchLeads.current(fetchFilters);
       
-        // Only include if not empty and not in excluded keys
-        if (!isEmptyValue && !shouldExcludeKey) {
-          acc[key] = filters[key];
-        }
-        
+      // Update active filters dot
+      const filteredFilters = Object.keys(filters).reduce((acc, key) => {
+        const isEmptyValue = filters[key] === "" || filters[key] == null;
+        const shouldExcludeKey = user.user.role === ROLE_EMPLOYEE
+          ? ["page", "pageSize", "totalPages", "total", "assigned_to", "userId", "exclude_verification"].includes(key)
+          : ["page", "pageSize", "totalPages", "total"].includes(key);
+      
+        if (!isEmptyValue && !shouldExcludeKey) acc[key] = filters[key];
         return acc;
       }, {});
-      console.log("filtered filters = ", filteredFilters);
 
       setShowDot(Object.keys(filteredFilters).length > 0);
     }
-  }, [filters, pageSize, fetchLeads]);
+  }, [filters, pageSize, user.user.role, tableType]);
 
-  // Cleanup debounce on unmount
+  // Loading state management
   useEffect(() => {
-    return () => {
-      fetchLeads.cancel();
-    };
-  }, [fetchLeads]); // Ensure it runs only after pageSize is set
-
-  // const fetchLeads = useCallback(
-  //   debounce((filters) => {
-  //     dispatch(getAllLeads(filters));
-  //   }, 500), // 500ms debounce time
-  //   [dispatch]
-  // );
+    let timer;
+    if (loading) {
+      // Show loader immediately for initial load, after delay for subsequent loads
+      const delay = isInitialDataLoaded ? 300 : 0;
+      timer = setTimeout(() => setShowLoader(true), delay);
+    } else {
+      setShowLoader(false);
+    }
+    return () => clearTimeout(timer);
+  }, [loading, isInitialDataLoaded]);
 
   useEffect(() => {
     if (users && users.length > 0) {
@@ -235,114 +213,80 @@ function Leads() {
     }
   }, [users]);
 
+  useEffect(() => {
+    if (role !== ROLE_EMPLOYEE) {
+      fetchUniqueInvalidLeadsReasons();
+    }
+  }, []);
+
   function handleRowsPerChange(data) {
-    console.log("page size = ", data);
+    const payload = { ...filters, page: 1, pageSize: data };
     if (tableType === INVALID_LEADS_TABLE) {
-      dispatch(getAllInvalidLeads({ ...filters, page: 1, pageSize: data }));
-    } else if (tableType === EX_EMPLOYEES_LEADS_TABLE) {
-      // TO DO
+      dispatch(getAllInvalidLeads(payload));
+    } else if (user.user.role === ROLE_EMPLOYEE) {
+      dispatch(getLeadsByAssignedUserId(payload));
     } else {
-      if (user.user.role === ROLE_EMPLOYEE) {
-        dispatch(
-          getLeadsByAssignedUserId({ ...filters, page: 1, pageSize: data })
-        );
-      } else {
-        dispatch(getAllLeads({ ...filters, page: 0, pageSize: data }));
-      }
+      dispatch(getAllLeads(payload));
     }
   }
 
   function handlePageChange(data) {
-    console.log("page number = ", data);
-    let payload = {};
-    if (tableType === INVALID_LEADS_TABLE) {
-      payload = {
-        pageSize: invalidLeadsPagination.pageSize,
-        page: data,
-      };
-    } else {
-      payload = {
-        ...filters,
-        pageSize: pagination.pageSize,
-        page: data,
-      };
-    }
+    const payload = {
+      ...filters,
+      pageSize: tableType === INVALID_LEADS_TABLE ? invalidLeadsPagination.pageSize : pagination.pageSize,
+      page: data,
+    };
+
     if (tableType === INVALID_LEADS_TABLE) {
       dispatch(getAllInvalidLeads(payload));
-    } else if (tableType === EX_EMPLOYEES_LEADS_TABLE) {
-      // TO DO
+    } else if (user.user.role === ROLE_EMPLOYEE) {
+      dispatch(getLeadsByAssignedUserId(payload));
     } else {
-      if (user.user.role === ROLE_EMPLOYEE) {
-        dispatch(
-          getLeadsByAssignedUserId({ ...payload, limit: payload.pageSize })
-        );
+      dispatch(getAllLeads(payload));
+    }
+  }
+
+  function handleNextPageClick() {
+    const paginationData = tableType === INVALID_LEADS_TABLE ? invalidLeadsPagination : pagination;
+    if (paginationData.page < paginationData.totalPages) {
+      const payload = {
+        ...filters,
+        pageSize: paginationData.pageSize,
+        page: paginationData.page + 1,
+      };
+
+      if (tableType === INVALID_LEADS_TABLE) {
+        dispatch(getAllInvalidLeads(payload));
+      } else if (user.user.role === ROLE_EMPLOYEE) {
+        dispatch(getLeadsByAssignedUserId(payload));
       } else {
         dispatch(getAllLeads(payload));
       }
     }
   }
 
-  function handleNextPageClick() {
-    if (tableType === INVALID_LEADS_TABLE) {
-      if (invalidLeadsPagination.page < invalidLeadsPagination.totalPages) {
-        let payload = {
-          ...filters,
-          pageSize: invalidLeadsPagination.pageSize,
-          page: invalidLeadsPagination.page + 1,
-        };
-        dispatch(getAllInvalidLeads(payload));
-      }
-    } else {
-      if (pagination.page < pagination.totalPages) {
-        let payload = {
-          ...filters,
-          pageSize: pagination.pageSize,
-          page: pagination.page + 1,
-        };
-        if (user.user.role === ROLE_EMPLOYEE) {
-          dispatch(
-            getLeadsByAssignedUserId({ ...payload, pageSize: payload.pageSize })
-          );
-        } else {
-          dispatch(getAllLeads(payload));
-        }
-      }
-    }
-  }
-
   function handlePrevPageClick() {
-    if (tableType === INVALID_LEADS_TABLE) {
-      if (invalidLeadsPagination.page > 1) {
-        // Prevent going below page 1
-        let payload = {
-          ...filters,
-          pageSize: invalidLeadsPagination.pageSize,
-          page: invalidLeadsPagination.page - 1,
-        };
+    const paginationData = tableType === INVALID_LEADS_TABLE ? invalidLeadsPagination : pagination;
+    if (paginationData.page > 1) {
+      const payload = {
+        ...filters,
+        pageSize: paginationData.pageSize,
+        page: paginationData.page - 1,
+      };
+
+      if (tableType === INVALID_LEADS_TABLE) {
         dispatch(getAllInvalidLeads(payload));
-      }
-    } else {
-      if (pagination.page > 1) {
-        // Prevent going below page 1
-        let payload = {
-          ...filters,
-          pageSize: pagination.pageSize,
-          page: pagination.page - 1,
-        };
-        if (user.user.role === ROLE_EMPLOYEE) {
-          dispatch(
-            getLeadsByAssignedUserId({ ...payload, pageSize: payload.pageSize })
-          );
-        } else {
-          dispatch(getAllLeads(payload));
-        }
+      } else if (user.user.role === ROLE_EMPLOYEE) {
+        dispatch(getLeadsByAssignedUserId(payload));
+      } else {
+        dispatch(getAllLeads(payload));
       }
     }
   }
 
   function handleResetFilters(tableType) {
-    let initialFilters = {
-      pageSize: 10,
+    const initialFilters = {
+      pageSize: pagination.pageSize || 10,
       ...(user.user.role === ROLE_EMPLOYEE && {
         userId: user.user.id,
         exclude_verification: true,
@@ -352,8 +296,7 @@ function Leads() {
     setResetFilters(true);
     setSelectedEmployeeName(null);
     setAreAllLeadsSelected(false);
-    // setShowNotAssignedTable(false);
-    setTableType(tableType)
+    setTableType(tableType);
     setSelectedLeadIds([]);
     setAssignedEmployee(null);
     setShowDot(false);
@@ -364,12 +307,9 @@ function Leads() {
   }
 
   function handleSelect(name, value) {
-    console.log("employee name", name, value);
     if (value) {
       const user = users.find((user) => user.name === value);
-      console.log("users = ", user);
       setAssignedEmployee(user);
-      // setFilters((prev) => ({ ...prev, [name]: user?.id }));
       setSelectedEmployeeName(user?.name);
     } else {
       setSelectedEmployeeName(null);
@@ -377,36 +317,33 @@ function Leads() {
   }
 
   function selectAllLeads() {
-    const updatedIds = leads.map((lead) => ({ id: lead.id, name: lead.name })); // Map once
+    const currentLeads = tableType === INVALID_LEADS_TABLE ? invalidLeads : leads;
+    const updatedIds = currentLeads.map((lead) => ({ id: lead.id, name: lead.name }));
+    
     if (areAllLeadsSelected) {
-      setSelectedLeadIds([]); // Unselect all
+      setSelectedLeadIds([]);
       setAreAllLeadsSelected(false);
     } else {
-      setSelectedLeadIds(updatedIds); // Select all
-      setAreAllLeadsSelected(true);
+      setSelectedLeadIds(updatedIds);
+      setAreAllLeadsSelected(updatedIds.length > 0);
     }
   }
 
   const handleCheckboxChange = (id, name, last_updated_status) => {
+    const isLeadSelected = selectedLeadIds.some((selectedLead) => selectedLead.id === id);
     let updatedIds;
-    const isLeadSelected = selectedLeadIds.some(
-      (selectedLead) => selectedLead.id === id
-    );
+
     if (isLeadSelected) {
-      updatedIds = selectedLeadIds.filter(
-        (selectedLead) => selectedLead.id !== id
-      );
+      updatedIds = selectedLeadIds.filter((selectedLead) => selectedLead.id !== id);
       setAreAllLeadsSelected(false);
     } else {
       updatedIds = [
         ...selectedLeadIds,
-        { id: id, name: name, last_updated_status: last_updated_status },
+        { id, name, last_updated_status },
       ];
-      if (updatedIds.length === leads.length) {
-        setAreAllLeadsSelected(true);
-      }
+      const currentLeads = tableType === INVALID_LEADS_TABLE ? invalidLeads : leads;
+      setAreAllLeadsSelected(updatedIds.length === currentLeads.length);
     }
-    console.log("selected lead ids = ", updatedIds);
 
     setSelectedLeadIds(updatedIds);
   };
@@ -414,18 +351,21 @@ function Leads() {
   function assignLeadsToEmployee() {
     setDisableConfirmationDialogueSubmitButton(false);
     setShowConfirmationDialogue(true);
+    
     try {
       const reassignedLeads = [];
       const freshLeads = [];
+      const currentLeads = tableType === INVALID_LEADS_TABLE ? invalidLeads : leads;
+
       const filteredLeadIds = selectedLeadIds.filter((leadId) => {
-        const lead = leads.find((lead) => lead.id === leadId.id);
-        if (
-          lead &&
-          lead.LeadAssignments[0]?.assigned_to === assignedEmployee.id
-        ) {
+        const lead = currentLeads.find((lead) => lead.id === leadId.id);
+        if (!lead) return false;
+        
+        if (lead.LeadAssignments?.[0]?.assigned_to === assignedEmployee.id) {
           return false;
         }
-        if (lead?.LeadAssignments[0]) {
+        
+        if (lead.LeadAssignments?.[0]) {
           reassignedLeads.push(lead);
         } else {
           freshLeads.push(lead);
@@ -434,55 +374,38 @@ function Leads() {
       });
 
       if (filteredLeadIds.length === 0) {
-        throw new Error(
-          "All selected leads are already assigned to the existing employee."
-        );
+        throw new Error("All selected leads are already assigned to the existing employee.");
       }
 
       const reassignedCount = reassignedLeads.length;
       const freshCount = freshLeads.length;
 
+      let message;
       if (reassignedCount > 0 && freshCount > 0) {
-        setConfirmationDialogueMessage(
+        message = (
           <>
-            You are about to reassign{" "}
-            <span className="text-red-500">{reassignedCount}</span> lead(s) and
-            assign <span className="text-green-500">{freshCount}</span> fresh
-            lead(s) to{" "}
-            <span className="font-bold text-black">
-              {assignedEmployee.name}
-            </span>
-            .
+            You are about to reassign <span className="text-red-500">{reassignedCount}</span> lead(s) and
+            assign <span className="text-green-500">{freshCount}</span> fresh lead(s) to{" "}
+            <span className="font-bold text-black">{assignedEmployee.name}</span>.
           </>
         );
       } else if (reassignedCount > 0) {
-        setConfirmationDialogueMessage(
+        message = (
           <>
-            You are about to reassign{" "}
-            <span className="text-red-500 font-bold">{reassignedCount}</span>{" "}
-            lead(s) to{" "}
-            <span className="font-bold text-black">
-              {assignedEmployee.name}
-            </span>
-            .
+            You are about to reassign <span className="text-red-500 font-bold">{reassignedCount}</span>{" "}
+            lead(s) to <span className="font-bold text-black">{assignedEmployee.name}</span>.
           </>
         );
-      } else if (freshCount > 0) {
-        setConfirmationDialogueMessage(
+      } else {
+        message = (
           <>
-            You are about to assign{" "}
-            <span className="text-green-500 font-bold">{freshCount}</span> fresh
-            lead(s) to{" "}
-            <span className="font-bold text-black">
-              {assignedEmployee.name}
-            </span>
-            .
+            You are about to assign <span className="text-green-500 font-bold">{freshCount}</span> fresh
+            lead(s) to <span className="font-bold text-black">{assignedEmployee.name}</span>.
           </>
         );
       }
 
-      console.log("user = ", user);
-
+      setConfirmationDialogueMessage(message);
       setAssignmentApiPayload({
         leadIds: filteredLeadIds,
         assignedTo: assignedEmployee.id,
@@ -507,33 +430,28 @@ function Leads() {
       const response = await assignLeads(assignmentApiPayload);
 
       if (response?.data.status === "SUCCESS") {
-        // Update toast to show success immediately
         setToastStatusType("SUCCESS");
         setToastMessage(response.data.message || "Leads assigned successfully");
         setToastStatusMessage("Success");
 
-        // Re-fetch leads and wait for completion
-        await dispatch(
-          getAllLeads({
-            ...pagination,
-            ...(showNotAssignedTable ? { assigned_to: "not_assigned" } : {}),
-          })
-        );
+        // Re-fetch leads
+        await dispatch(getAllLeads({
+          ...filters,
+          pageSize: pagination.pageSize,
+          page: pagination.page,
+        }));
 
-        // Reset selections only after re-fetch
+        // Reset selections
         setSelectedLeadIds([]);
         setAssignedEmployee(null);
         setSelectedEmployeeName(null);
 
-        // Close Snackbar after 3 seconds (give users time to read)
         setTimeout(() => setOpenToast(false), 3000);
-        setDisableConfirmationDialogueSubmitButton(false);
       } else {
         setToastStatusType("ERROR");
         setToastMessage("Failed to assign leads!");
         setToastStatusMessage("Error");
         setTimeout(() => setOpenToast(false), 3000);
-        setDisableConfirmationDialogueSubmitButton(false);
       }
     } catch (error) {
       console.error("Lead assignment failed:", error);
@@ -541,6 +459,7 @@ function Leads() {
       setToastMessage(error.message || "An error occurred");
       setToastStatusMessage("Error");
       setTimeout(() => setOpenToast(false), 3000);
+    } finally {
       setDisableConfirmationDialogueSubmitButton(false);
     }
   }
@@ -551,22 +470,29 @@ function Leads() {
     setToastStatusMessage("In Progress...");
     setShouldSnackbarCloseOnClickOfOutside(false);
     setOpenToast(true);
-    let response = null;
-    response = await exportLeadsHandler(
-      filters,
-      [],
-      leads,
-      users,
-      fieldsToExport,
-      setToastMessage
-    );
-    if (response === true) {
-      setToastStatusType("SUCCESS");
-      setToastMessage("Leads Exported Successfully");
-      setShouldSnackbarCloseOnClickOfOutside(true);
-    } else if (response === false && response !== null) {
+    
+    try {
+      const response = await exportLeadsHandler(
+        filters,
+        [],
+        tableType === INVALID_LEADS_TABLE ? invalidLeads : leads,
+        users,
+        fieldsToExport,
+        setToastMessage
+      );
+      
+      if (response === true) {
+        setToastStatusType("SUCCESS");
+        setToastMessage("Leads Exported Successfully");
+        setShouldSnackbarCloseOnClickOfOutside(true);
+      } else {
+        setToastStatusType("ERROR");
+        setToastMessage("Failed to export leads!");
+        setShouldSnackbarCloseOnClickOfOutside(true);
+      }
+    } catch (error) {
       setToastStatusType("ERROR");
-      setToastMessage("Failed to export leads !");
+      setToastMessage(error.message || "Failed to export leads");
       setShouldSnackbarCloseOnClickOfOutside(true);
     }
   }
@@ -577,67 +503,10 @@ function Leads() {
     setToastStatusMessage("In Progress...");
     setShouldSnackbarCloseOnClickOfOutside(false);
     setOpenToast(true);
-    let totalValidLeads = 0;
-    let totalInvalidLeads = 0;
-
+    
     const fileInput = e.target;
     const file = fileInput.files[0];
     const reader = new FileReader();
-
-    const validateHeaders = (headerRow) => {
-      const requiredFields = {
-        name: [
-          "name",
-          "lead name",
-          "customer name",
-          "full name",
-          "Full Name",
-          "full_name",
-        ],
-        phone: [
-          "mobile",
-          "mobile number",
-          "phone",
-          "phone number",
-          "mob no",
-          "mob. no.",
-          "phone_number",
-          "mobile_number",
-          "Mobile",
-        ],
-        source: [
-          "source",
-          "lead source",
-          "lead-source",
-          "LEAD SOURCE",
-          "Source",
-        ],
-      };
-
-      const missingFields = Object.keys(requiredFields).filter(
-        (field) =>
-          !headerRow.some((header) =>
-            requiredFields[field].some((name) =>
-              header.trim().toLowerCase().includes(name.toLowerCase())
-            )
-          )
-      );
-
-      if (missingFields.length > 0) {
-        throw new Error(
-          `The uploaded sheet is missing the required fields : ${missingFields.join(
-            " , "
-          )}.`
-        );
-      }
-    };
-
-    const normalizeField = (field, possibleNames) =>
-      Object.keys(field).find((key) =>
-        possibleNames.some((name) =>
-          key.trim().toLowerCase().includes(name.toLowerCase())
-        )
-      );
 
     reader.onload = async (event) => {
       try {
@@ -645,104 +514,51 @@ function Leads() {
         const workbook = XLSX.read(data, { type: "array" });
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
-        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 }); // Get raw data as rows
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
         if (!jsonData || jsonData.length === 0) {
           throw new Error("The uploaded sheet is empty.");
         }
 
-        // Validate headers
-        const headerRow = jsonData[0].map((col) => col.trim().toLowerCase());
+        const headerRow = jsonData[0].map((col) => col?.toString().trim().toLowerCase());
         validateHeaders(headerRow);
 
-        // Process data
         const jsonLeads = XLSX.utils.sheet_to_json(worksheet);
         const importedLeads = jsonLeads.map((item) => ({
-          name:
-            item[
-              normalizeField(item, [
-                "name",
-                "lead name",
-                "customer name",
-                "full name",
-                "Full Name",
-                "full_name",
-              ])
-            ] || null,
-          email:
-            item[
-              normalizeField(item, [
-                "email",
-                "email address",
-                "e-mail",
-                "Email",
-              ])
-            ] || null,
-          phone:
-            item[
-              normalizeField(item, [
-                "mobile",
-                "mobile number",
-                "phone",
-                "phone number",
-                "mob no",
-                "mob. no.",
-                "phone_number",
-                "mobile_number",
-                "Mobile",
-              ])
-            ] || null,
-          lead_source:
-            item[
-              normalizeField(item, [
-                "source",
-                "lead source",
-                "lead-source",
-                "LEAD SOURCE",
-                "Source",
-              ])
-            ] || null,
+          name: item.name || item["lead name"] || item["customer name"] || null,
+          email: item.email || item["email address"] || null,
+          phone: item.phone || item.mobile || item["phone number"] || null,
+          lead_source: item.source || item["lead source"] || null,
         }));
 
+        let totalValidLeads = 0;
+        let totalInvalidLeads = 0;
         const batchSize = 200;
+
         for (let i = 0; i < importedLeads.length; i += batchSize) {
           const batch = importedLeads.slice(i, i + batchSize);
           try {
             const response = await uploadLeadsInBulk(batch);
-            console.log("Leads imported successfully:", response.data);
-            totalValidLeads =
-              totalValidLeads + response.data.data.totalValidLeads;
-            totalInvalidLeads =
-              totalInvalidLeads + response.data.data.totalInvalidLeads;
-            // Update progress
-            const newProgress = Math.round(
-              ((i + batchSize) / importedLeads.length) * 100
-            );
+            totalValidLeads += response.data.data.totalValidLeads;
+            totalInvalidLeads += response.data.data.totalInvalidLeads;
+            
+            const progress = Math.round(((i + batchSize) / importedLeads.length) * 100);
             setToastMessage(
               <>
-                <span>Uploading leads... {newProgress}%</span>
+                <span>Uploading leads... {progress}%</span>
                 <br />
-                <span>
-                  Total Valid Leads:{" "}
-                  {totalValidLeads + response.data.data.totalValidLeads}
-                </span>
+                <span>Total Valid Leads: {totalValidLeads}</span>
                 <br />
-                <span>
-                  Total Invalid Leads:{" "}
-                  {totalInvalidLeads + response.data.data.totalInvalidLeads}
-                </span>
+                <span>Total Invalid Leads: {totalInvalidLeads}</span>
               </>
             );
           } catch (err) {
             console.error("Error importing leads batch:", err);
-            const newProgress = Math.round(
-              ((i + batchSize) / importedLeads.length) * 100
-            );
-            setToastMessage(
-              `Error importing some batches. Continuing... ${newProgress}%`
-            );
+            const progress = Math.round(((i + batchSize) / importedLeads.length) * 100);
+            setToastMessage(`Error importing some batches. Continuing... ${progress}%`);
           }
         }
+
         setToastStatusType("SUCCESS");
         setToastStatusMessage("Success");
         setToastMessage(
@@ -769,59 +585,82 @@ function Leads() {
     reader.readAsArrayBuffer(file);
   }
 
+  function validateHeaders(headerRow) {
+    const requiredFields = {
+      name: ["name", "lead name", "customer name", "full name"],
+      phone: ["mobile", "mobile number", "phone", "phone number"],
+      source: ["source", "lead source"],
+    };
+
+    const missingFields = Object.keys(requiredFields).filter(
+      (field) => !headerRow.some((header) =>
+        requiredFields[field].some((name) =>
+          header?.includes(name.toLowerCase())
+        )
+      )
+    );
+
+    if (missingFields.length > 0) {
+      throw new Error(
+        `The uploaded sheet is missing required fields: ${missingFields.join(", ")}`
+      );
+    }
+  }
+
   function showTable(tableType) {
+    if (showLoader) return null;
+
+    const currentLeads = tableType === INVALID_LEADS_TABLE ? invalidLeads : leads;
+    if (isEmpty(currentLeads)) return (
+      <div
+          className={`w-full h-[${height}px] bg-[#F0F6FF] flex justify-center items-center rounded-2xl`}
+          style={{ height: `${height + 20}px` }}
+        >
+          <EmptyDataMessageIcon size={100} />
+        </div>
+    );
+
     switch (tableType) {
       case ASSIGNED_TABLE:
         return (
-          !loading &&
-          !isEmpty(leads) && (
-            <AssignedLeadsTable
-              leads={leads}
-              areAllLeadsSelected={areAllLeadsSelected}
-              setAreAllLeadsSelected={setAreAllLeadsSelected}
-              selectAllLeads={selectAllLeads}
-              selectedLeadIds={selectedLeadIds}
-              handleCheckboxChange={handleCheckboxChange}
-              filters={filters}
-            />
-          )
+          <AssignedLeadsTable
+            leads={currentLeads}
+            areAllLeadsSelected={areAllLeadsSelected}
+            setAreAllLeadsSelected={setAreAllLeadsSelected}
+            selectAllLeads={selectAllLeads}
+            selectedLeadIds={selectedLeadIds}
+            handleCheckboxChange={handleCheckboxChange}
+            filters={filters}
+          />
         );
       case NOT_ASSIGNED_TABLE:
         return (
-          !loading &&
-          !isEmpty(leads) && (
-            <NotAssignedLeadsTable
-              leads={leads}
-              areAllLeadsSelected={areAllLeadsSelected}
-              setAreAllLeadsSelected={setAreAllLeadsSelected}
-              selectAllLeads={selectAllLeads}
-              selectedLeadIds={selectedLeadIds}
-              handleCheckboxChange={handleCheckboxChange}
-            />
-          )
+          <NotAssignedLeadsTable
+            leads={currentLeads}
+            areAllLeadsSelected={areAllLeadsSelected}
+            setAreAllLeadsSelected={setAreAllLeadsSelected}
+            selectAllLeads={selectAllLeads}
+            selectedLeadIds={selectedLeadIds}
+            handleCheckboxChange={handleCheckboxChange}
+          />
         );
       case INVALID_LEADS_TABLE:
         return (
-          !loading &&
-          !isEmpty(leads) && (
-            <InvalidLeadsTable
-              leads={invalidLeads}
-              areAllLeadsSelected={areAllLeadsSelected}
-              setAreAllLeadsSelected={setAreAllLeadsSelected}
-              selectAllLeads={selectAllLeads}
-              selectedLeadIds={selectedLeadIds}
-              handleCheckboxChange={handleCheckboxChange}
-            />
-          )
+          <InvalidLeadsTable
+            leads={currentLeads}
+            areAllLeadsSelected={areAllLeadsSelected}
+            setAreAllLeadsSelected={setAreAllLeadsSelected}
+            selectAllLeads={selectAllLeads}
+            selectedLeadIds={selectedLeadIds}
+            handleCheckboxChange={handleCheckboxChange}
+          />
         );
-      case EX_EMPLOYEES_LEADS_TABLE:
-        break;
+      default:
+        return null;
     }
   }
 
   function moreOptionsClickHandler(value) {
-    console.log('value = ', value);
-    
     if (value === EXPORT_LEADS) {
       if (tableType === NOT_ASSIGNED_TABLE) {
         handleExportLeads();
@@ -830,7 +669,7 @@ function Leads() {
       }
     } else {
       setTableType(value);
-      handleResetFilters(value)
+      handleResetFilters(value);
     }
   }
 
@@ -841,6 +680,7 @@ function Leads() {
       setToastStatusMessage("In Progress...");
       setShouldSnackbarCloseOnClickOfOutside(false);
       setOpenToast(true);
+      
       const leadsToExport = invalidLeads.map(
         ({ id, name, email, phone, lead_source, reason }) => ({
           id,
@@ -851,15 +691,16 @@ function Leads() {
           reason,
         })
       );
+      
       const worksheet = utils.json_to_sheet(leadsToExport);
       const workbook = utils.book_new();
       utils.book_append_sheet(workbook, worksheet, "Invalid Leads");
 
-      // Generate a filename with current date and descriptive title
-      const currentDate = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
+      const currentDate = new Date().toISOString().split("T")[0];
       const filename = `Invalid_Leads_${currentDate}.xlsx`;
 
       writeFile(workbook, filename);
+      
       setToastStatusType("SUCCESS");
       setToastMessage("Leads Exported Successfully");
       setShouldSnackbarCloseOnClickOfOutside(true);
@@ -872,35 +713,28 @@ function Leads() {
 
   async function fetchUniqueInvalidLeadsReasons() {
     try {
-      console.log('calling reasons api');
-  
       const response = await fetchDistinctInvalidLeadReasons();
-      console.log('reasons = ', response.data.data);
-  
       const latestReasons = [
-        { label: "Filter by reason", value: "" }, // default option
+        { label: "Filter by reason", value: "" },
         ...response.data.data.map((reason) => ({
           label: reason,
           value: reason
         }))
       ];
-  
       setReasons(latestReasons);
     } catch (error) {
-      console.log(error);
+      console.error("Failed to fetch invalid lead reasons:", error);
     }
   }
-  
 
   return (
     <div className="w-full">
-      {/* <!-- Cards Container --> */}
+      {/* Cards Container */}
       <div className="grid grid-cols-12 gap-4 overflow-y-visible">
         <div className="row col-span-12 flex justify-between items-center">
           <div>
             <span className="text-black text-base font-semibold poppins-thin leading-tight">
               {terminologiesMap.get(LEADS)}
-              {/* - {tableType} */}
             </span>
           </div>
           <div className="flex grid-cols-8 gap-2">
@@ -940,7 +774,6 @@ function Leads() {
                   <DropDown
                     options={employees}
                     onChange={(name, value) => handleSelect(name, value)}
-                    // Button Styling
                     buttonBackgroundColor="#D9E4F2"
                     buttonTextColor="#214768"
                     buttonBorder="1px solid #D1D5DB"
@@ -949,17 +782,14 @@ function Leads() {
                     buttonHeight="2.5rem"
                     buttonMinWidth="12rem"
                     buttonFontSize="0.875rem"
-                    // Options Styling
                     optionsBackgroundColor="#F2F7FE"
                     optionsTextColor="#464646"
                     optionsDisabledTextColor="#ABAAB9"
                     optionsMaxHeight="15rem"
                     optionsBorder="1px solid #E5E7EB"
                     optionsFontWeight="500"
-                    // Arrow Styling
                     dropdownArrowColor="#214768"
                     dropdownArrowSize="1rem"
-                    // Other Props
                     selectedOption={selectedEmployeeName}
                     resetFilters={resetFilters}
                     fieldName="created_by"
@@ -994,7 +824,7 @@ function Leads() {
         </div>
       </div>
 
-      {/* <!-- Additional Content (Expandable) --> */}
+      {/* Filter Dialogue */}
       <div
         className={`col-span-12 rounded transition-all duration-500 ease-in-out z-0 ${
           showFilter
@@ -1011,54 +841,55 @@ function Leads() {
         />
       </div>
 
-      <div className="col-span-12 mt-2 flex flex-col">
-        {showTable(tableType)}
-        {loading && (
-          <div
-            className={`w-full h-[${height}px] flex justify-center items-center bg=[#F0F6FF]`}
-            style={{ height: `${height + 20}px` }}
-          >
-            <Loader />
-          </div>
-        )}
+      {/* Content Area */}
+      {showLoader ? (
+        <div
+          className={`w-full h-[${height}px] flex justify-center items-center bg-[#F0F6FF] rounded-2xl`}
+          style={{ height: `${height + 20}px` }}
+        >
+          <Loader />
+        </div>
+      ) : isEmpty(leads) && isEmpty(invalidLeads) ? (
+        <div
+          className={`w-full h-[${height}px] bg-[#F0F6FF] flex justify-center items-center rounded-2xl`}
+          style={{ height: `${height + 20}px` }}
+        >
+          <EmptyDataMessageIcon size={100} />
+        </div>
+      ) : (
+        <>
+          {showTable(tableType)}
+          {(!isEmpty(leads) || !isEmpty(invalidLeads)) && (
+            <div className="mt-0 px-4">
+              <Pagination
+                total={
+                  tableType === INVALID_LEADS_TABLE
+                    ? invalidLeadsPagination?.total
+                    : pagination?.total
+                }
+                page={
+                  tableType === INVALID_LEADS_TABLE
+                    ? invalidLeadsPagination?.page
+                    : pagination?.page
+                }
+                pageSize={
+                  tableType === INVALID_LEADS_TABLE
+                    ? invalidLeadsPagination?.pageSize
+                    : pagination?.pageSize
+                }
+                onRowsPerChange={handleRowsPerChange}
+                onPageChange={handlePageChange}
+                onNextPageClick={handleNextPageClick}
+                onPrevPageClick={handlePrevPageClick}
+                options={paginationOptions}
+                resetFilters={resetFilters}
+              />
+            </div>
+          )}
+        </>
+      )}
 
-        {isEmpty(leads) && (
-          <div
-            className={`w-full h-[${height}px] bg-[#F0F6FF] flex justify-center items-center rounded-2xl`}
-            style={{ height: `${height + 20}px` }}
-          >
-            <EmptyDataMessageIcon size={100} />
-          </div>
-        )}
-
-        {!loading && !isEmpty(leads) && (
-          <div className="mt-0 px-4">
-            <Pagination
-              total={
-                tableType === INVALID_LEADS_TABLE
-                  ? invalidLeadsPagination?.total
-                  : pagination?.total
-              }
-              page={
-                tableType === INVALID_LEADS_TABLE
-                  ? invalidLeadsPagination?.page
-                  : pagination?.page
-              }
-              pageSize={
-                tableType === INVALID_LEADS_TABLE
-                  ? invalidLeadsPagination?.pageSize
-                  : pagination?.pageSize
-              }
-              onRowsPerChange={(data) => handleRowsPerChange(data)}
-              onPageChange={(data) => handlePageChange(data)}
-              onNextPageClick={(data) => handleNextPageClick(data)}
-              onPrevPageClick={(data) => handlePrevPageClick(data)}
-              options={paginationOptions}
-              resetFilters={resetFilters}
-            />
-          </div>
-        )}
-      </div>
+      {/* Confirmation Dialogue */}
       {showConfirmationDialogue && (
         <ConfirmationDialogue
           onClose={() => setShowConfirmationDialogue(false)}
@@ -1068,6 +899,8 @@ function Leads() {
           disabled={disableConfirmationDialogueSubmitButton}
         />
       )}
+
+      {/* Snackbar */}
       <Snackbar
         isOpen={openToast}
         onClose={() => setOpenToast(false)}
