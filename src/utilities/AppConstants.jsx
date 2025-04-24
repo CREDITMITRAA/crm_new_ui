@@ -20,6 +20,7 @@ export const SCHEDULED_CALL_WITH_MANAGER = "Scheduled Call With Manager";
 export const OKAY_FOR_POLICY = "Okay for Policy";
 export const THINK_AND_GET_BACK = "Think and get back";
 export const TWELVE_DOCUMENTS_COLLECTED = "12 documents collected";
+export const TWELVE_DOCUMENTS_NOT_COLLECTED = "12 documents not collected";
 export const NOT_OKAY_FOR_POLICY = "Not okay for Policy";
 export const OTHERS = "Others";
 export const ROLE_ADMIN = "ROLE_ADMIN";
@@ -75,6 +76,7 @@ export const terminologiesMap = new Map([
   [VERIFICATION_1, 'Preliminary Approval'],
   [SCHEDULE_CALL_WITH_MANAGER, 'Executive Consultation'],
   [TWELVE_DOCUMENTS_COLLECTED, "Documentation Collected"],
+  [TWELVE_DOCUMENTS_NOT_COLLECTED, "Documentation Not Collected"],
   [SCHEDULED_FOR_WALK_IN, 'Appointment Booked'],
   [APPROVED_FOR_WALK_IN, "Paperwork Verified"],
   [SCHEDULED_CALL_WITH_MANAGER, 'Advisor Consultation'],

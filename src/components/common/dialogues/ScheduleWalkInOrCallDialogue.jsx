@@ -180,9 +180,9 @@ function ScheduleWalkInOrCallDialogue({
         }
       } else {
         if (scheduleWalkIn.fulfilled.match(result)) {
-          setToastMessage("Success...");
+          setToastStatusMessage("Success...");
           setToastStatusType("SUCCESS");
-          setToastStatusMessage("Walk In Scheduled Successfully");
+          setToastMessage("Walk In Scheduled Successfully");
         } else if (scheduleWalkIn.rejected.match(result)) {
           console.error("Error scheduling:", result.error);
           setToastStatusMessage("Error...");
