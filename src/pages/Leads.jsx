@@ -122,6 +122,7 @@ function Leads() {
 
   // Initialize debounced function
   useEffect(() => {
+    console.log('table type = ', tableType)
     debouncedFetchLeads.current = debounce((filters) => {
       if (user.user.role === ROLE_EMPLOYEE) {
         dispatch(getLeadsByAssignedUserId(filters));
@@ -180,13 +181,14 @@ function Leads() {
       // Update active filters dot
       const filteredFilters = Object.keys(filters).reduce((acc, key) => {
         const isEmptyValue = filters[key] === "" || filters[key] == null;
+        const isNotAssigned = filters[key] === "not_assigned";
         const shouldExcludeKey = user.user.role === ROLE_EMPLOYEE
-          ? ["page", "pageSize", "totalPages", "total", "assigned_to", "userId", "exclude_verification"].includes(key)
-          : ["page", "pageSize", "totalPages", "total"].includes(key);
-      
+            ? ["page", "pageSize", "totalPages", "total", "assigned_to", "userId", "exclude_verification"].includes(key)
+            : ["page", "pageSize", "totalPages", "total", ...(isNotAssigned && key === "assigned_to" ? ["assigned_to"] : [])].includes(key);
+    
         if (!isEmptyValue && !shouldExcludeKey) acc[key] = filters[key];
         return acc;
-      }, {});
+    }, {});
 
       setShowDot(Object.keys(filteredFilters).length > 0);
     }
@@ -525,10 +527,10 @@ function Leads() {
 
         const jsonLeads = XLSX.utils.sheet_to_json(worksheet);
         const importedLeads = jsonLeads.map((item) => ({
-          name: item.name || item["lead name"] || item["customer name"] || null,
-          email: item.email || item["email address"] || null,
-          phone: item.phone || item.mobile || item["phone number"] || null,
-          lead_source: item.source || item["lead source"] || null,
+          name: item.name || item["lead name"] || item["customer name"] || item["full name"] || item["Full Name"] || item["full_name"] || item["Name"] || null,
+          email: item.email || item["email address"] || item["e-mail"] || item["Email"] || null,
+          phone: item.phone || item.mobile || item["phone number"] || item["mobile number"] || item["mob no"] || item["mob. no."] || item["phone_number"] || item["mobile_number"] || item["Mobile"] || item["Phone"] || null,
+          lead_source: item.source || item["lead source"] || item["lead-source"] || item["LEAD SOURCE"] || item["Source"] || null,
         }));
 
         let totalValidLeads = 0;
@@ -587,9 +589,28 @@ function Leads() {
 
   function validateHeaders(headerRow) {
     const requiredFields = {
-      name: ["name", "lead name", "customer name", "full name"],
-      phone: ["mobile", "mobile number", "phone", "phone number"],
-      source: ["source", "lead source"],
+      name: ["name",
+           "lead name",
+           "customer name",
+           "full name",
+           "Full Name",
+           "full_name",
+          "Name"],
+      phone: ["mobile",
+           "mobile number",
+           "phone",
+           "phone number",
+           "mob no",
+           "mob. no.",
+           "phone_number",
+           "mobile_number",
+           "Mobile",
+            "Phone"],
+      source: ["source",
+           "lead source",
+           "lead-source",
+           "LEAD SOURCE",
+           "Source",],
     };
 
     const missingFields = Object.keys(requiredFields).filter(

@@ -357,6 +357,7 @@ function AddActivityDialogue({
                       showBoxShadow={true}
                       borderColor="[#214768]"
                       date={taskDate && extractDate(taskDate)}
+                      fromTable={true}
                     />
                   </div>
                 </div>
