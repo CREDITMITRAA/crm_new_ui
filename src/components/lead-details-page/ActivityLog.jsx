@@ -134,16 +134,16 @@ function ActivityLog({ setShowActivityLog, showActivityLog, leadId }) {
     const { scrollTop, scrollHeight, clientHeight } = e.target;
     // const isAtBottom = scrollHeight - scrollTop > clientHeight;
     const isAtBottom = scrollTop + clientHeight + 10 > scrollHeight;
-    console.log(
-      "scroll top = ",
-      scrollTop,
-      " scroll height = ",
-      scrollHeight,
-      " client height = ",
-      clientHeight,
-      " is at bottom = ",
-      isAtBottom
-    );
+    // console.log(
+    //   "scroll top = ",
+    //   scrollTop,
+    //   " scroll height = ",
+    //   scrollHeight,
+    //   " client height = ",
+    //   clientHeight,
+    //   " is at bottom = ",
+    //   isAtBottom
+    // );
 
     if (isAtBottom && !loading && pagination.totalPages > page) {
       loadMore();

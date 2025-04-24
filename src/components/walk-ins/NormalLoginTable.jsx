@@ -84,6 +84,7 @@ function NormalLoginTable({ leads }) {
   const [isCall, setIsCall] = useState(false);
   const [selectedLeadStatus, setSelectedLeadStatus] = useState(null);
   const [selectedLead, setSelectedLead] = useState(false);
+  const [selectedLeadName, setSelectedLeadName] = useState(null)
 
   useEffect(() => {
     if (loading) {
@@ -232,8 +233,9 @@ function NormalLoginTable({ leads }) {
     }
   }
 
-  function handleClickOnView(leadId) {
+  function handleClickOnView(leadId, leadName) {
     setSelectedLeadId(leadId);
+    setSelectedLeadName(leadName)
     setShowActivityLogsInCommonDialogue(true);
   }
 
@@ -485,9 +487,10 @@ function NormalLoginTable({ leads }) {
                     className="truncate w-full text-left px-1"
                     style={{
                       color:
-                        optionColors.find(
-                          (item) => item.optionName === lead?.application_status
-                        )?.optionColor || "#2B323B",
+                        // optionColors.find(
+                        //   (item) => item.optionName === lead?.application_status
+                        // )?.optionColor || 
+                        "#2B323B",
                     }}
                   >
                     {terminologiesMap.get(lead?.application_status) ||
@@ -501,7 +504,7 @@ function NormalLoginTable({ leads }) {
               <div
                 className={`w-[5%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-none rounded-br-[10px] rounded-tr-[10px]`}
               >
-                <ViewIcon onClick={() => handleClickOnView(lead.id)} />
+                <ViewIcon onClick={() => handleClickOnView(lead.id, lead.name)} />
               </div>
             </div>
           ))}
@@ -553,6 +556,8 @@ function NormalLoginTable({ leads }) {
         <CommonDialogue
           onClose={() => setShowActivityLogsInCommonDialogue(false)}
           leadId={selectedLeadId}
+          leadName={selectedLeadName}
+          fromTable={true}
         />
       )}
       {showScheduleWalkInOrCallDialogue && (

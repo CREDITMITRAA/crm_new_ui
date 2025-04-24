@@ -24,6 +24,8 @@ const activityLogsSlice = createSlice({
         state.loading = true;
       })
       .addCase(getAllActivityLogs.fulfilled, (state, action) => {
+        state.activityLogsEmployeeWise = {}
+        state.activityLogs = {}
         const groupedActivityLogsEmployeeWise = groupRecordsByCreatedBy(
           action.payload.data.data
         );

@@ -194,7 +194,7 @@ function AddActivityDialogue({
       if (description) {
         payload.description = description;
       }
-      payload.prev_status = selectedLead.leadStatus
+      payload.prev_status = selectedLead.leadStatus || selectedLead.lead_status
   
       console.log("Dispatching with payload:", payload); // Log the payload
       setOpenToast(true)
@@ -293,7 +293,7 @@ function AddActivityDialogue({
                   !isEmpty(payslips) ||
                   !isEmpty(bureaus) ||
                   !isEmpty(loanReports) ||
-                  !isEmpty(creditReports)
+                  !isEmpty(creditReports) && leadId === lead.id
                     ? [
                         {
                           label: terminologiesMap.get(VERIFICATION_1),

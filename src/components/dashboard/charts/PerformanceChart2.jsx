@@ -616,6 +616,7 @@ const PerformanceChartHorizontal = (
                 dataKey="name"
                 padding={{ left: 10, right: 10, bottom:10 }}
                 tick={<CustomTick />}
+                interval={0}
               />
               <YAxis
                 domain={[0, "dataMax + 20"]}
