@@ -10,23 +10,35 @@ import { jwtDecode } from "jwt-decode";
 import Loader from "../../components/common/loaders/Loader";
 import { useNavigate } from "react-router-dom";
 import CompanyInfo from "../../components/signin/CompanyInfo";
+import { initializeUser } from "../../features/auth/authSlice";
 
 function SignIn() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user, loading } = useSelector((state) => state.auth);
   const [isLoading, setIsLoading] = useState(true);
+  const [tempUser, setTempUser] = useState(null)
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       const user = jwtDecode(token);
-      dispatch({ type: "auth/login/fulfilled", payload: user });
-      navigate("/dashboard");
+      if(user){
+        setTempUser(user)
+      }
     } else {
       setIsLoading(false);
     }
-  }, [dispatch, navigate]);
+  }, []);
+
+  useEffect(()=>{
+    if(tempUser){
+      // dispatch({ type: "auth/login/fulfilled", payload: user });
+      dispatch(initializeUser({user}))
+      navigate("/dashboard");
+    }
+  },[tempUser])
+
   return (
     <div className="w-screen h-screen relative overflow-hidden">
       {(loading || isLoading) && (

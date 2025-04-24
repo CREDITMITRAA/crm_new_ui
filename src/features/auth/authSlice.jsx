@@ -21,6 +21,12 @@ const authSlice = createSlice({
   reducers: {
     resetError:(state,action)=>{
       state.error=null  
+    },
+    initializeUser:(state,action)=>{
+      state.loading = true
+      state.user = action.payload.user;
+      state.role = action.payload.user?.user?.role;
+      state.loading = false
     }
   },
   extraReducers: (builder) => {
@@ -32,7 +38,7 @@ const authSlice = createSlice({
       .addCase(login.fulfilled, (state, action) => {
         console.log('payload = ', action.payload);
         state.user = action.payload.user;
-        state.role = action.payload.user.user.role;
+        state.role = action.payload.user?.user?.role;
         state.profile_image_url = action.payload.user.profile_image_url
         state.last_login_ago = action.payload.last_login_ago
         state.loading = false;
@@ -104,5 +110,5 @@ export const logout = createAsyncThunk("auth/logout", async () => {
   }
 });
 
-export const {resetError} = authSlice.actions
+export const {resetError, initializeUser} = authSlice.actions
 export default authSlice.reducer;

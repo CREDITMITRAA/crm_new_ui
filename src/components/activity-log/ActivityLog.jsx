@@ -262,7 +262,7 @@ function ActivityLog() {
         </>
       )}
 
-      {!loading && isEmpty(activityLogsEmployeeWise) && (
+      {!loading && !isEmpty(activityLogsEmployeeWise) && (
         <div className="mt-4 px-2">
           <Pagination
             total={pagination?.total}
