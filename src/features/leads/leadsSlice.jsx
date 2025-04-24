@@ -3,6 +3,7 @@ import {
   getAllDistinctLeadSources,
   getAllInvalidLeads,
   getAllLeads,
+  getExEmployeesLeads,
   getLeadByLeadId,
   getLeadsByAssignedUserId,
   getRecentActivityNotesByLeadId,
@@ -24,6 +25,8 @@ const initialState = {
   leadSources: [],
   invalidLeads: [],
   invalidLeadsPagination: {},
+  exEmployeesLeads: [],
+  exEmployeesPagination: {},
   lead: {},
   recentActivityNotes: [],
 };
@@ -176,6 +179,18 @@ const leadsSlice = createSlice({
         state.pagination = action.payload.data.pagination;
       })
       .addCase(getLeadsByAssignedUserId.rejected, (state,action)=>{
+        state.loading=false
+        state.error=action.payload
+      })
+      .addCase(getExEmployeesLeads.pending, (state,action)=>{
+        state.loading=true
+      })
+      .addCase(getExEmployeesLeads.fulfilled, (state,action)=>{
+        state.loading=false
+        state.exEmployeesLeads=action.payload.data.data
+        state.exEmployeesPagination = action.payload.data.pagination;
+      })
+      .addCase(getExEmployeesLeads.rejected, (state,action)=>{
         state.loading=false
         state.error=action.payload
       })

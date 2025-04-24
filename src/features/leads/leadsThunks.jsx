@@ -3,6 +3,7 @@ import {
   fetchAllInvalidLeads,
   fetchAllLeads,
   fetchDistinctLeadSources,
+  fetchExEmployeesLeads,
   fetchLeadByLeadId,
   fetchLeadsByAssignedUserId,
   fetchTodaysLeadsCount,
@@ -158,6 +159,20 @@ export const getLeadsByAssignedUserId = createAsyncThunk(
   async (params, thunkAPI) => {
     try {
       const data = await fetchLeadsByAssignedUserId(params)
+      return data
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data || "Failed to fetch leads by assigned user id"
+      );
+    }
+  }
+)
+
+export const getExEmployeesLeads = createAsyncThunk(
+  "leads/getExEmployeesLeads",
+  async (params, thunkAPI) => {
+    try {
+      const data = await fetchExEmployeesLeads(params)
       return data
     } catch (error) {
       return thunkAPI.rejectWithValue(

@@ -64,3 +64,7 @@ export async function fetchLeadsByAssignedUserId(params){
 export async function fetchDistinctInvalidLeadReasons(){
     return PrivateAxios.get('/api/invalid-leads/get-distinct-invalid-lead-reasons')
 }
+
+export async function fetchExEmployeesLeads(params){
+    return PrivateAxios.get('/api/ex-employees/get-ex-employees-leads', {params:params})
+}

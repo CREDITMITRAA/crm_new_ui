@@ -107,9 +107,11 @@ function FilterDialogue({
 
       case "lead_source":
         setFilters((prev) => ({ ...prev, lead_source: value }));
+        break;
 
       case "reason":
        setFilters((prev) => ({ ...prev, reason: value }));
+       break;
     }
   }
 
@@ -126,7 +128,7 @@ function FilterDialogue({
 
   return (
     <div
-      className="w-full h-max bg-[#E6F4FF] mt-4 p-4 py-1 grid grid-cols-12 gap-2 rounded-xl"
+      className="w-full h-max bg-[#E6F4FF] mt-4 p-4 py-4 grid grid-cols-12 gap-2 rounded-xl mb-2"
       style={{ zIndex: isConfirmationDialogueOpened && -1 }}
     >
       {/* lead id */}

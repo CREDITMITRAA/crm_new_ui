@@ -19,11 +19,11 @@ function MoreOptionsPopUp({onClick}) {
       optionName: "Export Leads",
       optionKey: EXPORT_LEADS
     },
-    // {
-    //   optionIcon: <ExEmployeesIcon color="#214768"/>,
-    //   optionName: "Ex Employees",
-    //   optionKey: EX_EMPLOYEES_LEADS_TABLE
-    // },
+    {
+      optionIcon: <ExEmployeesIcon color="#214768"/>,
+      optionName: "Ex Employees",
+      optionKey: EX_EMPLOYEES_LEADS_TABLE
+    },
   ];
 
   // Conditional option for employees only
