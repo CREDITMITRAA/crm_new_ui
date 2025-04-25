@@ -68,3 +68,7 @@ export async function fetchDistinctInvalidLeadReasons(){
 export async function fetchExEmployeesLeads(params){
     return PrivateAxios.get('/api/ex-employees/get-ex-employees-leads', {params:params})
 }
+
+export async function deleteInvalidLeadsByLeadIdsApi(payload){
+    return PrivateAxios.post('/api/invalid-leads/delete-invalid-leads-by-lead-ids', payload)
+}

@@ -23,6 +23,7 @@ import UploadLeadsButton from "../components/common/UploadLeadsButton";
 import ConfirmationDialogue from "../components/common/dialogues/ConfirmationDialogue";
 import {
   assignLeads,
+  deleteInvalidLeadsByLeadIdsApi,
   fetchDistinctInvalidLeadReasons,
   uploadLeadsInBulk,
 } from "../features/leads/leadsApi";
@@ -924,6 +925,39 @@ function Leads() {
     }
   }
 
+  async function handleDeleteSelectedLeadIds(payload) {
+    console.log('selected lead ids to be deleted = ', payload);
+    let leadIds = payload.map((lead) => lead.id);
+    console.log('lead ids = ', leadIds);
+  
+    try {
+      setOpenToast(true);
+      setToastStatusType("INFO");
+      setToastStatusMessage("In Progress...");
+      setToastMessage("Deleting invalid leads...");
+  
+      const response = await deleteInvalidLeadsByLeadIdsApi({ leadIds });
+  
+      // Assuming a successful response
+      setToastStatusType("SUCCESS");
+      setToastStatusMessage("Success");
+      setToastMessage("Invalid leads deleted successfully.");
+      
+      dispatch(getAllInvalidLeads())
+  
+    } catch (error) {
+      console.error("Error deleting invalid leads:", error);
+      setToastStatusType("ERROR");
+      setToastStatusMessage("Error");
+      setToastMessage("Failed to delete invalid leads.");
+    } finally {
+      // Optionally close the toast after a delay
+      setTimeout(() => {
+        setOpenToast(false);
+      }, 3000);
+    }
+  }  
+
   return (
     <div className="w-full">
       {/* Cards Container */}
@@ -1011,8 +1045,8 @@ function Leads() {
               tableType === ASSIGNED_TABLE && (
                 <ExportButton onClick={() => handleExportLeads()} />
               )}
-            {selectedLeadIds.length > 0 && role === ROLE_ADMIN && (
-              <DeleteButton color="#464646" />
+            {selectedLeadIds.length > 0 && role === ROLE_ADMIN && tableType === INVALID_LEADS_TABLE && (
+              <DeleteButton color="#464646" onClick={()=>handleDeleteSelectedLeadIds(selectedLeadIds)}/>
             )}
             {tableType === NOT_ASSIGNED_TABLE && (
               <UploadLeadsButton onFileUpload={(e) => handleFileUpload(e)} />
