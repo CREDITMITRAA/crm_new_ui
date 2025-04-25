@@ -442,7 +442,7 @@ function Leads() {
       const currentLeads =
         tableType === INVALID_LEADS_TABLE
           ? invalidLeads
-          : EX_EMPLOYEES_LEADS_TABLE
+          : tableType === EX_EMPLOYEES_LEADS_TABLE
           ? exEmployeesLeads
           : leads;
 
