@@ -122,7 +122,7 @@ function Employees() {
             {isEmpty(employees) ? (
               <>
                 <div
-                  className={`w-full h-[${height}px] bg-white flex justify-center items-center mt-2`}
+                  className={`w-full h-[${height}px] bg-[#E8EFF8] flex justify-center items-center mt-2 rounded-2xl`}
                   style={{ height: `${height + 30}px` }}
                 >
                   <EmptyDataMessageIcon size={100} />
@@ -131,7 +131,7 @@ function Employees() {
             ) : (
               <>
                 <div
-                  className={`w-full h-[${height}px] bg-[#E8EFF8] flex justify-center items-center mt-2`}
+                  className={`w-full h-[${height}px] bg-[#E8EFF8] flex justify-center items-center mt-2 rounded-2xl`}
                   style={{ height: `${height + 30}px` }}
                 >
                   <Loader />

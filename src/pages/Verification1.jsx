@@ -255,7 +255,7 @@ function Verification1() {
         <>
           {isEmpty(leads) ? (
             <div
-              className="w-full bg-[#F0F6FF] flex justify-center items-center mt-2 rounded-2xl"
+              className="w-full bg-[#E8EFF8] flex justify-center items-center mt-2 rounded-2xl"
               style={{ height: `${height + 30}px` }}
             >
               <EmptyDataMessageIcon size={100} />
