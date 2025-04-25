@@ -498,7 +498,7 @@ const PerformanceChartHorizontal = (
 
   if (loading) {
     return (
-      <div className="w-full h-[20rem] bg-[#E8EFF8] flex justify-center items-center mt-4">
+      <div className="w-full h-[20rem] bg-[#E8EFF8] flex justify-center items-center mt-4 rounded-2xl">
         <Loader />
       </div>
     );

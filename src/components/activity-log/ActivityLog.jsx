@@ -241,7 +241,7 @@ function ActivityLog() {
       {/* content main container */}
       {loading ? (
         <>
-          <div className="w-full h-[20rem] flex justify-center items-center bg-[#E8EFF8]">
+          <div className="w-full h-[20rem] flex justify-center items-center bg-[#E8EFF8] rounded-2xl">
             <Loader />
           </div>
         </>

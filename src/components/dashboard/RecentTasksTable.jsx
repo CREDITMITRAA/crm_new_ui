@@ -321,7 +321,7 @@ function RecentTasksTable() {
       {/* table */}
       {loading ? (
         <>
-          <div className="w-full h-[20rem] flex justify-center items-center bg-[#E8EFF8]">
+          <div className="w-full h-[20rem] flex justify-center items-center bg-[#E8EFF8] rounded-2xl mb-1">
             <Loader />
           </div>
         </>
@@ -329,7 +329,7 @@ function RecentTasksTable() {
         <>
           {isEmpty(tasks) ? (
             <>
-              <div className="w-full h-[20rem] bg-[#F0F6FF] flex justify-center items-center rounded-2xl shadow-xl">
+              <div className="w-full h-[20rem] bg-[#F0F6FF] flex justify-center items-center rounded-2xl shadow-xl mb-1">
                 <EmptyDataMessageIcon size={100} />
               </div>
             </>
