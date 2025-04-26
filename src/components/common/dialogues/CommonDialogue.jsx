@@ -2,196 +2,125 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import CloseIcon from "../../icons/CloseIcon";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllActivityLogs } from "../../../features/activity-logs/activityLogsThunks";
-import ActivityLogsContainer from "../../activity-log/ActivityLogsContainer";
-import { resetActivityLogs } from "../../../features/activity-logs/activityLogsSlice";
 import { setIsConfirmationDialogueOpened } from "../../../features/ui/uiSlice";
+import ActivityLogsContainer from "../../activity-log/ActivityLogsContainer";
 import AddActivityDialogue from "./AddActivityDialogue";
-import Snackbar from "../snackbars/Snackbar";
 import AddNoteDialogue from "./AddNoteDialogue";
-import PrimaryButton from "../PrimaryButton";
+import Snackbar from "../snackbars/Snackbar";
 import PopupButton from "../PopupButton";
+import { resetActivityLogs } from "../../../features/activity-logs/activityLogsSlice";
 
 function CommonDialogue({ onClose, leadId, fromTable = false, leadName }) {
   const dispatch = useDispatch();
-  const {
-    activityLogs = {},
-    loading,
-    error,
-    pagination,
-  } = useSelector(
-    (state) => state.activityLogs || {} // Ensure state exists
-  );
-
-  const { users } = useSelector((state) => state.users);
-  const { loading: activitiesLoading, error: activitiesError } = useSelector(
-    (state) => state.activities
-  );
-  const { lead } = useSelector((state) => state.leads);
+  
+  const { activityLogs = {}, loading, error, pagination } = useSelector(state => state.activityLogs || {});
+  const { users } = useSelector(state => state.users);
+  const { loading: activitiesLoading, error: activitiesError } = useSelector(state => state.activities);
+  
   const dialogueRef = useRef(null);
   const containerRef = useRef(null);
+  
   const [isOpen, setIsOpen] = useState(false);
   const [filters, setFilters] = useState({ lead_id: leadId });
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [activityLogsToShow, setActivityLogsToShow] = useState([]);
+  
   const [showAddActivityDialogue, setShowAddActivityDialogue] = useState(false);
+  const [showAddNoteDialogue, setShowAddNoteDialogue] = useState(false);
+  
   const [openToast, setOpenToast] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
   const [toastStatusMessage, setToastStatusMessage] = useState(null);
   const [toastStatusType, setToastStatusType] = useState(null);
-  const [
-    shouldSnackbarCloseOnClickOfOutside,
-    setShouldSnackbarCloseOnClickOfOutside,
-  ] = useState(true);
-  const [showAddNoteDialogue, setShowAddNoteDialogue] = useState(false);
+  const [shouldSnackbarCloseOnClickOfOutside, setShouldSnackbarCloseOnClickOfOutside] = useState(true);
 
-  // Calculate pageSize based on container height
+  const userMap = useMemo(() => {
+    return new Map(
+      users.map(user => [user.id, { name: user.name, role_id: user.role_id }])
+    );
+  }, [users]);
+
+  // When Dialogue Mounts
   useEffect(() => {
     dispatch(setIsConfirmationDialogueOpened(true));
+
     if (containerRef.current) {
       const containerHeight = containerRef.current.clientHeight;
-      const itemHeight = 50; // Approximate height of each item
-      const calculatedPageSize = Math.ceil(containerHeight / itemHeight) + 2; // Add buffer
+      const itemHeight = 50; // approximate single row height
+      const calculatedPageSize = Math.ceil(containerHeight / itemHeight) + 2; 
       setPageSize(calculatedPageSize);
     }
+
     return () => {
       dispatch(resetActivityLogs());
       dispatch(setIsConfirmationDialogueOpened(false));
     };
   }, []);
 
+  // Fetch Activity Logs after Page Size is Set
   useEffect(() => {
-    let newActivityLogs = {
-      ...activityLogsToShow,
-      ...activityLogs,
-    };
-    setActivityLogsToShow(newActivityLogs);
-  }, [activityLogs]);
-
-  // Fetch initial data with calculated pageSize
-  useEffect(() => {
-    dispatch(getAllActivityLogs({ ...filters, page: 1, pageSize }));
+    if (pageSize > 0) {
+      dispatch(getAllActivityLogs({ ...filters, page: 1, pageSize }));
+      setPage(1);
+    }
   }, [pageSize]);
 
+  // Scroll for Pagination
+  const handleScroll = (e) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.target;
+    const isAtBottom = scrollTop + clientHeight + 10 >= scrollHeight;
+
+    if (isAtBottom && !loading && page < pagination.totalPages) {
+      const nextPage = page + 1;
+      dispatch(getAllActivityLogs({ ...filters, page: nextPage, pageSize }));
+      setPage(nextPage);
+    }
+  };
+
+  // Click Outside and ESC to Close
   useEffect(() => {
     setIsOpen(true);
 
     function handleClickOutside(e) {
-      if (
-        dialogueRef.current &&
-        !dialogueRef.current.contains(e.target) &&
-        !showAddActivityDialogue &&
-        !showAddNoteDialogue
-      ) {
+      if (dialogueRef.current && !dialogueRef.current.contains(e.target) && !showAddActivityDialogue && !showAddNoteDialogue) {
         onClose();
       }
     }
 
     function handleEscapeKey(e) {
-      if (
-        e.key === "Escape" &&
-        !showAddActivityDialogue &&
-        !showAddNoteDialogue
-      ) {
+      if (e.key === "Escape" && !showAddActivityDialogue && !showAddNoteDialogue) {
         onClose();
       }
     }
 
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("keydown", handleEscapeKey);
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleEscapeKey);
     };
   }, [onClose, showAddActivityDialogue, showAddNoteDialogue]);
 
+  // Toast Handling
   useEffect(() => {
-    if (activitiesLoading) {
+    if (activitiesLoading || loading) {
       setToastStatusType("INFO");
-      setToastMessage("Adding activity...");
+      setToastMessage("Processing...");
       setToastStatusMessage("In Progress...");
       setShouldSnackbarCloseOnClickOfOutside(true);
-    } else {
-      setToastStatusType("SUCCESS");
-      setToastMessage("Activity added...");
-      setToastStatusMessage("Success...");
-      setShouldSnackbarCloseOnClickOfOutside(true);
     }
-  }, [activitiesLoading]);
+  }, [activitiesLoading, loading]);
 
   useEffect(() => {
-    if (activitiesError) {
+    if (activitiesError || error) {
+      const errMsg = activitiesError?.message || error?.message;
       setToastStatusType("ERROR");
-      setToastMessage(activitiesError.message);
+      setToastMessage(errMsg);
       setToastStatusMessage("Error...");
       setShouldSnackbarCloseOnClickOfOutside(true);
     }
-  }, [activitiesError]);
-
-  useEffect(() => {
-    if (loading) {
-      setToastStatusType("INFO");
-      setToastMessage("Adding activity note...");
-      setToastStatusMessage("In Progress...");
-      setShouldSnackbarCloseOnClickOfOutside(true);
-    } else {
-      setToastStatusType("SUCCESS");
-      setToastMessage("Activity note added...");
-      setToastStatusMessage("Success...");
-      setShouldSnackbarCloseOnClickOfOutside(true);
-    }
-  }, [loading]);
-
-  useEffect(() => {
-    if (error) {
-      setToastStatusType("ERROR");
-      setToastMessage(error.message);
-      setToastStatusMessage("Error...");
-      setShouldSnackbarCloseOnClickOfOutside(true);
-    }
-  }, [error]);
-
-  const userMap = useMemo(() => {
-    return new Map(
-      users.map((user) => [
-        user.id,
-        {
-          name: user.name,
-          role_id: user.role_id,
-        },
-      ])
-    );
-  }, [users]);
-
-  const loadMore = () => {
-    const nextPage = page + 1;
-    if (nextPage <= pagination.totalPages) {
-      dispatch(
-        getAllActivityLogs({ ...filters, page: Number(nextPage), pageSize })
-      );
-      setPage(nextPage);
-    }
-  };
-
-  const handleScroll = (e) => {
-    const { scrollTop, scrollHeight, clientHeight } = e.target;
-    // const isAtBottom = scrollHeight - scrollTop > clientHeight;
-    const isAtBottom = scrollTop + clientHeight + 10 > scrollHeight;
-    console.log(
-      "scroll top = ",
-      scrollTop,
-      " scroll height = ",
-      scrollHeight,
-      " client height = ",
-      clientHeight,
-      " is at bottom = ",
-      isAtBottom
-    );
-
-    if (isAtBottom && !loading && pagination.totalPages > page) {
-      loadMore();
-    }
-  };
+  }, [activitiesError, error]);
 
   return (
     <div
@@ -210,7 +139,7 @@ function CommonDialogue({ onClose, leadId, fromTable = false, leadName }) {
       <div
         ref={dialogueRef}
         style={{
-          padding: "0rem",
+          padding: "0",
           minWidth: "28rem",
           backgroundColor: "#E8EFF8",
           minHeight: "10rem",
@@ -226,11 +155,8 @@ function CommonDialogue({ onClose, leadId, fromTable = false, leadName }) {
         onClick={(e) => e.stopPropagation()}
         className="rounded-bl-xl rounded-tl-xl rounded-tr-xl"
       >
-        {/* Dialogue title */}
-        <div
-          className="w-full h-[10%] flex justify-between items-center px-4 
-                border-b border-gray-300 shadow-md"
-        >
+        {/* Header */}
+        <div className="w-full h-[10%] flex justify-between items-center px-4 border-b border-gray-300 shadow-md">
           <div className="text-[#214768] text-base font-semibold poppins-thin leading-tight">
             Activity Logs
           </div>
@@ -244,7 +170,7 @@ function CommonDialogue({ onClose, leadId, fromTable = false, leadName }) {
                 textColor="#214768"
               />
             </div>
-            <div className="mr-3" onClick={() => setShowAddNoteDialogue(true)}>
+            <div className="mr-3">
               <PopupButton
                 name="Add Note"
                 onClick={() => setShowAddNoteDialogue(true)}
@@ -259,27 +185,26 @@ function CommonDialogue({ onClose, leadId, fromTable = false, leadName }) {
           </div>
         </div>
 
-        {/* Dialogue content */}
+        {/* Content */}
         <div
           ref={containerRef}
-          className="w-full h-[90%] rounded-bl-xl rounded-br-xl overflow-y-auto py-0"
+          className="w-full h-[90%] overflow-y-auto py-0"
           onScroll={handleScroll}
         >
           <ActivityLogsContainer
-            activityLogs={activityLogsToShow}
+            activityLogs={activityLogs}
             userMap={userMap}
             fromTable={fromTable}
           />
           {loading && <div className="text-center py-4">Loading...</div>}
         </div>
       </div>
+
+      {/* Add Activity Dialogue */}
       {showAddActivityDialogue && (
         <AddActivityDialogue
           onClose={() => setShowAddActivityDialogue(false)}
-          // selectedLead={lead}
-          fromTable={false}
-          onActivityAdded={() => {}}
-          fromActivityLog={true}
+          fromActivityLog
           setOpenToast={setOpenToast}
           openToast={openToast}
           setToastStatusType={setToastStatusType}
@@ -289,15 +214,19 @@ function CommonDialogue({ onClose, leadId, fromTable = false, leadName }) {
           leadName={leadName}
         />
       )}
+
+      {/* Add Note Dialogue */}
       {showAddNoteDialogue && (
         <AddNoteDialogue
           onClose={() => setShowAddNoteDialogue(false)}
-          fromActivityLog={true}
+          fromActivityLog
           setOpenToast={setOpenToast}
           leadId={leadId}
           leadName={leadName}
         />
       )}
+
+      {/* Snackbar */}
       <Snackbar
         isOpen={openToast}
         onClose={() => setOpenToast(false)}

@@ -26,6 +26,7 @@ function ActivityLog({ setShowActivityLog, showActivityLog, leadId }) {
   );
   const { height } = useSelector((state) => state.ui);
   const { users } = useSelector((state) => state.users);
+  
   const [filters, setFilters] = useState({ lead_id: leadId });
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -36,83 +37,15 @@ function ActivityLog({ setShowActivityLog, showActivityLog, leadId }) {
   const [toastMessage, setToastMessage] = useState(null);
   const [toastStatusMessage, setToastStatusMessage] = useState(null);
   const [toastStatusType, setToastStatusType] = useState(null);
-  const [
-    shouldSnackbarCloseOnClickOfOutside,
-    setShouldSnackbarCloseOnClickOfOutside,
-  ] = useState(true);
+  const [shouldSnackbarCloseOnClickOfOutside, setShouldSnackbarCloseOnClickOfOutside] = useState(true);
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
   const [showNewActivityLogs, setShowNewActivityLogs] = useState(false);
   const [showDot, setShowDot] = useState(false);
+  
   const containerRef = useRef(null);
-  useEffect(() => {
-    dispatch(getUsersNameAndId());
-    console.log("activity log inside lead details page mounted");
-    if (containerRef.current) {
-      const containerHeight = containerRef.current.clientHeight;
-      const itemHeight = 50; // Approximate height of each item
-      const calculatedPageSize = Math.ceil(containerHeight / itemHeight) + 2; // Add buffer
-      setPageSize(calculatedPageSize);
-    }
-    return () => {
-      dispatch(resetActivityLogs());
-    };
-  }, []);
-  useEffect(() => {
-    if (showNewActivityLogs) {
-      let newActivityLogs = {
-        ...activityLogs,
-      };
-      setActivityLogsToShow(newActivityLogs);
-    } else {
-      let newActivityLogs = {
-        ...activityLogsToShow,
-        ...activityLogs,
-      };
-      setActivityLogsToShow(newActivityLogs);
-    }
-  }, [activityLogs]);
+  const initialLoad = useRef(true);
 
-  useEffect(() => {
-    dispatch(getAllActivityLogs({ ...filters, page: 1, pageSize }));
-  }, [pageSize]);
-
-  useEffect(() => {
-    // Fetch activity logs with the current filters
-    fetchActivityLogs({ ...filters, pageSize: Number(pageSize) });
-
-    // Filter out keys with empty values
-    const filteredFilters = Object.keys(filters)?.reduce((acc, key) => {
-      // Skip keys like "page", "pageSize", "totalPages", and "total"
-      if (
-        !["page", "pageSize", "totalPages", "total", "lead_id"].includes(key)
-      ) {
-        // Check if the value is not empty
-        const value = filters[key];
-        if (
-          value !== null &&
-          value !== undefined &&
-          value !== "" &&
-          !(Array.isArray(value) && value.length === 0)
-        ) {
-          acc[key] = value;
-        }
-      }
-      return acc;
-    }, {});
-
-    // Set showDot based on whether there are any active filters
-    if (Object.keys(filteredFilters).length > 0) {
-      setShowNewActivityLogs(true);
-      setShowDot(Object.keys(filteredFilters).length > 0);
-    }
-  }, [filters]);
-
-  const fetchActivityLogs = useCallback(
-    debounce((filters) => {
-      dispatch(getAllActivityLogs(filters));
-    }, 500), // 500ms debounce time
-    [dispatch]
-  );
-
+  // Memoized user map for quick lookups
   const userMap = useMemo(() => {
     return new Map(users.map((user) => [user.id, { 
       name: user.name, 
@@ -120,33 +53,87 @@ function ActivityLog({ setShowActivityLog, showActivityLog, leadId }) {
     }]));
   }, [users]);
 
-  const loadMore = () => {
-    const nextPage = page + 1;
-    if (nextPage <= pagination.totalPages) {
-      dispatch(
-        getAllActivityLogs({ ...filters, page: Number(nextPage), pageSize })
-      );
-      setPage(nextPage);
+  // Debounced fetch function with cleanup
+  const fetchActivityLogs = useCallback(
+    debounce((filters) => {
+      dispatch(getAllActivityLogs(filters));
+    }, 500),
+    [dispatch]
+  );
+
+  // Initial setup
+  useEffect(() => {
+    dispatch(getUsersNameAndId());
+    
+    if (containerRef.current) {
+      const containerHeight = containerRef.current.clientHeight;
+      const itemHeight = 50;
+      const calculatedPageSize = Math.ceil(containerHeight / itemHeight) + 2;
+      setPageSize(calculatedPageSize);
     }
-  };
+
+    return () => {
+      dispatch(resetActivityLogs());
+    };
+  }, [dispatch]);
+
+  // Handle pageSize changes
+  useEffect(() => {
+    if (!initialLoad.current) {
+      fetchActivityLogs({ ...filters, page: 1, pageSize });
+      setPage(1);
+      setActivityLogsToShow([]);
+    }
+    initialLoad.current = false;
+  }, [pageSize, fetchActivityLogs, filters]);
+
+  // Handle filter changes
+  useEffect(() => {
+    const activeFilters = Object.keys(filters).filter(
+      key => !["page", "pageSize", "totalPages", "total", "lead_id"].includes(key) &&
+            filters[key] !== null &&
+            filters[key] !== undefined &&
+            filters[key] !== "" &&
+            !(Array.isArray(filters[key]) && filters[key].length === 0)
+    ).length > 0;
+
+    setShowDot(activeFilters);
+    
+    if (activeFilters) {
+      setShowNewActivityLogs(true);
+      setPage(1);
+    }
+
+    fetchActivityLogs({ ...filters, page: 1, pageSize });
+  }, [filters, pageSize, fetchActivityLogs]);
+
+  // Update activity logs to show
+  // Update activity logs to show
+useEffect(() => {
+  console.log('activity logs = ', activityLogs);
+  
+  if (!activityLogs || activityLogs.length === 0) return;
+
+  if (page === 1 || showNewActivityLogs) {
+    setActivityLogsToShow(activityLogs);
+    setShowNewActivityLogs(false);
+  } else {
+    setActivityLogsToShow(prev => {
+      // Ensure prev is always treated as an array
+      // const previousLogs = Array.isArray(prev) ? prev : [];
+      return {...prev, ...activityLogs}
+    });
+  }
+}, [activityLogs, page, showNewActivityLogs]);
 
   const handleScroll = (e) => {
     const { scrollTop, scrollHeight, clientHeight } = e.target;
-    // const isAtBottom = scrollHeight - scrollTop > clientHeight;
     const isAtBottom = scrollTop + clientHeight + 10 > scrollHeight;
-    // console.log(
-    //   "scroll top = ",
-    //   scrollTop,
-    //   " scroll height = ",
-    //   scrollHeight,
-    //   " client height = ",
-    //   clientHeight,
-    //   " is at bottom = ",
-    //   isAtBottom
-    // );
 
     if (isAtBottom && !loading && pagination.totalPages > page) {
-      loadMore();
+      const nextPage = page + 1;
+      dispatch(getAllActivityLogs({ ...filters, page: nextPage, pageSize }));
+      setPage(nextPage);
     }
   };
 
@@ -156,39 +143,62 @@ function ActivityLog({ setShowActivityLog, showActivityLog, leadId }) {
     setToastStatusMessage("In Progress...");
     setShouldSnackbarCloseOnClickOfOutside(false);
     setOpenToast(true);
-    let response = null;
-    response = await exportLeadActivityLogs(users, filters, setToastMessage);
-    if (response === true) {
-      setToastStatusType("SUCCESS");
-      setToastStatusMessage("Success...");
-      setToastMessage("Logs Exported Successfully");
-      setShouldSnackbarCloseOnClickOfOutside(true);
-    } else if (response === false && response !== null) {
+    
+    try {
+      const response = await exportLeadActivityLogs(users, filters, setToastMessage);
+      if (response) {
+        setToastStatusType("SUCCESS");
+        setToastStatusMessage("Success...");
+        setToastMessage("Logs Exported Successfully");
+      } else {
+        setToastStatusType("ERROR");
+        setToastStatusMessage("Error...");
+        setToastMessage("Failed to export logs!");
+      }
+    } catch (error) {
       setToastStatusType("ERROR");
       setToastStatusMessage("Error...");
-      setToastMessage("Failed to export logs !");
+      setToastMessage("Failed to export logs!");
+    } finally {
       setShouldSnackbarCloseOnClickOfOutside(true);
     }
   }
 
   function handleResetFilters() {
-    let initialFilters = {
-      lead_id: leadId,
-    };
-    let pageSize = null;
+    const initialFilters = { lead_id: leadId };
+    
     if (containerRef.current) {
       const containerHeight = containerRef.current.clientHeight;
-      const itemHeight = 50; // Approximate height of each item
-      pageSize = Math.ceil(containerHeight / itemHeight) + 2; // Add buffer
-      setPageSize(pageSize);
-      setFilters({ ...initialFilters, pageSize: pageSize });
+      const itemHeight = 50;
+      const newPageSize = Math.ceil(containerHeight / itemHeight) + 2;
+      
+      setPageSize(newPageSize);
+      setFilters({ ...initialFilters, pageSize: newPageSize });
       setResetFilters(true);
       setShowDot(false);
+      setPage(1);
+      
       setTimeout(() => {
         setResetFilters(false);
       }, 1000);
     }
   }
+
+  function handleDateChange(data) {
+    setFilters(prev => ({
+      ...prev,
+      from_date: data.startDate,
+      to_date: data.endDate,
+      page: 1
+    }));
+    setIsPickerOpen(false);
+    setPage(1);
+  }
+
+  // Calculate if we should show empty state
+  const showEmptyState = useMemo(() => {
+    return !loading && page === 1 && activityLogsToShow.length === 0;
+  }, [loading, page, activityLogsToShow]);
 
   return (
     <>
@@ -219,20 +229,20 @@ function ActivityLog({ setShowActivityLog, showActivityLog, leadId }) {
                 />
               </div>
               <div className="h-9">
-              <DateButton
-                onClick={() => setIsPickerOpen(!isPickerOpen)}
-                onDateChange={(data) => handleDateChange(data)}
-                showDot={false}
-                buttonBackgroundColor="bg-[#C7D4E4]"
-              showBoxShadow={true}
-              />
+                <DateButton
+                  onClick={() => setIsPickerOpen(!isPickerOpen)}
+                  onDateChange={handleDateChange}
+                  showDot={false}
+                  buttonBackgroundColor="bg-[#C7D4E4]"
+                  showBoxShadow={true}
+                />
               </div>
               <FilterButton
                 onClick={() => setShowFilter(!showFilter)}
                 showDot={showDot}
               />
-              {showDot && <ClearButton onClick={() => handleResetFilters()} />}
-              <ExportButton onClick={() => handleExportLeads()} />
+              {showDot && <ClearButton onClick={handleResetFilters} />}
+              <ExportButton onClick={handleExportLeads} />
             </div>
           </div>
         </div>
@@ -249,14 +259,24 @@ function ActivityLog({ setShowActivityLog, showActivityLog, leadId }) {
             resetFilters={resetFilters}
           />
         </div>
-        {loading ? (
+        {loading && page === 1 ? (
           <div
             className="w-full bg-white flex justify-center items-center rounded-2xl"
             style={{ height: `${height + 20}px` }}
           >
             <Loader />
           </div>
-        ) : !activityLogsToShow.length > 0 ? (
+        ) : showEmptyState ? (
+          <div
+            className="w-full bg-white flex justify-center items-center rounded-2xl"
+            style={{ height: `${height + 20}px` }}
+          >
+            <EmptyDataMessageIcon
+              size={100}
+              message="No activity logs available"
+            />
+          </div>
+        ) : (
           <div
             className="h-full w-full overflow-y-auto"
             ref={containerRef}
@@ -267,16 +287,11 @@ function ActivityLog({ setShowActivityLog, showActivityLog, leadId }) {
               userMap={userMap}
               setShowActivityLog={setShowActivityLog}
             />
-          </div>
-        ) : (
-          <div
-            className="w-full bg-white flex justify-center items-center rounded-2xl"
-            style={{ height: `${height + 20}px` }}
-          >
-            <EmptyDataMessageIcon
-              size={100}
-              message="No activity logs available"
-            />
+            {loading && page > 1 && (
+              <div className="flex justify-center py-4">
+                <Loader size="small" />
+              </div>
+            )}
           </div>
         )}
       </div>
