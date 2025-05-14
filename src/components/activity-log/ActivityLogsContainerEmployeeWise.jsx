@@ -15,7 +15,7 @@ function ActivityLogsContainerEmployeeWise({
   userMap,
   fromTable = false,
 }) {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { isConfirmationDialogueOpened } = useSelector((state) => state.ui);
   const [expandedItems, setExpandedItems] = useState({});
   const [allExpanded, setAllExpanded] = useState(false);
@@ -215,7 +215,12 @@ function ActivityLogsContainerEmployeeWise({
                                   {formatName(logs[0].lead_name)}
                                 </div>
                                 <div className="w-5 h-5 flex items-center justify-center cursor-pointer">
-                                  <LeadNavigationIcon color="#214768" onClick={()=>navigate(`/lead-details-page/${leadId}`)}/>
+                                  <LeadNavigationIcon
+                                    color="#214768"
+                                    onClick={() =>
+                                      navigate(`/lead-details-page/${leadId}`)
+                                    }
+                                  />
                                 </div>
                               </div>
                               <div
@@ -256,12 +261,10 @@ function ActivityLogsContainerEmployeeWise({
                                   : "max-h-0 opacity-0"
                               }`}
                             >
-                              <ul className="list-disc list-outside pl-5 text-[#32086d] mt-1">
+                              <ul className="list-disc list-outside pl-5 text-[#214768] mt-1">
                                 {logs.map((log) => {
-                                  const [beforeTo, afterTo] =
+                                  const [fromPart, toPart] =
                                     log.activity_desc.split(" to ");
-                                  const hasAfterTo =
-                                    afterTo && afterTo.trim() !== "";
 
                                   return (
                                     <li
@@ -269,24 +272,40 @@ function ActivityLogsContainerEmployeeWise({
                                       className="text-sm poppins-thin mt-1"
                                     >
                                       <span className="text-[#425565] text-xs font-normal poppins-thin">
-                                        {beforeTo}
+                                        {fromPart}
                                       </span>
-                                      {hasAfterTo && (
+
+                                      {toPart && (
                                         <span className="text-[#114F00] text-xs font-semibold poppins-thin">
                                           {" to "}
-                                          {log.activity_type ===
-                                          "LEAD_ASSIGNMENT" || "APPLICATION_STATUS_UPDATE" || "VERIFICATION_STATUS_UPDATE" || "LEAD_STATUS_UPDATE"
-                                            ? afterTo ||
-                                              afterTo
-                                            : afterTo}
+                                          {toPart}
                                         </span>
+                                      )}
+
+                                      {log.note && (
+                                        <div
+                                          className={`w-fit h-max relative bg-none rounded-[5px] text-xs border border-[#005085] mt-2 py-0.5 px-1 text-[#425565] transition-opacity duration-300 ${
+                                            isExpanded
+                                              ? "opacity-100"
+                                              : "opacity-0"
+                                          }`}
+                                          style={{
+                                            zIndex: fromTable
+                                              ? !isConfirmationDialogueOpened
+                                              : isConfirmationDialogueOpened
+                                              ? -1
+                                              : 1,
+                                          }}
+                                        >
+                                          {formatName(log.note)}
+                                        </div>
                                       )}
                                     </li>
                                   );
                                 })}
                               </ul>
 
-                              {logs[0].note && (
+                              {/* {logs[0].note && (
                                 <div
                                   className={`w-fit h-max relative bg-none rounded-[5px] text-xs border border-[#005085] mt-2 py-0.5 px-1 text-[#425565] transition-opacity duration-300 ${
                                     isExpanded ? "opacity-100" : "opacity-0"
@@ -301,7 +320,7 @@ function ActivityLogsContainerEmployeeWise({
                                 >
                                   {formatName(logs[0].note)}
                                 </div>
-                              )}
+                              )} */}
                             </div>
                           </div>
                         );

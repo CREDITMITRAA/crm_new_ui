@@ -229,7 +229,7 @@ function ActivityLogsContainer({
                                           : "max-h-0 opacity-0"
                                       }`}
                                     >
-                                      <ul className="list-disc list-outside pl-5 text-[#32086d] mt-1">
+                                      <ul className="list-disc list-outside pl-5 text-[#214768] mt-1">
                                         {logs.map((log) => {
                                           const [fromPart, toPart] =
                                             log.activity_desc.split(" to ");
