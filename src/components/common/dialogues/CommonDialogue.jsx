@@ -145,6 +145,11 @@ function CommonDialogue({ onClose, leadId, fromTable = false, leadName }) {
       setToastMessage("Processing...");
       setToastStatusMessage("In Progress...");
       setShouldSnackbarCloseOnClickOfOutside(true);
+    }else {
+      setToastStatusType("SUCCESS");
+      setToastMessage("Activity added...");
+      setToastStatusMessage("Success...");
+      setShouldSnackbarCloseOnClickOfOutside(true);
     }
   }, [activitiesLoading, loading]);
 
@@ -239,7 +244,13 @@ function CommonDialogue({ onClose, leadId, fromTable = false, leadName }) {
       {/* Add Activity Dialogue */}
       {showAddActivityDialogue && (
         <AddActivityDialogue
-          onClose={() => setShowAddActivityDialogue(false)}
+          onClose={() => {
+            setShowAddActivityDialogue(false)
+            if(openToast){
+              setOpenToast(false)
+            }
+            dispatch(getAllActivityLogs({ ...filters, ...pagination }))
+          }}
           fromActivityLog
           setOpenToast={setOpenToast}
           openToast={openToast}
@@ -254,7 +265,13 @@ function CommonDialogue({ onClose, leadId, fromTable = false, leadName }) {
       {/* Add Note Dialogue */}
       {showAddNoteDialogue && (
         <AddNoteDialogue
-          onClose={() => setShowAddNoteDialogue(false)}
+          onClose={() => {
+            setShowAddNoteDialogue(false)
+            if(openToast){
+              setOpenToast(false)
+            }
+            dispatch(getAllActivityLogs({ ...filters, ...pagination }))
+          }}
           fromActivityLog
           setOpenToast={setOpenToast}
           leadId={leadId}

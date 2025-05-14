@@ -49,7 +49,7 @@ const activityLogsSlice = createSlice({
       })
       .addCase(addActivityLogNote.rejected, (state,action)=>{
         state.loading = false
-        state.error = null
+        state.error = action.payload
       })
   },
 });
