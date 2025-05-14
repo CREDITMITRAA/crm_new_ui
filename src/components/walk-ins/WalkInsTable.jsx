@@ -613,6 +613,7 @@ function WalkInsTable({ leads }) {
             dispatch(
               getAllWalkInLeads({
                 ...defaultWalkInLeadsTableFilters,
+                ...(user.user.role === ROLE_EMPLOYEE && {assigned_to: user.user.id}),
                 page: pagination.page,
                 pageSize: pagination.pageSize,
               })
@@ -689,6 +690,7 @@ function WalkInsTable({ leads }) {
             dispatch(
               getAllWalkInLeads({
                 ...defaultWalkInLeadsTableFilters,
+                ...(user.user.role === ROLE_EMPLOYEE && {assigned_to: user.user.id}),
                 page: pagination.page,
                 pageSize: pagination.pageSize,
               })
