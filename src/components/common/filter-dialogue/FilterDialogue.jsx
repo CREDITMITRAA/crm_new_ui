@@ -16,6 +16,7 @@ import {
   NOT_INTERESTED,
   NOT_POSSIBLE,
   NOT_WORKING_NOT_REACHABLE,
+  OTHERS,
   RNR_RING_NO_RESPONSE,
   ROLE_EMPLOYEE,
   SCHEDULED_CALL_WITH_MANAGER,
@@ -69,6 +70,7 @@ function FilterDialogue({
       label: terminologiesMap.get(SCHEDULED_CALL_WITH_MANAGER),
       value: SCHEDULED_CALL_WITH_MANAGER,
     },
+    {label: terminologiesMap.get(OTHERS), value: OTHERS}
   ]);
   const [leadSourceOptions, setLeadSourceOptions] = useState([
     { label: "Select lead source", value: "" },
