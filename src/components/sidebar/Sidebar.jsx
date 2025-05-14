@@ -5,6 +5,7 @@ import LeadsIcon from "../icons/LeadsIcon";
 import Verification1Icon from "../icons/Verification1Icon";
 import WalkInsIcon from "../icons/WalkInsIcon";
 import EmployeesIcon from "../icons/EmployeesIcon";
+import ApprovedApplicationsIcon from "../icons/ApprovedApplicationsIcon";
 import NavigationItem from "./NavigationItem";
 import UserProfile from "./UserProfile";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -13,7 +14,7 @@ import AlertButton from "../common/AlertButton";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../features/auth/authSlice";
 import store from "../../store/store";
-import { ROLE_EMPLOYEE } from "../../utilities/AppConstants";
+import { ROLE_EMPLOYEE, ROLE_OPERATIONS_TEAM } from "../../utilities/AppConstants";
 import company_logo_icon from "../../assets/images/company_logo_icon.png"
 
 function Sidebar() {
@@ -53,6 +54,11 @@ function Sidebar() {
     },
     { itemName: "Appointments", icon: WalkInsIcon, navigateTo: "/walk-ins" },
     {
+      itemName: "Approved Applications",
+      icon: ApprovedApplicationsIcon,
+      navigateTo: "/approved-applications",
+    },
+    {
       itemName: "Client Executives",
       icon: EmployeesIcon,
       navigateTo: "/employees",
@@ -60,7 +66,7 @@ function Sidebar() {
   ];
 
   const filteredNavigationItems =
-    user?.user.role === ROLE_EMPLOYEE
+    [ROLE_EMPLOYEE, ROLE_OPERATIONS_TEAM].includes(user?.user.role)
       ? navigationItems.filter((item) => item.itemName !== "Client Executives")
       : navigationItems;
 

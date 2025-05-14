@@ -2,9 +2,15 @@ import moment from "moment";
 import Pagination from "../common/Pagination";
 import CallIcon from "../icons/CallIcon";
 import {
+  APPLICATION_APPROVED,
   applicationStatusOptionsForWalkInsPageTable,
+  APPOINTMENTS,
+  APPROVED_APPLICATIONS,
   CANCELLED,
+  CLOSED,
   leadStatusOptionsForWalkInsPageTable,
+  LOGIN,
+  NORMAL_LOGIN,
   optionColors,
   PENDING,
   REJECTED,
@@ -36,9 +42,11 @@ import {
 } from "../../utilities/utility-functions";
 import { useNavigate } from "react-router-dom";
 import { updateLeadStatus } from "../../features/walk-ins/walkInsSlice";
+import ApplicationApprovedDialogue from "../common/dialogues/ApplicationApprovedDialogue";
 
 const defaultWalkInLeadsTableFilters = {
-  verification_status: ["Scheduled For Walk-In", "Scheduled Call With Manager"],
+  // verification_status: ["Scheduled For Walk-In", "Scheduled Call With Manager"],
+  lead_bucket: APPOINTMENTS,
   lead_status: "",
   for_walk_ins_page: true,
   walk_in_attributes: [
@@ -61,8 +69,10 @@ function WalkInsTable({ leads }) {
     error,
     leadsPagination: pagination,
     statusUpdateLoading,
-    statusUpdateError
+    statusUpdateError,
+    leads: updatedLeads // Make sure this is coming from Redux
   } = useSelector((state) => state.walkIns);
+  
   const [openToast, setOpenToast] = useState(false);
   const [showUpdateLeadStatusDialogue, setShowUpdateLeadStatusDialogue] =
     useState(false);
@@ -92,8 +102,16 @@ function WalkInsTable({ leads }) {
   const [selectedLead, setSelectedLead] = useState(false);
   const [isReschedule, setIsReschedule] = useState(false);
   const [selectedWalkIn, setSelectedWalkIn] = useState(null);
-  const [selectedLeadName, setSelectedLeadName] = useState(null)
+  const [selectedLeadName, setSelectedLeadName] = useState(null);
+  const [showApplicationApprovedDialogue, setShowApplicationApprovedDialgoue] = useState(false);
+  const [localLeads, setLocalLeads] = useState(leads);
 
+  // Sync local leads with Redux leads
+  useEffect(() => {
+    setLocalLeads(leads);
+  }, [leads]);
+
+  // Handle status update effects
   useEffect(() => {
     if (loading || statusUpdateLoading) {
       setToastStatusType("INFO");
@@ -105,21 +123,23 @@ function WalkInsTable({ leads }) {
       setToastStatusMessage("In Progress...");
       setShouldSnackbarCloseOnClickOfOutside(true);
     } else {
-      setToastStatusType("SUCCESS");
-      if (showUpdateApplicationStatusDialogue) {
-        setToastMessage("Application Status Updated...");
-      } else {
-        setToastMessage("Lead Status Updated...");
+      if (!error && !statusUpdateError) {
+        setToastStatusType("SUCCESS");
+        if (showUpdateApplicationStatusDialogue) {
+          setToastMessage("Application Status Updated...");
+        } else {
+          setToastMessage("Lead Status Updated...");
+        }
+        setToastStatusMessage("Success...");
+        setShouldSnackbarCloseOnClickOfOutside(true);
       }
-      setToastStatusMessage("Success...");
-      setShouldSnackbarCloseOnClickOfOutside(true);
     }
-  }, [loading, statusUpdateLoading]);
+  }, [loading, statusUpdateLoading, error, statusUpdateError, showUpdateApplicationStatusDialogue]);
 
   useEffect(() => {
     if (error || statusUpdateError) {
       setToastStatusType("ERROR");
-      setToastMessage(error?.message || statusUpdateError.message);
+      setToastMessage(error?.message || statusUpdateError?.message);
       setToastStatusMessage("Error...");
       setShouldSnackbarCloseOnClickOfOutside(true);
     }
@@ -127,23 +147,17 @@ function WalkInsTable({ leads }) {
 
   function handleLeadStatusChange(e, lead) {
     const newStatus = e.target.value;
-    console.log("New status selected:", newStatus);
-
     e.stopPropagation();
 
-    // Check if user has permission
     if (![ROLE_EMPLOYEE, ROLE_ADMIN].includes(user.user.role)) {
       showErrorToast("Manager has no access to update lead status");
       return;
     }
 
-    const walk_in = lead.walkIns?.[0]; // Safe access with optional chaining
+    const walk_in = lead.walkIns?.[0];
     const walkInStatus = walk_in ? getStatusDetails(walk_in).status : null;
-
-    // Handle reschedule cases
-    if (
-      [RESCHEDULE_WALK_IN, RESCHEDULE_CALL_WITH_MANAGER].includes(newStatus)
-    ) {
+    
+    if ([RESCHEDULE_WALK_IN, RESCHEDULE_CALL_WITH_MANAGER].includes(newStatus)) {
       if ([UPCOMING, PENDING].includes(walkInStatus)) {
         const message = walk_in?.is_call
           ? "Please complete or cancel the existing Scheduled Call!"
@@ -151,9 +165,7 @@ function WalkInsTable({ leads }) {
         showErrorToast(message);
         return;
       }
-      console.log("walk in  = ", walk_in);
 
-      // Proceed with rescheduling
       setIsCall(newStatus === RESCHEDULE_CALL_WITH_MANAGER);
       setIsReschedule(true);
       setSelectedLead(lead);
@@ -163,17 +175,7 @@ function WalkInsTable({ leads }) {
       return;
     }
 
-    // Handle non-scheduling status changes
-    if (
-      ![SCHEDULED_FOR_WALK_IN, SCHEDULED_CALL_WITH_MANAGER].includes(newStatus)
-    ) {
-      if (walkInStatus === CANCELLED) {
-        showErrorToast(
-          "Please complete or cancel the existing Scheduled Walk-In!"
-        );
-        return;
-      }
-
+    if (![SCHEDULED_FOR_WALK_IN, SCHEDULED_CALL_WITH_MANAGER].includes(newStatus)) {
       if ([PENDING, UPCOMING].includes(walkInStatus)) {
         const message = walk_in?.is_call
           ? "Please complete existing Scheduled Call!"
@@ -182,7 +184,6 @@ function WalkInsTable({ leads }) {
         return;
       }
 
-      // Prepare payload for status update
       const payload = {
         lead_id: lead.id,
         lead_status: newStatus,
@@ -192,13 +193,52 @@ function WalkInsTable({ leads }) {
         prev_lead_status: lead.lead_status,
       };
 
-      console.log("Payload for update lead status:", payload);
       setApiPayload(payload);
       setShowUpdateLeadStatusDialogue(true);
     }
   }
 
-  // Helper function for showing error toasts
+  function handleApplicationStatusChange(e, lead) {
+    e.stopPropagation();
+    
+    if (user.user.role === ROLE_EMPLOYEE) {
+      showErrorToast("Access Denied...");
+      return;
+    }
+
+    if (lead.lead_status !== TWELVE_DOCUMENTS_COLLECTED) {
+      showErrorToast("Application Status Cannot change due to Invalid Lead Status!");
+      return;
+    }
+
+    const newStatus = e.target.value;
+    const payload = {
+      lead_id: lead.id,
+      application_status: newStatus,
+      lead_status: lead.lead_status,
+      role: user.user.role,
+      rejected_by_id: user.user.id,
+      user_id: user.user.id,
+      lead_name: lead.name,
+      assigned_to: lead.LeadAssignments[0]?.assigned_to,
+    };
+
+    // Optimistically update local state
+    const updatedLeads = localLeads.map(l => 
+      l.id === lead.id ? { ...l, application_status: newStatus } : l
+    );
+    setLocalLeads(updatedLeads);
+
+    if (newStatus === APPLICATION_APPROVED) {
+      payload.lead_bucket = APPROVED_APPLICATIONS;
+      setApiPayload(payload);
+      setShowApplicationApprovedDialgoue(true);
+    } else {
+      setApiPayload(payload);
+      setShowUpdateApplicationStatusDialogue(true);
+    }
+  }
+
   function showErrorToast(message) {
     setToastStatusType("ERROR");
     setToastStatusMessage("Error...");
@@ -207,44 +247,9 @@ function WalkInsTable({ leads }) {
     setOpenToast(true);
   }
 
-  function handleApplicationStatusChange(e, lead) {
-    e.stopPropagation();
-    if (user.user.role === ROLE_EMPLOYEE) {
-      setToastStatusType("ERROR");
-      setToastStatusMessage("Error...");
-      setToastMessage("Access Denied...");
-      setShouldSnackbarCloseOnClickOfOutside(true);
-      setOpenToast(true);
-      return;
-    } else {
-      if (lead.lead_status !== TWELVE_DOCUMENTS_COLLECTED) {
-        setToastStatusType("ERROR");
-        setToastStatusMessage("Error...");
-        setToastMessage(
-          "Application Status Cannot change due to Invalid Lead Status !"
-        );
-        setShouldSnackbarCloseOnClickOfOutside(true);
-        setOpenToast(true);
-      } else {
-        let payload = {};
-        payload["lead_id"] = lead.id;
-        payload["application_status"] = e.target.value;
-        payload["lead_status"] = lead.lead_status;
-        payload["role"] = user.user.role;
-        payload["rejected_by_id"] = user.user.id;
-        payload["user_id"] = user.user.id;
-        payload["lead_name"] = lead.name;
-        payload["assigned_to"] = lead.LeadAssignments[0].assigned_to;
-        console.log("payload for update application status = ", payload);
-        setApiPayload(payload);
-        setShowUpdateApplicationStatusDialogue(true);
-      }
-    }
-  }
-
   function handleClickOnView(leadId, leadName) {
     setSelectedLeadId(leadId);
-    setSelectedLeadName(leadName)
+    setSelectedLeadName(leadName);
     setShowActivityLogsInCommonDialogue(true);
   }
 
@@ -313,11 +318,11 @@ function WalkInsTable({ leads }) {
             </div>
           </div>
 
-          {/* table row */}
-          {leads.map((lead, index) => (
+          {/* table rows */}
+          {localLeads.map((lead, index) => (
             <div
               className="w-full h-9 justify-start flex cursor-pointer mb-1 rounded-tl-lg rounded-bl-lg rounded-tr-lg rounded-br-lg px-[20px]"
-              key={index}
+              key={`${lead.id}-${lead.application_status}`}
               style={{
                 boxShadow: `7px 2px 16px 0px rgba(0, 0, 0, 0.05) inset, 
                   27px 7px 28px 0px rgba(0, 0, 0, 0.05) inset, 
@@ -331,7 +336,7 @@ function WalkInsTable({ leads }) {
               <div
                 className="w-[8%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight rounded-tl-[10px] rounded-bl-[10px] overflow-hidden"
                 onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
-                title={`${lead.id}`} // Tooltip added here
+                title={`${lead.id}`}
               >
                 <span className="truncate w-full text-center flex justify-left">
                   {truncateWithEllipsis(lead?.id, 8)}
@@ -342,7 +347,7 @@ function WalkInsTable({ leads }) {
               <div
                 className="w-[11%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
                 onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
-                title={`${formatName(lead.name)}`} // Tooltip added here
+                title={`${formatName(lead.name)}`}
               >
                 <span className="truncate w-full text-center flex justify-left">
                   {truncateWithEllipsis(formatName(lead.name), 15)}
@@ -353,7 +358,7 @@ function WalkInsTable({ leads }) {
               <div
                 className="w-[9%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
                 onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
-                title={`${lead?.phone}`} // Tooltip added here
+                title={`${lead?.phone}`}
               >
                 <span className="truncate w-full text-center flex justify-left">
                   {getLast10Digits(lead?.phone)}
@@ -364,7 +369,7 @@ function WalkInsTable({ leads }) {
               <div
                 className="w-[12%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
                 onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
-                title={`${lead?.LeadAssignments?.[0]?.AssignedTo?.name}`} // Tooltip added here
+                title={`${lead?.LeadAssignments?.[0]?.AssignedTo?.name}`}
               >
                 <span className="truncate w-full text-center flex justify-left">
                   {(lead?.LeadAssignments || []).length > 0
@@ -382,7 +387,7 @@ function WalkInsTable({ leads }) {
               <div
                 className="w-[10%] flex justify-center items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
                 onDoubleClick={() => navigate(`/lead-details-page/${lead.id}`)}
-                title={`${lead?.lead_source || "Not Available"}`} // Tooltip added here
+                title={`${lead?.lead_source || "Not Available"}`}
               >
                 <span className="truncate w-full text-center flex justify-left">
                   {truncateWithEllipsis(formatName(lead.lead_source), 10) ||
@@ -400,7 +405,7 @@ function WalkInsTable({ leads }) {
                       .format("DD MMM YY hh:mm a")
                   : moment(lead.walkIns[0]?.walk_in_date_time)
                       .utcOffset(330)
-                      .format("DD MMM YY hh:mm a")}`} // Tooltip added here
+                      .format("DD MMM YY hh:mm a")}`}
               >
                 {lead?.walkIns?.length > 0 && (
                   <div className="flex items-center w-full truncate flex justify-left">
@@ -425,7 +430,7 @@ function WalkInsTable({ leads }) {
               {/* Status */}
               <div
                 className="w-[16%] flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden pr-4"
-                title={`Status: ${terminologiesMap.get(lead?.lead_status) || "Not Available"}`} // Tooltip added here
+                title={`Status: ${terminologiesMap.get(lead?.last_updated_status) || "Not Available"}`}
               >
                 {/* Dot */}
                 <div className="flex-shrink-0 mr-2">
@@ -436,12 +441,12 @@ function WalkInsTable({ leads }) {
                         optionColors.find(
                           (option) =>
                             option.optionName ===
-                            (lead?.lead_status ||
-                              (lead?.last_updated_status === "Others"
-                                ? lead.last_updated_status
-                                : (lead?.Activities || [])[0]
-                                    ?.activity_status || ""))
-                            // lead.last_updated_status
+                            // (lead?.lead_status ||
+                            //   (lead?.last_updated_status === "Others"
+                            //     ? lead.last_updated_status
+                            //     : (lead?.Activities || [])[0]
+                            //         ?.activity_status || ""))
+                            lead.lead_status
                         )?.optionColor || "#46AACA"
                       }
                     />
@@ -452,12 +457,13 @@ function WalkInsTable({ leads }) {
                 <select
                   className="w-full px-1 py-1 pl-0 text-xs font-normal inter-inter leading-tight bg-transparent border border-none outline-none appearance-none cursor-pointer focus:outline-none focus:ring-0 focus:border-transparent pr-6 truncate"
                   value={
-                    lead?.lead_status ||
-                    (lead?.last_updated_status === "Others"
-                      ? lead.last_updated_status
-                      : (lead?.Activities || [])[0]?.activity_status || "")
-                  }
-                  // value={lead.last_updated_status || lead.verification_status}
+                    // lead?.lead_status ||
+                    // (lead?.last_updated_status === "Others"
+                    //   ? lead.last_updated_status
+                    //   : (lead?.Activities || [])[0]
+                    //       ?.activity_status || "")
+                    lead.lead_status
+                        }
                   onChange={(e) => handleLeadStatusChange(e, lead)}
                   disabled={lead?.application_status === REJECTED}
                   style={{
@@ -482,7 +488,7 @@ function WalkInsTable({ leads }) {
                       {terminologiesMap.get(option.value) || option.label}
                     </option>
                   ))}
-                  {lead.lead_status === "Scheduled For Walk-In" && (
+                  {[lead.last_updated_status, lead.lead_status].includes("Scheduled For Walk-In") && (
                     <option
                       value="Scheduled For Walk-In"
                       disabled
@@ -492,7 +498,7 @@ function WalkInsTable({ leads }) {
                         "Scheduled For Walk-In"}
                     </option>
                   )}
-                  {lead.lead_status === "Scheduled Call With Manager" && (
+                  {[lead.last_updated_status, lead.lead_status].includes("Scheduled Call With Manager") && (
                     <option
                       value="Scheduled Call With Manager"
                       disabled
@@ -502,7 +508,7 @@ function WalkInsTable({ leads }) {
                         "Scheduled Call With Manager"}
                     </option>
                   )}
-                  {lead.lead_status === RESCHEDULED_FOR_WALK_IN && (
+                  {[lead.last_updated_status, lead.lead_status].includes(RESCHEDULED_FOR_WALK_IN) && (
                     <option
                       value={RESCHEDULED_FOR_WALK_IN}
                       disabled
@@ -516,94 +522,87 @@ function WalkInsTable({ leads }) {
               </div>
 
               {/* Application Status */}
-              <div className="w-[13%] flex justify-left items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
-              title={`Application Status: ${
-                terminologiesMap.get(lead?.application_status) || "Not Available"
-              }`} // Tooltip added here
+              <div 
+                className="w-[13%] flex justify-left items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
+                title={`Application Status: ${
+                  terminologiesMap.get(lead?.application_status) || "Not Available"
+                }`}
               >
-                 {/* Colored Dot */}
-                 <div
-                   className="w-[6px] h-[6px] rounded-full mr-1.5"
-                   style={{
-                     backgroundColor:
-                       optionColors.find(
-                         (option) =>
-                           option.optionName === (lead?.application_status || "")
-                       )?.optionColor || "#32086d",
-                   }}
-                 ></div>
- 
-                 {user.user.role !== ROLE_EMPLOYEE ? (
-                   <select
-                     className="w-full px-1 pl-0 py-1 text-xs font-normal inter-inter leading-tight bg-transparent border border-none outline-none appearance-none cursor-pointer focus:outline-none focus:ring-0 focus:border-transparent pr-6 truncate"
-                     value={lead?.application_status}
-                     style={{
-                       // color:
-                       //   optionColors.find(
-                       //     (option) =>
-                       //       option.optionName ===
-                       //       (lead?.application_status || "")
-                       //   )?.optionColor || "#32086d",
-                       backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23${
-                         // optionColors
-                         //   .find(
-                         //     (option) =>
-                         //       option.optionName ===
-                         //       (lead?.application_status || "")
-                         //   )
-                         //   ?.optionColor?.replace("#", "") || "32086d"
-                         "464646"
-                       }'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E")`,
-                       backgroundPosition: "right 8px center",
-                       backgroundRepeat: "no-repeat",
-                       backgroundSize: "14px",
-                       zIndex: isConfirmationDialogueOpened && -1,
-                       paddingLeft:'5px'
-                     }}
-                     onChange={(e) => handleApplicationStatusChange(e, lead)}
-                     disabled={
-                       user.user.role === ROLE_EMPLOYEE ||
-                       lead?.lead_status !== TWELVE_DOCUMENTS_COLLECTED
-                     }
-                   >
-                     {applicationStatusOptionsForWalkInsPageTable.map(
-                       (option, index) => (
-                         <option
-                           key={index}
-                           value={option.value}
-                           className="text-xs p-2 truncate"
-                           style={{ ...option.style }}
-                         >
-                           {terminologiesMap.get(option.value) || option.label}
-                         </option>
-                       )
-                     )}
-                   </select>
-                 ) : (
-                   <span
-                     className="truncate w-full text-left px-1"
-                     style={{
-                       color:
-                         optionColors.find(
-                           (item) => item.optionName === lead?.application_status
-                         )?.optionColor || "#000",
-                     }}
-                   >
-                     {terminologiesMap.get(lead?.application_status) ||
-                       lead?.application_status ||
-                       "Select Application Status"}
-                   </span>
-                 )}
-               </div>
+                {/* Colored Dot */}
+                <div
+                  className="w-[6px] h-[6px] rounded-full mr-1.5"
+                  style={{
+                    backgroundColor:
+                      optionColors.find(
+                        (option) =>
+                          option.optionName === (lead?.application_status || "")
+                      )?.optionColor || "#32086d",
+                  }}
+                ></div>
+
+                {user.user.role !== ROLE_EMPLOYEE ? (
+                  <select
+                    className={`w-full px-1 pl-0 py-1 text-xs font-normal inter-inter leading-tight bg-transparent border border-none outline-none appearance-none cursor-pointer focus:outline-none focus:ring-0 focus:border-transparent pr-6 truncate ${
+                      statusUpdateLoading && lead.id === apiPayload.lead_id ? "opacity-50" : ""
+                    }`}
+                    value={lead?.application_status}
+                    onChange={(e) => handleApplicationStatusChange(e, lead)}
+                    disabled={
+                      user.user.role === ROLE_EMPLOYEE ||
+                      lead?.lead_status !== TWELVE_DOCUMENTS_COLLECTED ||
+                      (statusUpdateLoading && lead.id === apiPayload.lead_id)
+                    }
+                    style={{
+                      backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23464646'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E")`,
+                      backgroundPosition: "right 8px center",
+                      backgroundRepeat: "no-repeat",
+                      backgroundSize: "14px",
+                      zIndex: isConfirmationDialogueOpened && -1,
+                      paddingLeft: "5px",
+                    }}
+                  >
+                    {statusUpdateLoading && lead.id === apiPayload.lead_id ? (
+                      <option value="Updating...">Updating...</option>
+                    ) : (
+                      applicationStatusOptionsForWalkInsPageTable.map((option, index) => (
+                        <option
+                          key={index}
+                          value={option.value}
+                          className="text-xs p-2 truncate"
+                          style={{ ...option.style }}
+                        >
+                          {terminologiesMap.get(option.value) || option.label}
+                        </option>
+                      ))
+                    )}
+                  </select>
+                ) : (
+                  <span
+                    className="truncate w-full text-left px-1"
+                    style={{
+                      color:
+                        optionColors.find(
+                          (item) => item.optionName === lead?.application_status
+                        )?.optionColor || "#000",
+                    }}
+                  >
+                    {terminologiesMap.get(lead?.application_status) ||
+                      lead?.application_status ||
+                      "Select Application Status"}
+                  </span>
+                )}
+              </div>
 
               {/* View Icon */}
               <div className="w-[5%] flex justify-center items-center text-[#32086d] text-xs font-normal inter-inter leading-tight rounded-br-[10px] rounded-tr-[10px] overflow-hidden pl-8">
-                 <ViewIcon onClick={() => handleClickOnView(lead.id, lead.name)} />
+                <ViewIcon onClick={() => handleClickOnView(lead.id, lead.name)} />
               </div>
             </div>
           ))}
         </div>
       </div>
+
+      {/* Dialogues */}
       {showUpdateLeadStatusDialogue && (
         <UpdateLeadStatusDialogue
           onClose={() => setShowUpdateLeadStatusDialogue(false)}
@@ -621,6 +620,7 @@ function WalkInsTable({ leads }) {
           }}
         />
       )}
+
       {showUpdateApplicationStatusDialogue && (
         <UpdateApplicationStatusDialogue
           onClose={() => setShowUpdateApplicationStatusDialogue(false)}
@@ -628,17 +628,36 @@ function WalkInsTable({ leads }) {
           openToast={openToast}
           setOpenToast={setOpenToast}
           onStatusUpdate={() => {
-            // dispatch(
-            //   getAllWalkInLeads({
-            //     ...defaultWalkInLeadsTableFilters,
-            //     page: pagination.page,
-            //     pageSize: pagination.pageSize,
-            //   })
-            // );
-            dispatch(updateLeadStatus({id:apiPayload.lead_id, status:apiPayload.application_status}))
+            dispatch(
+              getAllWalkInLeads({
+                ...defaultWalkInLeadsTableFilters,
+                page: pagination.page,
+                pageSize: pagination.pageSize,
+              })
+            );
           }}
         />
       )}
+
+      {showApplicationApprovedDialogue && (
+        <ApplicationApprovedDialogue
+          onClose={() => setShowApplicationApprovedDialgoue(false)}
+          payload={apiPayload}
+          openToast={openToast}
+          setOpenToast={setOpenToast}
+          onStatusUpdate={() => {
+            dispatch(
+              getAllWalkInLeads({
+                ...defaultWalkInLeadsTableFilters,
+                page: pagination.page,
+                pageSize: pagination.pageSize,
+              })
+            );
+            dispatch(updateLeadStatus({id: apiPayload.lead_id, status: apiPayload.application_status}));
+          }}
+        />
+      )}
+
       <Snackbar
         isOpen={openToast}
         onClose={() => setOpenToast(false)}
@@ -647,6 +666,7 @@ function WalkInsTable({ leads }) {
         statusType={toastStatusType}
         shouldCloseOnClickOfOutside={shouldSnackbarCloseOnClickOfOutside}
       />
+
       {showActivityLogsInCommonDialogue && (
         <CommonDialogue
           onClose={() => setShowActivityLogsInCommonDialogue(false)}
@@ -655,6 +675,7 @@ function WalkInsTable({ leads }) {
           leadName={selectedLeadName}
         />
       )}
+
       {showScheduleWalkInOrCallDialogue && (
         <ScheduleWalkInOrCallDialogue
           onClose={() => setShowScheduleWalkInOrCallDialogue(false)}

@@ -33,6 +33,8 @@ function CommonDialogue({ onClose, leadId, fromTable = false, leadName }) {
   const [toastStatusMessage, setToastStatusMessage] = useState(null);
   const [toastStatusType, setToastStatusType] = useState(null);
   const [shouldSnackbarCloseOnClickOfOutside, setShouldSnackbarCloseOnClickOfOutside] = useState(true);
+  const [activityLogsToShow, setActivityLogsToShow] = useState([]);
+  const [showNewActivityLogs, setShowNewActivityLogs] = useState(false);
 
   const userMap = useMemo(() => {
     return new Map(
@@ -101,6 +103,40 @@ function CommonDialogue({ onClose, leadId, fromTable = false, leadName }) {
       document.removeEventListener("keydown", handleEscapeKey);
     };
   }, [onClose, showAddActivityDialogue, showAddNoteDialogue]);
+
+  useEffect(() => {
+    console.log('activity logs = ', activityLogs);
+    
+    if (!activityLogs || Object.keys(activityLogs).length === 0) return;
+  
+    if (page === 1 || showNewActivityLogs) {
+      // For first page or when we want to show new logs (after adding one)
+      setActivityLogsToShow(activityLogs);
+      setShowNewActivityLogs(false);
+    } else {
+      // For subsequent pages, deep merge the new logs with existing ones
+      setActivityLogsToShow(prev => {
+        // Create a new merged object
+        const merged = {...prev};
+        
+        // Iterate through all keys in the new activityLogs
+        for (const key in activityLogs) {
+          if (Array.isArray(prev[key]) && Array.isArray(activityLogs[key])) {
+            // If both values are arrays, concatenate them
+            merged[key] = [...prev[key], ...activityLogs[key]];
+          } else if (typeof prev[key] === 'object' && typeof activityLogs[key] === 'object') {
+            // If both values are objects, merge them recursively
+            merged[key] = {...prev[key], ...activityLogs[key]};
+          } else {
+            // For other cases (primitives), use the new value
+            merged[key] = activityLogs[key];
+          }
+        }
+        
+        return merged;
+      });
+    }
+  }, [activityLogs, page, showNewActivityLogs]);
 
   // Toast Handling
   useEffect(() => {
@@ -192,7 +228,7 @@ function CommonDialogue({ onClose, leadId, fromTable = false, leadName }) {
           onScroll={handleScroll}
         >
           <ActivityLogsContainer
-            activityLogs={activityLogs}
+            activityLogs={activityLogsToShow}
             userMap={userMap}
             fromTable={fromTable}
           />

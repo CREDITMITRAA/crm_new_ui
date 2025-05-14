@@ -10,6 +10,7 @@ import moment from "moment";
 import { fetchAllActivityLogs } from "../features/activity-logs/activityLogsApi";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
+import { fetchWalkIns } from "../features/walk-ins/walkInsApi.jsx";
 
 export async function exportLeadsHandler(
   params,
@@ -902,6 +903,73 @@ export async function exportWalkInLeadsHandler(
     return true;
   } catch (error) {
     console.error("Export Error:", error);
+    return false;
+  }
+}
+
+export async function exportWalkIns(params, setToastMessage) {
+  try {
+    // Fetch data from the API
+    let leads = [];
+    let page = 1;
+    let totalPages = 1; // Start with 1 to ensure loop runs at least once
+    let pageSize = 1000;
+
+    while (page <= totalPages) {
+      const response = await fetchWalkIns({ ...params, page, pageSize });
+      console.log("fetch all tasks api response in export method = ", response);
+
+      leads = leads.concat(response.data);
+      totalPages = response.pagination.totalPages; // Update total pages
+      page += 1;
+
+      // Ensure export progress doesn't exceed 100%
+      let progress = Math.floor(Math.min((page / totalPages) * 100, 100));
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      setToastMessage(`Exporting Leads... ${progress}%`);
+    }
+
+    // Transform the data into the required structure
+    const transformedData = leads.map((item) => {
+      const leadAssignment = item.lead?.LeadAssignments?.[0] || {};
+      const assignedTo = leadAssignment?.AssignedTo?.name || "";
+      const assignedDate = leadAssignment.createdAt
+        ? formatToISTDate(leadAssignment.createdAt)
+        : "";
+
+      return {
+        "Lead Id": item.lead?.id || "",
+        "Lead Name": item.lead?.name || "",
+        "Lead Phone" : item.lead?.phone || "",
+        "Lead Status": item.Lead?.lead_status || "",
+        "Walk In Status" : item.walk_in_status,
+        "Walk In Date Time" : formatToISTDate(item.walk_in_date_time),
+        "Rescheduled Date Time" : formatToISTDate(item.rescheduled_date_time),
+        "Verification Status" : item.lead?.verification_status,
+        "Assigned To": assignedTo,
+        "Assigned Date": assignedDate,
+        "Activity Status": item.activity_status || "",
+        "Created On": item.createdAt ? formatToISTDate(item.createdAt) : "",
+        "Updated On" : item.updatedAt ? formatToISTDate(item.updatedAt) : "",
+        "Is Call" : item.is_call,
+        "Is Rescheduled" : item.is_rescheduled,
+        "Note" : item.note
+      };
+    });
+
+    // Create a worksheet from the transformed data
+    const worksheet = XLSX.utils.json_to_sheet(transformedData);
+
+    // Create a workbook and append the worksheet
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Leads");
+    const currentDate = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
+    // Export the workbook as an Excel file
+    const filename = `Leads_${currentDate}.xlsx`;
+    XLSX.writeFile(workbook, filename);
+    return true;
+  } catch (error) {
+    console.log("Export Error : ", error);
     return false;
   }
 }

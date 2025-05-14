@@ -18,6 +18,7 @@ import SingleDetailCard from "./SingleDetailCard";
 import { downloadReport } from "../../utilities/utility-functions";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import OtherDocsSection from "./OtherDocsSection";
 
 function BasicDetailsContainer({ setShowActivityLog, showActivityLog }) {
   const navigate = useNavigate()
@@ -73,13 +74,16 @@ function BasicDetailsContainer({ setShowActivityLog, showActivityLog }) {
           <PayslipsSection />
 
           <BureauSection />
+
+          <OtherDocsSection/>
         </div>
 
         {/* Employee Card (Fixed at Top-Right) */}
         <div className="col-span-3 row-span-1 h-max">
           <EmployeeDetailsCard />
         </div>
-
+        
+        
         {/* loan details container */}
         <div className="col-span-12 row-span-1 h-max text-white">
           <div className="grid grid-cols-12 my-3">

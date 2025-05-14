@@ -17,6 +17,7 @@ import notificationsReducer from '../features/notifications/notificationSlice'
 import chartReducer from '../features/charts/chartsSlice'
 import interactiveNotificationsReducer from '../features/interactive-notifications/interactiveNotificationsSlice'
 import quoteDialogueSliceReducer from "../features/quote-dialogue/quoteDialogueSlice"
+import approvedLeadsReducer from "../features/approved-leads/approvedLeadsSlice"
 
 const store = configureStore({
     reducer:{
@@ -37,7 +38,8 @@ const store = configureStore({
         notifications: notificationsReducer,
         charts: chartReducer,
         interactiveNotifications : interactiveNotificationsReducer,
-        quoteDialogue: quoteDialogueSliceReducer
+        quoteDialogue: quoteDialogueSliceReducer,
+        approvedLeads: approvedLeadsReducer
     }
 })
 

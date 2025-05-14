@@ -1,7 +1,7 @@
 function CloseIcon() {
   return (
     <div data-svg-wrapper>
-      <div class="border-solid border-[#888888] border rounded-[5px]">
+      <div class="border-solid border-[#214768] border rounded-[5px]">
         <svg
           width="20"
           height="20"
@@ -11,7 +11,7 @@ function CloseIcon() {
         >
           <path
             d="M6.66797 6.66602L10.0013 9.99935M10.0013 9.99935L13.3346 13.3327M10.0013 9.99935L13.3346 6.66602M10.0013 9.99935L6.66797 13.3327"
-            stroke="#32086D"
+            stroke="#214768"
             stroke-linecap="round"
           />
         </svg>

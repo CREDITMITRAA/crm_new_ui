@@ -6,16 +6,40 @@ import UploadBereauButton from "../common/UploadBereauButton";
 import UploadPayslipButton from "../common/UploadPayslipButton";
 import {
   activityOptions,
+  ALL_DISPUTES_UPDATED,
+  APPLICATION_APPROVED,
+  applicationStatusBankLoginOptionsForPaidApprovedApplicationsPageTable,
+  applicationStatusOptionsForPaidApprovedApplicationsPageTable,
+  applicationStatusOptionsForUnPaidApprovedApplicationsPageTable,
   applicationStatusOptionsForWalkInsPageTable,
+  APPOINTMENTS,
+  APPROVED_APPLICATIONS,
   APPROVED_FOR_WALK_IN,
+  BUREAU_DISPUTE_RAISED,
   CANCELLED,
+  CLOSED,
+  CLOSING_AMOUNT_PAID,
   CREDIT_BUREAU,
   LEADS,
+  leadStatusAfterClosingAmountPaidOptionsForPaidApprovedApplicationsPageTable,
+  leadStatusOptionsForPaidApprovedApplicationsPageTable,
+  leadStatusOptionsForUnPaidApprovedApplicationsPageTable,
   leadStatusOptionsForVerification1Table,
   leadStatusOptionsForWalkInsPageTable,
+  LOGIN,
+  LOGIN_BANK_1,
+  LOGIN_BANK_2,
+  LOGIN_BANK_3,
+  LOGIN_BANK_4,
+  LOGIN_BANK_5,
+  LOGIN_BANK_6,
+  NORMAL_LOGIN,
+  OTHER_DOCS,
   OTHERS,
   PAYSLIP,
   PENDING,
+  PIPELINE_ENTRIES,
+  PRELIMINERY_CHECK,
   REJECTED,
   RESCHEDULE_CALL_WITH_MANAGER,
   RESCHEDULE_WALK_IN,
@@ -112,14 +136,15 @@ function EmployeeDetailsCard() {
 
   useEffect(() => {
     console.log("LEAD FROM STORE = ", lead);
-    setLeadBucket(
-      lead.last_updated_status === SCHEDULED_FOR_WALK_IN ||
-        lead.verification_status === SCHEDULED_FOR_WALK_IN
-        ? WALK_INS
-        : lead.lead_status === VERIFICATION_1
-        ? VERIFICATION_1
-        : LEADS
-    );
+    // setLeadBucket(
+    //   lead.last_updated_status === SCHEDULED_FOR_WALK_IN ||
+    //     lead.verification_status === SCHEDULED_FOR_WALK_IN
+    //     ? WALK_INS
+    //     : lead.lead_status === VERIFICATION_1
+    //     ? VERIFICATION_1
+    //     : LEADS
+    // );
+    setLeadBucket(lead.lead_bucket);
   }, [lead]);
 
   useEffect(() => {
@@ -323,7 +348,7 @@ function EmployeeDetailsCard() {
         payload["rejected_by_id"] = user.user.id;
         payload["user_id"] = user.user.id;
         payload["lead_name"] = lead.name;
-        payload["assigned_to"] = user.user.id;
+        payload["assigned_to"] = lead.LeadAssignments[0].assigned_to;
         console.log("payload for update application status = ", payload);
         setApiPayload(payload);
         setShowUpdateApplicationStatusDialogue(true);
@@ -392,9 +417,54 @@ function EmployeeDetailsCard() {
       payload["rejected_by_id"] = user.user.id;
       payload["user_id"] = user.user.id;
       payload["lead_name"] = lead.name;
-      payload["assigned_to"] = user.user.id;
+      payload["assigned_to"] = lead.LeadAssignments[0].assigned_to;
       setApiPayload(payload);
       setShowUpdateVerificationStatusDialogue(true);
+    }
+  }
+
+  function handleLeadStatusChangeForApprovedLeads(e, lead){
+    e.stopPropagation();
+    const newStatus = e.target.value;
+    const payload = {
+      lead_id: lead.id,
+      lead_status: newStatus,
+      role: user.user.role,
+      user_id: user.user.id,
+      lead_name: lead.name,
+      prev_lead_status: lead.lead_status,
+    };
+
+    console.log("Payload for update lead status:", payload);
+      setApiPayload(payload);
+      setShowUpdateLeadStatusDialogue(true);
+  }
+
+  function handleApplicationStatusChangeForApprovedLeads(e, lead) {
+    e.stopPropagation();
+    if (user.user.role === ROLE_EMPLOYEE) {
+      setToastStatusType("ERROR");
+      setToastStatusMessage("Error...");
+      setToastMessage("Access Denied...");
+      setShouldSnackbarCloseOnClickOfOutside(true);
+      setOpenToast(true);
+      return;
+    } else {
+       
+        let payload = {};
+        payload["lead_id"] = lead.id;
+        payload["application_status"] = e.target.value;
+        payload["lead_status"] = lead.lead_status;
+        payload["role"] = user.user.role;
+        payload["rejected_by_id"] = user.user.id;
+        payload["user_id"] = user.user.id;
+        payload["lead_name"] = lead.name;
+        payload["assigned_to"] = lead.LeadAssignments[0].assigned_to;
+        payload["lead_bucket"] = APPROVED_APPLICATIONS
+        console.log("payload for update application status = ", payload);
+        setApiPayload(payload);
+        setShowUpdateApplicationStatusDialogue(true);
+      
     }
   }
 
@@ -460,7 +530,7 @@ function EmployeeDetailsCard() {
             }
           /> */}
 
-          {leadBukcet === LEADS ? (
+          {leadBukcet === PIPELINE_ENTRIES ? (
             // Leads bucket select (unchanged)
             <select
               className="w-full bg-[#D9E4F2] h-full flex items-center justify-between border px-3 py-2 rounded-md text-[#464646] cursor-pointer"
@@ -489,7 +559,8 @@ function EmployeeDetailsCard() {
                 </option>
               ))}
             </select>
-          ) : leadBukcet === WALK_INS && user.user.role === ROLE_EMPLOYEE ? (
+          ) : leadBukcet === APPOINTMENTS &&
+            user.user.role === ROLE_EMPLOYEE ? (
             // Walk-ins for employees
             <div className="w-full bg-[#D9E4F2] h-full flex items-center justify-between border border-[#6b7280] px-3 py-2 rounded-md text-[#464646]">
               <select
@@ -556,7 +627,8 @@ function EmployeeDetailsCard() {
                 )}
               </select>
             </div>
-          ) : leadBukcet === WALK_INS && user.user.role !== ROLE_EMPLOYEE ? (
+          ) : leadBukcet === APPOINTMENTS &&
+            user.user.role !== ROLE_EMPLOYEE ? (
             // Walk-ins for non-employees
             <div className="w-full bg-[#D9E4F2] h-full flex items-center justify-between border border-[#6b7280] px-3 py-2 rounded-md text-[#464646]">
               <select
@@ -602,7 +674,7 @@ function EmployeeDetailsCard() {
                 )}
               </select>
             </div>
-          ) : leadBukcet === VERIFICATION_1 &&
+          ) : leadBukcet === PRELIMINERY_CHECK &&
             user.user.role === ROLE_EMPLOYEE ? (
             // Verification for employees
             <div className="w-full bg-[#D9E4F2] h-full flex items-center justify-between border border-[#6b7280] px-3 py-2 rounded-md text-[#464646]">
@@ -639,7 +711,7 @@ function EmployeeDetailsCard() {
                 ))}
               </select>
             </div>
-          ) : leadBukcet === VERIFICATION_1 &&
+          ) : leadBukcet === PRELIMINERY_CHECK &&
             user.user.role !== ROLE_EMPLOYEE ? (
             // Verification for non-employees
             <div className="w-full bg-[#D9E4F2] h-full flex items-center justify-between border border-[#6b7280] px-3 py-2 rounded-md text-[#464646]">
@@ -671,6 +743,232 @@ function EmployeeDetailsCard() {
                   )
                 )}
               </select>
+            </div>
+          ) : leadBukcet === APPROVED_APPLICATIONS &&
+            user.user.role === ROLE_EMPLOYEE ? (
+            <div className="w-full bg-[#D9E4F2] h-full flex items-center justify-between border border-[#6b7280] px-3 py-2 rounded-md text-[#464646]">
+              {lead.is_paid ? (
+                <select
+                  className="w-full px-1 py-1 pl-0 text-xs font-normal inter-inter leading-tight bg-transparent border border-none outline-none appearance-none cursor-pointer focus:outline-none focus:ring-0 focus:border-transparent pr-6 truncate"
+                  value={
+                    // lead?.lead_status ||
+                    // (lead?.last_updated_status === "Others"
+                    //   ? lead.last_updated_status
+                    //   : (lead?.Activities || [])[0]?.activity_status || "")
+                    lead.lead_status
+                  }
+                  onChange={(e) => handleLeadStatusChangeForApprovedLeads(e, lead)}
+                  onClick={(e) => (e.target.value = "")}
+                  onBlur={(e) => {
+                    if (e.target.value === "") {
+                      e.target.value = lead?.lead_status;
+                    }
+                  }}
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23464646'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E")`,
+                    backgroundPosition: "right 8px center",
+                    backgroundRepeat: "no-repeat",
+                    backgroundSize: "14px",
+                    zIndex: isConfirmationDialogueOpened && -1,
+                    paddingLeft: "5px",
+                  }}
+                >
+                  {(lead.application_status === CLOSING_AMOUNT_PAID
+                    ? [
+                        ...leadStatusOptionsForPaidApprovedApplicationsPageTable,
+                        ...leadStatusAfterClosingAmountPaidOptionsForPaidApprovedApplicationsPageTable,
+                      ]
+                    : leadStatusOptionsForPaidApprovedApplicationsPageTable
+                  ).map((option, index) => (
+                    <option
+                      key={index}
+                      value={option.value}
+                      className="text-xs p-2 truncate"
+                      style={{ ...option.style }}
+                      disabled={option.value === TWELVE_DOCUMENTS_COLLECTED}
+                    >
+                      {terminologiesMap.get(option.value) || option.label}
+                    </option>
+                  ))}
+                  {[
+                    BUREAU_DISPUTE_RAISED,
+                    ALL_DISPUTES_UPDATED,
+                    LOGIN_BANK_1,
+                    LOGIN_BANK_2,
+                    LOGIN_BANK_3,
+                    LOGIN_BANK_4,
+                    LOGIN_BANK_5,
+                    LOGIN_BANK_6,
+                  ].map((status) =>
+                    lead.lead_status === status &&
+                    lead.application_status !== CLOSING_AMOUNT_PAID ? (
+                      <option
+                        key={status}
+                        value={status}
+                        disabled
+                        className="truncate"
+                        style={{ color: "#464646", backgroundColor: "#F2F7FE" }}
+                      >
+                        {terminologiesMap.get(status) || status}
+                      </option>
+                    ) : null
+                  )}
+                </select>
+              ) : (
+                <select
+                  className="w-full px-1 py-1 pl-0 text-xs font-normal inter-inter leading-tight bg-transparent border border-none outline-none appearance-none cursor-pointer focus:outline-none focus:ring-0 focus:border-transparent pr-6 truncate"
+                  value={
+                    // lead?.lead_status ||
+                    // (lead?.last_updated_status === "Others"
+                    //   ? lead.last_updated_status
+                    //   : (lead?.Activities || [])[0]?.activity_status || "")
+                    lead.lead_status
+                  }
+                  // value={lead.last_updated_status || lead.verification_status}
+                  onChange={(e) => handleLeadStatusChangeForApprovedLeads(e, lead)}
+                  onClick={(e) => (e.target.value = "")}
+                  onBlur={(e) => {
+                    if (e.target.value === "") {
+                      e.target.value = lead?.lead_status;
+                    }
+                  }}
+                  // disabled={lead?.LEA === TWELVE_DOCUMENTS_COLLECTED}
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23${"464646".replace(
+                      "#",
+                      ""
+                    )}'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E")`,
+                    backgroundPosition: "right 8px center",
+                    backgroundRepeat: "no-repeat",
+                    backgroundSize: "14px",
+                    zIndex: isConfirmationDialogueOpened && -1,
+                    paddingLeft: "5px",
+                  }}
+                >
+                  {leadStatusOptionsForUnPaidApprovedApplicationsPageTable.map(
+                    (option, index) => (
+                      <option
+                        key={index}
+                        value={option.value}
+                        className="text-xs p-2 truncate"
+                        style={{ ...option.style }}
+                        disabled={option.value === TWELVE_DOCUMENTS_COLLECTED}
+                      >
+                        {terminologiesMap.get(option.value) || option.label}
+                      </option>
+                    )
+                  )}
+                </select>
+              )}
+            </div>
+          ) : leadBukcet === APPROVED_APPLICATIONS &&
+            user.user.role !== ROLE_EMPLOYEE ? (
+            <div className="w-full bg-[#D9E4F2] h-full flex items-center justify-between border border-[#6b7280] px-3 py-2 rounded-md text-[#464646]">
+              {lead.is_paid ? (
+                <select
+                  className="w-full px-1 pl-0 py-1 text-xs font-normal inter-inter leading-tight bg-transparent border border-none outline-none appearance-none cursor-pointer focus:outline-none focus:ring-0 focus:border-transparent pr-6 truncate"
+                  value={lead?.application_status}
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23464646'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E")`,
+                    backgroundPosition: "right 8px center",
+                    backgroundRepeat: "no-repeat",
+                    backgroundSize: "14px",
+                    zIndex: isConfirmationDialogueOpened && -1,
+                    paddingLeft: "5px",
+                  }}
+                  onChange={(e) => handleApplicationStatusChangeForApprovedLeads(e, lead)}
+                  disabled={user.user.role === ROLE_EMPLOYEE}
+                >
+                  {([
+                    LOGIN_BANK_1,
+                    LOGIN_BANK_2,
+                    LOGIN_BANK_3,
+                    LOGIN_BANK_4,
+                    LOGIN_BANK_5,
+                    LOGIN_BANK_6,
+                  ].includes(lead.lead_status)
+                    ? [
+                        ...applicationStatusOptionsForPaidApprovedApplicationsPageTable,
+                        ...applicationStatusBankLoginOptionsForPaidApprovedApplicationsPageTable,
+                      ]
+                    : applicationStatusOptionsForPaidApprovedApplicationsPageTable
+                  ).map((option, index) => (
+                    <option
+                      key={index}
+                      value={option.value}
+                      className="text-xs p-2 truncate"
+                      style={{ ...option.style }}
+                    >
+                      {terminologiesMap.get(option.value) || option.label}
+                    </option>
+                  ))}
+
+                  {/* Show disabled selected value if it matches restricted ones */}
+                  {[REJECTED, CLOSED, LOGIN, NORMAL_LOGIN].includes(
+                    lead?.application_status
+                  ) && (
+                    <option
+                      value={lead.application_status}
+                      disabled
+                      className="text-xs p-2 truncate"
+                      style={{ color: "#464646", backgroundColor: "#F2F7FE" }}
+                    >
+                      {terminologiesMap.get(lead.application_status) ||
+                        lead.application_status}
+                    </option>
+                  )}
+                </select>
+              ) : (
+                <select
+                  className="w-full px-1 pl-0 py-1 text-xs font-normal inter-inter leading-tight bg-transparent border border-none outline-none appearance-none cursor-pointer focus:outline-none focus:ring-0 focus:border-transparent pr-6 truncate"
+                  value={lead?.application_status}
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23464646'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E")`,
+                    backgroundPosition: "right 8px center",
+                    backgroundRepeat: "no-repeat",
+                    backgroundSize: "14px",
+                    zIndex: isConfirmationDialogueOpened && -1,
+                    paddingLeft: "5px",
+                  }}
+                  onChange={(e) => handleApplicationStatusChangeForApprovedLeads(e, lead)}
+                  onClick={(e) => (e.target.value = "")}
+                  onBlur={(e) => {
+                    if (e.target.value === "") {
+                      e.target.value = lead?.application_status;
+                    }
+                  }}
+                  disabled={user.user.role === ROLE_EMPLOYEE}
+                >
+                  {applicationStatusOptionsForUnPaidApprovedApplicationsPageTable.map(
+                    (option, index) => (
+                      <option
+                        key={index}
+                        value={option.value}
+                        className="text-xs p-2 truncate"
+                        style={{ ...option.style }}
+                        disabled={option.value === APPLICATION_APPROVED}
+                      >
+                        {terminologiesMap.get(option.value) || option.label}
+                      </option>
+                    )
+                  )}
+
+                  {/* Show disabled option if status is one of the commented-out ones */}
+                  {[REJECTED, CLOSED, LOGIN, NORMAL_LOGIN].includes(
+                    lead?.application_status
+                  ) && (
+                    <option
+                      value={lead.application_status}
+                      disabled
+                      className="text-xs p-2 truncate"
+                      style={{ color: "#464646", backgroundColor: "#F2F7FE" }}
+                    >
+                      {terminologiesMap.get(lead.application_status) ||
+                        lead.application_status}
+                    </option>
+                  )}
+                </select>
+              )}
             </div>
           ) : null}
         </div>
@@ -709,7 +1007,9 @@ function EmployeeDetailsCard() {
             }
           />
         </div>
-        <TwelveDocumentsButton />
+        <TwelveDocumentsButton
+          onFileSelect={(file) => uploadLeadDocumentHandler(OTHER_DOCS, file)}
+        />
       </div>
       <Snackbar
         isOpen={openToast}

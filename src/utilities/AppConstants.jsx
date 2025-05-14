@@ -26,9 +26,11 @@ export const OTHERS = "Others";
 export const ROLE_ADMIN = "ROLE_ADMIN";
 export const ROLE_MANAGER = "ROLE_MANAGER";
 export const ROLE_EMPLOYEE = "ROLE_EMPLOYEE";
+export const ROLE_OPERATIONS_TEAM = "OPERATIONS_TEAM";
 export const ADMIN = "Admin";
 export const MANAGER = "Manager";
 export const EMPLOYEE = "Employee";
+export const OPERATIONS_TEAM = "Operations Team";
 export const PAYSLIP = "payslip";
 export const CREDIT_BUREAU = "creditBureau";
 export const OTHER_DOCS = "otherDocs";
@@ -49,6 +51,7 @@ export const SCHEDULE_FOR_WALK_IN = "Schedule For Walk-In";
 export const SCHEDULE_CALL_WITH_MANAGER = "Schedule Call With Manager";
 export const RESCHEDULE_WALK_IN = "Reschedule Walk-In"
 export const RESCHEDULE_CALL_WITH_MANAGER = "Reschedule Call With Manager"
+export const RESCHEDULED_CALL_WITH_MANAGER = "Re-Scheduled Call With Manager"
 export const UPCOMING = "Upcoming"
 export const PENDING = "Pending"
 export const CANCELLED = "Cancelled"
@@ -60,6 +63,37 @@ export const APPLICATION_CLOSED = "Closed"
 export const RESCHEDULED_FOR_WALK_IN = "Re-Scheduled For Walk-In"
 export const MALE = "male"
 export const FEMALE = "female"
+export const APPROVED_APPLICATIONS = "APPROVED_APPLICATIONS"
+export const UNPAID = "UnPaid"
+export const PAID = "Paid"
+export const APPLICATION_APPROVED = "Application Approved"
+export const CLOSING_DATE_CHANGED = "Closing Date Changed"
+export const ADVANCE_AMOUNT_PAID = "Advance Amount Paid"
+export const CLOSING_AMOUNT_PAID = "Closing Amount Paid"
+export const ALL_CLEAR = "All Clear"
+export const NEGATIVE_TRANSACTION = "Negative Transaction"
+export const LOAN_DISBURSED_FROM_BANK = "Loans Disbursed From Bank"
+export const APPLICATION_IS_CLOSED = "Application Closed"
+export const LOGIN_STARTED = "Login Started"
+export const ALL_POSITIVE = "All Positive"
+export const ALL_LOANS_CLOSED = "All Loans Closed"
+export const ALL_CLOSURE_DOCUMENTS_VERIFIED = "All Closure Documents Verified"
+export const ALL_LOGIN_DOCUMENTS_VERIFIED = "All Login Documents Verified"
+export const BUREAU_DISPUTE_RAISED = "Bureau Dispute Raised"
+export const ALL_DISPUTES_UPDATED = "All Disputes Updated"
+export const LOGIN_BANK_1 = "Login Bank 1"
+export const LOGIN_BANK_2 = "Login Bank 2"
+export const LOGIN_BANK_3 = "Login Bank 3"
+export const LOGIN_BANK_4 = "Login Bank 4"
+export const LOGIN_BANK_5 = "Login Bank 5"
+export const LOGIN_BANK_6 = "Login Bank 6"
+export const CLOSING_DATE = "closing_date"
+export const VERIFICATION_DATE = "verification_date"
+export const PRELIMINERY_CHECK = "PRELIMINERY_CHECK"
+export const APPOINTMENTS = "APPOINTMENTS"
+export const PIPELINE_ENTRIES = "PIPELINE_ENTRIES"
+export const LOGIN_DATE_CHANGED = "Login Date Changed"
+export const LOGIN_DATE = "login_date"
 
 export const terminologiesMap = new Map([
   [NOT_CONTACTED, 'Unattended'],
@@ -96,7 +130,32 @@ export const terminologiesMap = new Map([
   [LOGIN, LOGIN],
   [WALK_INS, "Appointments"],
   [LEADS, "Pipeline Entries"],
-  [RESCHEDULED_FOR_WALK_IN, "Appointment Rescheduled"]
+  [RESCHEDULED_FOR_WALK_IN, "Appointment Rescheduled"],
+  [APPROVED_APPLICATIONS, "Approved Applications"],
+  [APPLICATION_APPROVED, APPLICATION_APPROVED],
+  [LOGIN_STARTED, LOGIN_STARTED],
+  [ALL_POSITIVE, ALL_POSITIVE],
+  [ALL_LOANS_CLOSED, ALL_LOANS_CLOSED],
+  [ALL_CLOSURE_DOCUMENTS_VERIFIED, ALL_CLOSURE_DOCUMENTS_VERIFIED],
+  [ALL_LOGIN_DOCUMENTS_VERIFIED, ALL_LOGIN_DOCUMENTS_VERIFIED],
+  [BUREAU_DISPUTE_RAISED, BUREAU_DISPUTE_RAISED],
+  [ALL_DISPUTES_UPDATED, ALL_DISPUTES_UPDATED],
+  [LOGIN_BANK_1, LOGIN_BANK_1],
+  [LOGIN_BANK_2, LOGIN_BANK_2],
+  [LOGIN_BANK_3, LOGIN_BANK_3],
+  [LOGIN_BANK_4, LOGIN_BANK_4],
+  [LOGIN_BANK_5, LOGIN_BANK_5],
+  [LOGIN_BANK_6, LOGIN_BANK_6],
+  [ALL_CLEAR, ALL_CLEAR],
+  [NEGATIVE_TRANSACTION, NEGATIVE_TRANSACTION],
+  [APPLICATION_APPROVED,APPLICATION_APPROVED],
+  [CLOSING_DATE_CHANGED,CLOSING_DATE_CHANGED],
+  [ADVANCE_AMOUNT_PAID,ADVANCE_AMOUNT_PAID],
+  [CLOSING_AMOUNT_PAID,CLOSING_AMOUNT_PAID],
+  [LOAN_DISBURSED_FROM_BANK,LOAN_DISBURSED_FROM_BANK],
+  [RESCHEDULED_CALL_WITH_MANAGER, "Advisor Call Rescheduled"],
+  [APPLICATION_IS_CLOSED,APPLICATION_IS_CLOSED],
+  [LOGIN_DATE_CHANGED,LOGIN_DATE_CHANGED]
 ])
 
 export const verificationStatusOptions = [
@@ -136,6 +195,7 @@ export const userRoleOptions = [
   { label: ADMIN, value: ROLE_ADMIN, id: 1 },
   { label: MANAGER, value: ROLE_MANAGER, id: 2 },
   { label: EMPLOYEE, value: ROLE_EMPLOYEE, id: 3 },
+  { label: OPERATIONS_TEAM, value: ROLE_OPERATIONS_TEAM, id: 4 },
 ];
 
 export const userGenderOptions = [
@@ -186,10 +246,11 @@ export const applicationStatusOptionsForWalkInsPageTable = [
   { label: "Select Status", value: "", style:{color:'#464646', backgroundColor:'#F2F7FE'} }, // 808080
   { label: MANAGER_1_APPROVED, value: MANAGER_1_APPROVED, style:{color:'#464646', backgroundColor:'#F2F7FE'} }, // 00A2A8
   { label: MANAGER_2_APPROVED, value: MANAGER_2_APPROVED, style:{color:'#464646', backgroundColor:'#F2F7FE'} }, // 3ECFA9
-  { label: REJECTED, value: REJECTED, style:{color:'#464646', backgroundColor:'#F2F7FE'} }, // F01923
-  { label: CLOSED, value: CLOSED, style:{color:'#464646', backgroundColor:'#F2F7FE'} }, // FF0000
-  { label: LOGIN, value: LOGIN, style:{color:'#464646', backgroundColor:'#F2F7FE'} }, // FF0000
-  { label: NORMAL_LOGIN, value: NORMAL_LOGIN, style:{color:'#464646', backgroundColor:'#F2F7FE'} }, // FF0000
+  // { label: REJECTED, value: REJECTED, style:{color:'#464646', backgroundColor:'#F2F7FE'} }, // F01923
+  // { label: CLOSED, value: CLOSED, style:{color:'#464646', backgroundColor:'#F2F7FE'} }, // FF0000
+  // { label: LOGIN, value: LOGIN, style:{color:'#464646', backgroundColor:'#F2F7FE'} }, // FF0000
+  // { label: NORMAL_LOGIN, value: NORMAL_LOGIN, style:{color:'#464646', backgroundColor:'#F2F7FE'} }, // FF0000
+  { label: APPLICATION_APPROVED, value: APPLICATION_APPROVED, style:{color:'#464646', backgroundColor:'#F2F7FE'} }, // FF0000
 ]
 
 export const optionColors = [
@@ -287,3 +348,94 @@ export const getActivityOptions = (fromActivityLog = false) => {
     { label: terminologiesMap.get(OTHERS), value: OTHERS },
   ];
 };
+
+export const leadStatusOptionsForUnPaidApprovedApplicationsPageTable = [
+  { label: "Select Status", value: "", style:{color:'#464646', backgroundColor:'#F2F7FE'} }, // 808080
+  {label: terminologiesMap.get(TWELVE_DOCUMENTS_COLLECTED), value: TWELVE_DOCUMENTS_COLLECTED, style:{color:'#464646', backgroundColor:'#F2F7FE'}},
+  {label: terminologiesMap.get(ALL_CLEAR), value: ALL_CLEAR, style:{color:'#464646', backgroundColor:'#F2F7FE'}},
+  {label: terminologiesMap.get(NEGATIVE_TRANSACTION), value: NEGATIVE_TRANSACTION, style:{color:'#464646', backgroundColor:'#F2F7FE'}}
+]
+
+export const applicationStatusOptionsForUnPaidApprovedApplicationsPageTable = [
+  { label: "Select Status", value: "", style:{color:'#464646', backgroundColor:'#F2F7FE'} }, // 808080
+  {label: terminologiesMap.get(APPLICATION_APPROVED), value: APPLICATION_APPROVED, style:{color:'#464646', backgroundColor:'#F2F7FE'}},
+  {label: terminologiesMap.get(CLOSING_DATE_CHANGED), value: CLOSING_DATE_CHANGED, style:{color:'#464646', backgroundColor:'#F2F7FE'}},
+  {label: terminologiesMap.get(ADVANCE_AMOUNT_PAID), value: ADVANCE_AMOUNT_PAID, style:{color:'#464646', backgroundColor:'#F2F7FE'}},
+  {label: terminologiesMap.get(CLOSING_AMOUNT_PAID), value: CLOSING_AMOUNT_PAID, style:{color:'#464646', backgroundColor:'#F2F7FE'}}
+]
+
+export const leadStatusOptionsForPaidApprovedApplicationsPageTable = [
+  { label: "Select Status", value: "", style:{color:'#464646', backgroundColor:'#F2F7FE'} }, // 808080
+  {label: terminologiesMap.get(TWELVE_DOCUMENTS_COLLECTED), value: TWELVE_DOCUMENTS_COLLECTED, style:{color:'#464646', backgroundColor:'#F2F7FE'}},
+  {label: terminologiesMap.get(ALL_CLEAR), value: ALL_CLEAR, style:{color:'#464646', backgroundColor:'#F2F7FE'}},
+  {label: terminologiesMap.get(NEGATIVE_TRANSACTION), value: NEGATIVE_TRANSACTION, style:{color:'#464646', backgroundColor:'#F2F7FE'}},
+  {label: terminologiesMap.get(ALL_CLOSURE_DOCUMENTS_VERIFIED), value: ALL_CLOSURE_DOCUMENTS_VERIFIED, style:{color:'#464646', backgroundColor:'#F2F7FE'}},
+  {label: terminologiesMap.get(ALL_LOGIN_DOCUMENTS_VERIFIED), value: ALL_LOGIN_DOCUMENTS_VERIFIED, style:{color:'#464646', backgroundColor:'#F2F7FE'}},
+  {label: terminologiesMap.get(OTHERS), value: OTHERS, style:{color:'#464646', backgroundColor:'#F2F7FE'}},
+]
+
+export const leadStatusAfterClosingAmountPaidOptionsForPaidApprovedApplicationsPageTable = [
+  {label: terminologiesMap.get(BUREAU_DISPUTE_RAISED), value: BUREAU_DISPUTE_RAISED, style:{color:'#464646', backgroundColor:'#F2F7FE'}},
+  {label: terminologiesMap.get(ALL_DISPUTES_UPDATED), value: ALL_DISPUTES_UPDATED, style:{color:'#464646', backgroundColor:'#F2F7FE'}},
+  {label: terminologiesMap.get(LOGIN_BANK_1), value: LOGIN_BANK_1, style:{color:'#464646', backgroundColor:'#F2F7FE'}},
+  {label: terminologiesMap.get(LOGIN_BANK_2), value: LOGIN_BANK_2, style:{color:'#464646', backgroundColor:'#F2F7FE'}},
+  {label: terminologiesMap.get(LOGIN_BANK_3), value: LOGIN_BANK_3, style:{color:'#464646', backgroundColor:'#F2F7FE'}},
+  {label: terminologiesMap.get(LOGIN_BANK_4), value: LOGIN_BANK_4, style:{color:'#464646', backgroundColor:'#F2F7FE'}},
+  {label: terminologiesMap.get(LOGIN_BANK_5), value: LOGIN_BANK_5, style:{color:'#464646', backgroundColor:'#F2F7FE'}},
+  {label: terminologiesMap.get(LOGIN_BANK_6), value: LOGIN_BANK_6, style:{color:'#464646', backgroundColor:'#F2F7FE'}},
+]
+
+export const applicationStatusOptionsForPaidApprovedApplicationsPageTable = [
+  { label: "Select Status", value: "", style:{color:'#464646', backgroundColor:'#F2F7FE'} }, // 808080
+  {label: terminologiesMap.get(CLOSING_DATE_CHANGED), value: CLOSING_DATE_CHANGED, style:{color:'#464646', backgroundColor:'#F2F7FE'}},
+  {label: terminologiesMap.get(ADVANCE_AMOUNT_PAID), value: ADVANCE_AMOUNT_PAID, style:{color:'#464646', backgroundColor:'#F2F7FE'}},
+  {label: terminologiesMap.get(CLOSING_AMOUNT_PAID), value: CLOSING_AMOUNT_PAID, style:{color:'#464646', backgroundColor:'#F2F7FE'}},
+  {label: terminologiesMap.get(OTHERS), value: OTHERS, style:{color:'#464646', backgroundColor:'#F2F7FE'}},
+  {label: terminologiesMap.get(LOGIN_DATE_CHANGED), value: LOGIN_DATE_CHANGED, style:{color:'#464646', backgroundColor:'#F2F7FE'}},
+  // {label: terminologiesMap.get(LOGIN_STARTED), value: LOGIN_STARTED, style:{color:'#464646', backgroundColor:'#F2F7FE'}},
+]
+
+export const applicationStatusBankLoginOptionsForPaidApprovedApplicationsPageTable = [
+  {label: terminologiesMap.get(LOAN_DISBURSED_FROM_BANK), value: LOAN_DISBURSED_FROM_BANK, style:{color:'#464646', backgroundColor:'#F2F7FE'}},
+  {label: terminologiesMap.get(APPLICATION_IS_CLOSED), value: APPLICATION_IS_CLOSED, style:{color:'#464646', backgroundColor:'#F2F7FE'}},
+]
+
+export const leadStatusOptionsForUnPaidApprovedLeadsFilters = [
+  { label: "Select lead status", value: "" },
+  { label: terminologiesMap.get(ALL_CLEAR), value: ALL_CLEAR},
+  { label: terminologiesMap.get(NEGATIVE_TRANSACTION), value: NEGATIVE_TRANSACTION },
+];
+
+export const leadStatusOptionsForPaidApprovedLeadsFilters = [
+  { label: "Select lead status", value: "" },
+  { label: terminologiesMap.get(ALL_CLEAR), value: ALL_CLEAR},
+  { label: terminologiesMap.get(NEGATIVE_TRANSACTION), value: NEGATIVE_TRANSACTION },
+  { label: terminologiesMap.get(ALL_LOGIN_DOCUMENTS_VERIFIED), value: ALL_LOGIN_DOCUMENTS_VERIFIED },
+  { label: terminologiesMap.get(BUREAU_DISPUTE_RAISED), value: BUREAU_DISPUTE_RAISED },
+  { label: terminologiesMap.get(ALL_DISPUTES_UPDATED), value: ALL_DISPUTES_UPDATED },
+  { label: terminologiesMap.get(LOGIN_BANK_1), value: LOGIN_BANK_1 },
+  { label: terminologiesMap.get(LOGIN_BANK_2), value: LOGIN_BANK_2 },
+  { label: terminologiesMap.get(LOGIN_BANK_3), value: LOGIN_BANK_3 },
+  { label: terminologiesMap.get(LOGIN_BANK_4), value: LOGIN_BANK_4 },
+  { label: terminologiesMap.get(LOGIN_BANK_5), value: LOGIN_BANK_5 },
+  { label: terminologiesMap.get(LOGIN_BANK_6), value: LOGIN_BANK_6 },
+];
+
+export const applicationStatusOptionsForUnPaidApprovedLeadsFilters = [
+  { label: "Select application status", value: "" },
+  { label: terminologiesMap.get(APPLICATION_APPROVED), value: APPLICATION_APPROVED},
+  { label: terminologiesMap.get(CLOSING_DATE_CHANGED), value: CLOSING_DATE_CHANGED},
+  { label: terminologiesMap.get(ADVANCE_AMOUNT_PAID), value: ADVANCE_AMOUNT_PAID},
+  { label: terminologiesMap.get(CLOSING_AMOUNT_PAID), value: CLOSING_AMOUNT_PAID},
+]
+
+export const applicationStatusOptionsForPaidApprovedLeadsFilters = [
+  { label: "Select application status", value: "" },
+  { label: terminologiesMap.get(CLOSING_DATE_CHANGED), value: CLOSING_DATE_CHANGED},
+  { label: terminologiesMap.get(ADVANCE_AMOUNT_PAID), value: ADVANCE_AMOUNT_PAID},
+  { label: terminologiesMap.get(CLOSING_AMOUNT_PAID), value: CLOSING_AMOUNT_PAID},
+  { label: terminologiesMap.get(LOAN_DISBURSED_FROM_BANK), value: LOAN_DISBURSED_FROM_BANK},
+  { label: terminologiesMap.get(APPLICATION_IS_CLOSED), value: APPLICATION_IS_CLOSED},
+  { label: terminologiesMap.get(OTHERS), value: OTHERS},
+  { label: terminologiesMap.get(LOGIN_STARTED), value: LOGIN_STARTED},
+]

@@ -58,6 +58,8 @@ function ActivityLog() {
   }, [activityLogsEmployeeWise]);
 
   useEffect(() => {
+    console.log('filter = ', filters);
+    
     // Fetch activity logs with the current filters (fixed pageSize)
     fetchActivityLogs({ ...filters, pageSize: 10 });
   
@@ -218,7 +220,7 @@ function ActivityLog() {
               showDot={showDot}
               showFilter={showFilter}
             />
-            {showDot && <ClearButton onClick={() => handleResetFilters()} />}
+            {(showDot || filters.hasOwnProperty("createdAt")) && (<ClearButton onClick={() => handleResetFilters()} />)}
             <ExportButton onClick={() => handleExportLeads()} />
           </div>
         </div>

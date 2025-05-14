@@ -12,14 +12,15 @@ import Snackbar from "../components/common/snackbars/Snackbar";
 import { debounce } from "lodash";
 import FilterDialogueForWalkInLeadsTable from "../components/walk-ins/FilterDialogueForWalkInLeadsTable";
 import { exportLeadsHandler, isEmpty } from "../utilities/utility-functions";
-import { NORMAL_LOGIN, ROLE_EMPLOYEE, terminologiesMap, WALK_INS } from "../utilities/AppConstants";
+import { APPOINTMENTS, NORMAL_LOGIN, ROLE_EMPLOYEE, terminologiesMap, WALK_INS } from "../utilities/AppConstants";
 import NormalLoginTable from "../components/walk-ins/NormalLoginTable";
 import Loader from "../components/common/loaders/Loader";
 import EmptyDataMessageIcon from "../components/icons/EmptyDataMessageIcon";
 import { getAllDistinctLeadSources } from "../features/leads/leadsThunks";
 
 const defaultWalkInLeadsTableFilters = {
-  verification_status: ["Scheduled For Walk-In", "Scheduled Call With Manager"],
+  // verification_status: ["Scheduled For Walk-In", "Scheduled Call With Manager"],
+  lead_bucket: APPOINTMENTS,
   lead_status: "",
   for_walk_ins_page: true,
   walk_in_attributes: [
@@ -288,7 +289,7 @@ function WalkIns() {
             </span>
           </div>
           <div className="flex grid-cols-6 gap-2">
-            <PrimaryButton
+            {/* <PrimaryButton
               isActive={!showNormalLoginTable}
               name="Appointments"
               onClick={() => {
@@ -298,8 +299,8 @@ function WalkIns() {
                 setShowFilter(false);
               }}
               backgroundColor="#C7D4E4"
-            />
-            <PrimaryButton
+            /> */}
+            {/* <PrimaryButton
               name="Normal Login"
               isActive={showNormalLoginTable}
               onClick={() => {
@@ -309,7 +310,7 @@ function WalkIns() {
                 setShowFilter(false);
               }}
               backgroundColor="#C7D4E4"
-            />
+            /> */}
             <FilterButton
               onClick={() => setShowFilter(!showFilter)}
               showDot={showDot}

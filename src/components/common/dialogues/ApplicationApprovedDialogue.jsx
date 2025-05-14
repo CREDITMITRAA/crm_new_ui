@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import {
   activityOptions,
-  ALL_CLEAR,
   CALL_BACK,
+  CLOSING_DATE,
   FOLLOW_UP,
-  NEGATIVE_TRANSACTION,
-  OTHERS,
+  REJECTED,
   SCHEDULED_CALL_WITH_MANAGER,
   terminologiesMap,
+  VERIFICATION_DATE,
 } from "../../../utilities/AppConstants";
 import DateButton from "../DateButton";
 import DropDown from "../dropdowns/DropDown";
@@ -19,10 +19,14 @@ import {
   extractDate,
   formatDateTime,
 } from "../../../utilities/utility-functions";
-import { updateLeadStatus } from "../../../features/leads/leadsThunks";
+import {
+  updateLeadStatus,
+  updateVerificationStatus,
+} from "../../../features/leads/leadsThunks";
+import { updateApplicationStatus } from "../../../features/walk-ins/walkInsThunks";
 import { setIsConfirmationDialogueOpened } from "../../../features/ui/uiSlice";
 
-function UpdateLeadStatusDialogue({
+function ApplicationApprovedDialogue({
   onClose,
   setOpenToast,
   openToast,
@@ -32,11 +36,12 @@ function UpdateLeadStatusDialogue({
   const dispatch = useDispatch();
   const dialogueRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [description, setDescription] = useState("");
-  const [notError, setNoteError] = useState("");
+  const [closingDate, setClosingDate] = useState(null);
   const [verificationDate, setVerificationDate] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(false);
 
   useEffect(() => {
+    console.log("payload = ", payload);
     dispatch(setIsConfirmationDialogueOpened(true));
     return () => {
       onStatusUpdate();
@@ -76,35 +81,34 @@ function UpdateLeadStatusDialogue({
   }, [onClose]);
 
   async function handleSubmit() {
-    if (payload.lead_status === OTHERS && !description.trim()) {
-      setNoteError("Note cannot be empty !");
-    } else {
-      setOpenToast(true);
-      try {
-        const result = await dispatch(
-          updateLeadStatus({
-            ...payload,
-            others_note: description,
-            ...([ALL_CLEAR, NEGATIVE_TRANSACTION].includes(
-              payload.lead_status
-            ) && {
-              verification_date: verificationDate || extractDate(new Date()),
-            }),
-          })
-        );
-      } catch (error) {
-        console.log(error.message);
-      }
+    if (!closingDate) {
+      setErrorMessage(true);
+      return;
+    }
+    setOpenToast(true);
+    let apiPayload = {
+      ...payload,
+      closing_date: closingDate,
+      verification_date: verificationDate || extractDate(new Date()),
+    };
+
+    try {
+      dispatch(updateApplicationStatus(apiPayload));
+    } catch (error) {
+      console.log(error.message);
     }
   }
 
-  function handleChange(e) {
-    setDescription(e.target.value);
-    setNoteError("");
-  }
-
   function handleDateChange(fieldName, date) {
-    setVerificationDate(extractDate(date));
+    switch (fieldName) {
+      case CLOSING_DATE:
+        setClosingDate(extractDate(date));
+        setErrorMessage(false)
+        break;
+      case VERIFICATION_DATE:
+        setVerificationDate(extractDate(date));
+        break;
+    }
   }
 
   return (
@@ -132,7 +136,7 @@ function UpdateLeadStatusDialogue({
           transform: isOpen ? "scale(1)" : "scale(0.9)",
           opacity: isOpen ? 1 : 0,
           transition: "transform 0.3s ease-in-out, opacity 0.3s ease-in-out",
-          minWidth: "40rem",
+          minWidth: "35rem",
           width: "max-content",
           height: "max-content",
         }}
@@ -142,7 +146,7 @@ function UpdateLeadStatusDialogue({
           <div className="relative flex items-center w-full">
             {/* Left-aligned "Add Activity" */}
             <span className="text-[#32086D] font-bold leading-5 poppins-thin">
-              {/* Update Lead Status */}
+              {/* Update Application Status */}
             </span>
 
             {/* Centered "Are you sure?" */}
@@ -151,62 +155,58 @@ function UpdateLeadStatusDialogue({
             </span>
           </div>
 
-          <div className="w-full flex justify-center my-2 text-[#888888]">
-            <span>{`You are about to change lead status to ${terminologiesMap.get(
-              payload?.lead_status
-            )} `}</span>
-          </div>
-
-          {/* verification date div */}
-          {[ALL_CLEAR, NEGATIVE_TRANSACTION].includes(payload.lead_status) && (
-            <div className="flex flex-col w-max">
-              <span className="text-[#214768] text-sm font-medium leading-5 mb-[0.625rem]">
-                Verification Date
-              </span>
-              <div className="h-8">
-                <DateButton
-                  showDot={false}
-                  showTimeFilterToggleButton={false}
-                  showSingleCalender={true}
-                  onDateChange={(fieldName, date) =>
-                    handleDateChange(fieldName, date)
-                  }
-                  buttonBackgroundColor="[#D9E4F2]"
-                  showBoxShadow={true}
-                  borderColor="[#214768]"
-                  date={verificationDate}
-                  fromTable={true}
-                  fieldName="verification_date"
-                />
+          <div className="w-full h-max flex justify-center mt-4">
+            <div className="w-1/2 flex flex-col justify-between">
+            <div className="flex justify-between">
+              {/* closing date div */}
+              <div className="flex flex-col w-max">
+                <span className="text-[#214768] text-sm font-medium leading-5 mb-[0.625rem]">
+                  Closing Date
+                </span>
+                <div className="h-8">
+                  <DateButton
+                    showDot={false}
+                    showTimeFilterToggleButton={false}
+                    showSingleCalender={true}
+                    onDateChange={(fieldName, date) =>
+                      handleDateChange(fieldName, date)
+                    }
+                    buttonBackgroundColor="[#D9E4F2]"
+                    showBoxShadow={true}
+                    borderColor="[#214768]"
+                    date={closingDate}
+                    fromTable={true}
+                    fieldName="closing_date"
+                  />
+                </div>
               </div>
-            </div>
-          )}
-
-          <div className="relative w-full h-max mt-[1.375rem]">
-            {/* Note Label */}
-            <div
-              className={`absolute -top-2 left-4 bg-[#E6F4FF] px-2 rounded-[5px] ${
-                notError ? "text-[#FF0000]" : "text-[#214768]"
-              } text-sm font-medium`}
-            >
-              Note
-            </div>
-
-            {/* Multiline Input (Textarea) */}
-            <textarea
-              className={`border ${
-                notError
-                  ? "border-red-500 focus:border-red-500"
-                  : "border-[#214768] focus:border-[#214768]"
-              } rounded-2xl p-4 bg-[#21476815] min-h-[10rem] w-full resize-none outline-none focus:outline-none focus:ring-0 text-[#214768] text-sm placeholder:text-[#888888]`}
-              placeholder="Write your note here..."
-              onChange={(e) => handleChange(e)}
-            />
-
-            {/* Validation Error Message */}
-            {notError && (
-              <p className="text-red-500 text-sm mt-1">{notError}</p>
+              {/* verification date div */}
+              {/* <div className="flex flex-col w-max">
+                <span className="text-[#214768] text-sm font-medium leading-5 mb-[0.625rem]">
+                  Verification Date
+                </span>
+                <div className="h-8">
+                  <DateButton
+                    showDot={false}
+                    showTimeFilterToggleButton={false}
+                    showSingleCalender={true}
+                    onDateChange={(fieldName, date) =>
+                      handleDateChange(fieldName, date)
+                    }
+                    buttonBackgroundColor="[#D9E4F2]"
+                    showBoxShadow={true}
+                    borderColor="[#214768]"
+                    date={verificationDate}
+                    fromTable={true}
+                    fieldName="verification_date"
+                  />
+                </div>
+              </div> */}
+              </div>
+              {errorMessage && (
+              <span className="text-red-500">Closing date is required !</span>
             )}
+            </div>
           </div>
 
           <div className="w-full flex justify-between mt-[1.25rem]">
@@ -234,4 +234,4 @@ function UpdateLeadStatusDialogue({
   );
 }
 
-export default UpdateLeadStatusDialogue;
+export default ApplicationApprovedDialogue;

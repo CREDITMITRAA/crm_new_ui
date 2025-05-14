@@ -15,6 +15,7 @@ import ClearButton from "../common/ClearButton";
 import ExportButton from "../common/ExportButton";
 import {
   exportWalkInLeadsHandler,
+  exportWalkIns,
   formatDatePayload,
   formatName,
   formatSentence,
@@ -80,6 +81,7 @@ function WalkInsTable() {
     "phone", // From lead.phone
     "walk_in_status", // Walk-in status
     "walk_in_date_time", // Formatted walk-in time
+    "rescheduled_date_time",
     "lead_status", // From lead.lead_status
     "verification_status", // From lead.verification_status
     "LeadAssignments", // Processed assignments
@@ -148,7 +150,7 @@ function WalkInsTable() {
 
     // If you still need just the keys for some reason:
     const filterKeys = Object.keys(filteredFilters);
-
+    console.log("filtered filters = ", filteredFilters, filterKeys);
     setShowDot(filterKeys.length > 0);
   }, [filters]);
 
@@ -231,21 +233,22 @@ function WalkInsTable() {
     setToastStatusMessage("In Progress...");
     setOpenToast(true);
     let response = null;
-    response = await exportWalkInLeadsHandler(
-      filters,
-      [],
-      walkIns,
-      users,
-      fieldsToExport,
-      setToastMessage
-    );
+    // response = await exportWalkInLeadsHandler(
+    //   filters,
+    //   [],
+    //   walkIns,
+    //   users,
+    //   fieldsToExport,
+    //   setToastMessage
+    // );
+    response = await exportWalkIns(filters, setToastMessage);
     if (response === true) {
       setToastStatusType("SUCCESS");
-      setToastMessage("Leads Exported Successfully");
+      setToastMessage("Walk Ins Exported Successfully");
       setTimeout(() => setOpenToast(false), 1500);
     } else if (response === false && response !== null) {
       setToastStatusType("ERROR");
-      setToastMessage("Failed to export leads !");
+      setToastMessage("Failed to export Walk Ins !");
       setTimeout(() => setOpenToast(false), 1500);
     }
   }
@@ -372,7 +375,11 @@ function WalkInsTable() {
               showDot={showDot}
               showFilter={showFilter}
             />
-            {showDot && <ClearButton onClick={() => handleResetFilters()} />}
+            {(showDot ||
+              filters.hasOwnProperty("date") ||
+              filters.hasOwnProperty("date_time_range")) && (
+              <ClearButton onClick={() => handleResetFilters()} />
+            )}
             {role !== ROLE_EMPLOYEE && (
               <ExportButton onClick={() => handleExportLeads()} />
             )}
@@ -545,7 +552,7 @@ function WalkInsTable() {
                         {moment(walkIn.walk_in_date_time)
                           .utcOffset(330)
                           .format("DD MMM, YYYY hh:mm A")}
-                          {walkIn.is_call && (
+                        {walkIn.is_call && (
                           <span className="">
                             <CallIcon size={14} />
                           </span>

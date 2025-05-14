@@ -13,6 +13,7 @@ import { addNotification } from "../../features/notifications/notificationSlice"
 import { useEffect } from "react";
 import { getNotificationsByEmployeeId } from "../../features/notifications/notificationsThunk";
 import SignIn from "../../pages/new/SignIn";
+import ApprovedApplicationsPage from "../../pages/ApprovedApplicationsPage";
 
 function Routers() {
   const dispatch = useDispatch();
@@ -74,6 +75,10 @@ function Routers() {
           <Route
             path="/lead-details-page/:leadId"
             element={<PrivateRoute element={<LeadDetailsPage />} />}
+          />
+          <Route
+            path="/approved-applications"
+            element={<PrivateRoute element={<ApprovedApplicationsPage/>}/>}
           />
         </Route>
       </Routes>

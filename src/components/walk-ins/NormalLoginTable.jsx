@@ -3,20 +3,29 @@ import Pagination from "../common/Pagination";
 import CallIcon from "../icons/CallIcon";
 import {
   applicationStatusOptionsForWalkInsPageTable,
+  APPOINTMENTS,
+  APPROVED_FOR_WALK_IN,
   CANCELLED,
+  leadStatusOptionsForVerification1Table,
   leadStatusOptionsForWalkInsPageTable,
+  NORMAL_LOGIN,
   optionColors,
+  OTHERS,
   PENDING,
+  PRELIMINERY_CHECK,
   REJECTED,
   RESCHEDULE_CALL_WITH_MANAGER,
   RESCHEDULE_WALK_IN,
   ROLE_ADMIN,
   ROLE_EMPLOYEE,
+  SCHEDULE_CALL_WITH_MANAGER,
+  SCHEDULE_FOR_WALK_IN,
   SCHEDULED_CALL_WITH_MANAGER,
   SCHEDULED_FOR_WALK_IN,
   terminologiesMap,
   TWELVE_DOCUMENTS_COLLECTED,
   UPCOMING,
+  verificationStatusOptionsForVerificationTable,
 } from "../../utilities/AppConstants";
 import UpdateLeadStatusDialogue from "../common/dialogues/UpdateLeadStatusDialogue";
 import { useEffect, useState } from "react";
@@ -34,9 +43,13 @@ import {
   truncateWithEllipsis,
 } from "../../utilities/utility-functions";
 import { useNavigate } from "react-router-dom";
+import UpdateVerificationStatusDialogue from "../common/dialogues/UpdateVerificationStatusDialogue";
+import { getVerificationLeads } from "../../features/verification/verificationThunks";
+import { getApprovedLeads } from "../../features/approved-leads/approvedLeadsThunks";
 
 const defaultWalkInLeadsTableFilters = {
-  verification_status: ["Scheduled For Walk-In", "Scheduled Call With Manager"],
+  // verification_status: ["Scheduled For Walk-In", "Scheduled Call With Manager"],
+  lead_bucket: APPOINTMENTS,
   lead_status: "",
   for_walk_ins_page: true,
   walk_in_attributes: [
@@ -51,7 +64,8 @@ const defaultWalkInLeadsTableFilters = {
 function NormalLoginTable({ leads }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
+  const { user, role } = useSelector((state) => state.auth);
+  const { isConfirmationDialogueOpened } = useSelector((state) => state.ui);
   const {
     loading,
     error,
@@ -85,6 +99,10 @@ function NormalLoginTable({ leads }) {
   const [selectedLeadStatus, setSelectedLeadStatus] = useState(null);
   const [selectedLead, setSelectedLead] = useState(false);
   const [selectedLeadName, setSelectedLeadName] = useState(null)
+  const [
+    showUpdateVerificationStatusDialogue,
+    setShowUpdateVerificationStatusDialogue,
+  ] = useState(false);
 
   useEffect(() => {
     if (loading) {
@@ -118,72 +136,36 @@ function NormalLoginTable({ leads }) {
   }, [error]);
 
   function handleLeadStatusChange(e, lead) {
-    e.stopPropagation();
-    let walk_in = lead.walkIns[0];
-    if (![ROLE_EMPLOYEE, ROLE_ADMIN].includes(user.user.role)) {
-      setToastStatusType("ERROR");
-      setToastStatusMessage("Error...");
-      setToastMessage("Manager has no access to update...");
-      setShouldSnackbarCloseOnClickOfOutside(true);
-      setOpenToast(true);
-    } else {
-      if (
-        [RESCHEDULE_WALK_IN, RESCHEDULE_CALL_WITH_MANAGER].includes(
-          e.target.value
-        )
-      ) {
-        if ([UPCOMING, PENDING].includes(getStatusDetails(walk_in).status)) {
-          setToastStatusType("ERROR");
-          setToastStatusMessage("Error...");
-          if (walk_in.is_call) {
-            setToastMessage(
-              "Please complete or cancel the existing Scheduled Call !"
-            );
-          } else {
-            setToastMessage(
-              "Please complete or cancel the existing Scheduled Walk-In !"
-            );
-          }
-          setShouldSnackbarCloseOnClickOfOutside(true);
-          setOpenToast(true);
-        } else {
-          if (e.target.value === RESCHEDULE_CALL_WITH_MANAGER) {
-            setIsCall(true);
-            setSelectedLead(lead);
-            setSelectedLeadStatus(value);
-            setShowScheduleWalkInOrCallDialogue(true);
-          } else {
-            setSelectedLead(lead);
-            setSelectedLeadStatus(value);
-            setShowScheduleWalkInOrCallDialogue(true);
-          }
-        }
-      } else if (
-        ![SCHEDULED_FOR_WALK_IN, SCHEDULED_CALL_WITH_MANAGER].includes(
-          e.target.value
-        )
-      ) {
-        if (getStatusDetails(walk_in).status === CANCELLED) {
-          setToastStatusType("ERROR");
-          setToastStatusMessage("Error...");
-          setToastMessage(
-            "Please complete or cancel the existing Scheduled Walk-In !"
-          );
-          setShouldSnackbarCloseOnClickOfOutside(true);
-          setOpenToast(true);
-        } else if (
-          [PENDING, UPCOMING].includes(getStatusDetails(walk_in).status)
+      e.stopPropagation();
+      const { name, value } = e.target;
+      if (![ROLE_EMPLOYEE, ROLE_ADMIN].includes(user.user.role)) {
+        setToastStatusType("ERROR");
+        setToastStatusMessage("Error...");
+        setToastMessage("Manager has no access to update...");
+        setShouldSnackbarCloseOnClickOfOutside(true);
+        setOpenToast(true);
+        return;
+      } else {
+        if (
+          lead.verification_status !== APPROVED_FOR_WALK_IN &&
+          value === SCHEDULE_FOR_WALK_IN
         ) {
           setToastStatusType("ERROR");
           setToastStatusMessage("Error...");
-          if (walk_in.is_call) {
-            setToastMessage("Please complete existing Scheduled Call !");
-          } else {
-            setToastMessage("Please complete Scheduled Walk-In !");
-          }
+          setToastMessage("Lead Not Approved For Walk-In Yet...");
           setShouldSnackbarCloseOnClickOfOutside(true);
           setOpenToast(true);
-        } else {
+          return;
+        } else if (value === SCHEDULE_CALL_WITH_MANAGER) {
+          setIsCall(true);
+          setSelectedLead(lead);
+          setSelectedLeadStatus(value);
+          setShowScheduleWalkInOrCallDialogue(true);
+        } else if (value === SCHEDULE_FOR_WALK_IN) {
+          setSelectedLead(lead);
+          setSelectedLeadStatus(value);
+          setShowScheduleWalkInOrCallDialogue(true);
+        } else if (value === OTHERS) {
           let payload = {};
           payload["lead_id"] = lead.id;
           payload["lead_status"] = e.target.value;
@@ -197,7 +179,6 @@ function NormalLoginTable({ leads }) {
         }
       }
     }
-  }
 
   function handleApplicationStatusChange(e, lead) {
     e.stopPropagation();
@@ -237,6 +218,28 @@ function NormalLoginTable({ leads }) {
     setSelectedLeadId(leadId);
     setSelectedLeadName(leadName)
     setShowActivityLogsInCommonDialogue(true);
+  }
+
+  function handleVerificationStatusChange(e, lead) {
+    e.stopPropagation();
+    if (user.user.role === ROLE_EMPLOYEE) {
+      setToastStatusType("ERROR");
+      setToastStatusMessage("Error...");
+      setToastMessage("Access Denied...");
+      setShouldSnackbarCloseOnClickOfOutside(true);
+      setOpenToast(true);
+    } else {
+      let payload = {};
+      payload["lead_id"] = lead.id;
+      payload["verification_status"] = e.target.value;
+      payload["role"] = user.user.role;
+      payload["rejected_by_id"] = user.user.id;
+      payload["user_id"] = user.user.id;
+      payload["lead_name"] = lead.name;
+      payload["assigned_to"] = lead.LeadAssignments[0].assigned_to;
+      setApiPayload(payload);
+      setShowUpdateVerificationStatusDialogue(true);
+    }
   }
 
   return (
@@ -293,9 +296,9 @@ function NormalLoginTable({ leads }) {
               Status
             </div>
 
-            {/* Application Status */}
+            {/* Verification Status */}
             <div className="w-[17%] flex justify-left items-center text-[#214768] text-xs font-bold inter-inter">
-              Application Status
+              Verification Status
             </div>
 
             {/* View */}
@@ -373,132 +376,126 @@ function NormalLoginTable({ leads }) {
               </div> */}
 
               {/* Status */}
-              <div className="w-[21%] flex justify-left items-center text-[#2B323B] text-xs font-normal inter-inter leading-none pl-1 overflow-hidden pr-6">
-                {/* Colored Dot */}
-                <div
-                  className="w-[6px] h-[6px] rounded-full mr-1.5"
-                  style={{
-                    backgroundColor:
-                      optionColors.find(
-                        (option) =>
-                          option.optionName ===
-                          (lead?.last_updated_status === "Others"
-                            ? lead.last_updated_status
-                            : (lead?.Activities || [])[0]?.activity_status ||
-                              "")
-                      )?.optionColor || "#32086d",
-                  }}
-                ></div>
+              <div
+                              className="w-[20%] flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden pr-8"
+                              title={`Current Status: ${
+                                terminologiesMap.get(lead?.last_updated_status) || "Not Updated"
+                              }\nActivity Status: ${
+                                terminologiesMap.get(lead?.Activities[0]?.activity_status) || "No Activity"
+                              }`}
+                            >
+                              {/* Dot */}
+                              <div className="flex-shrink-0 mr-2">
+                                <svg width="6" height="6" viewBox="0 0 8 8" fill="none">
+                                  <path
+                                    d="M4 0C2.939 0 1.922 0.421 1.172 1.172C0.421 1.922 0 2.939 0 4C0 5.061 0.421 6.078 1.172 6.828C1.922 7.579 2.939 8 4 8C6.22 8 8 6.22 8 4C8 2.939 7.579 1.922 6.828 1.172C6.078 0.421 5.061 0 4 0Z"
+                                    fill={
+                                      optionColors.find(
+                                        (option) =>
+                                          option.optionName ===
+                                          (lead?.last_updated_status === "Others"
+                                            ? lead.last_updated_status
+                                            : lead?.Activities[0]?.activity_status || "")
+                                      )?.optionColor || "#46AACA"
+                                    }
+                                  />
+                                </svg>
+                              </div>
+              
+                              {/* Dropdown */}
+                              <select
+                                className="w-full px-1 py-1 pl-0 text-xs font-normal inter-inter leading-tight bg-transparent border border-none outline-none appearance-none cursor-pointer focus:outline-none focus:ring-0 focus:border-transparent pr-6 truncate"
+                                value={
+                                  lead?.last_updated_status === "Others"
+                                    ? lead.last_updated_status
+                                    : lead?.Activities[0]?.activity_status || ""
+                                }
+                                style={{
+                                  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23464646'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E")`,
+                                  backgroundPosition: "right 8px center",
+                                  backgroundRepeat: "no-repeat",
+                                  backgroundSize: "14px",
+                                  zIndex: isConfirmationDialogueOpened && -1,
+                                  paddingLeft: "5px",
+                                }}
+                                onChange={(e) => handleLeadStatusChange(e, lead)}
+                                disabled={lead?.verification_status === REJECTED}
+                              >
+                                {leadStatusOptionsForVerification1Table.map(
+                                  (option, index) => (
+                                    <option
+                                      key={index}
+                                      value={option.value}
+                                      className="text-xs p-2 truncate"
+                                      style={{ ...option.style }}
+                                      disabled={option.value === ""}
+                                    >
+                                      {terminologiesMap.get(option.value) || option.label}
+                                    </option>
+                                  )
+                                )}
+                              </select>
+                            </div>
 
-                <select
-                  className="w-full px-1 py-1 pl-0 text-xs font-normal inter-inter leading-tight bg-transparent border border-none outline-none appearance-none cursor-pointer focus:outline-none focus:ring-0 focus:border-transparent pr-6 truncate"
-                  value={lead?.lead_status || lead?.last_updated_status}
-                  style={{
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23464646'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E")`,
-                    backgroundPosition: "right 8px center",
-                    backgroundRepeat: "no-repeat",
-                    backgroundSize: "14px",
-                    paddingLeft: "5px",
-                  }}
-                  onChange={(e) => handleLeadStatusChange(e, lead)}
-                  disabled={lead?.application_status === REJECTED}
-                >
-                  {leadStatusOptionsForWalkInsPageTable.map((option, index) => (
-                    <option
-                      key={index}
-                      value={option.value}
-                      className="text-xs p-2 truncate"
-                      style={{ ...option.style }}
-                    >
-                      {terminologiesMap.get(option.value) || option.label}
-                    </option>
-                  ))}
-
-                  {lead.lead_status === "Scheduled For Walk-In" && (
-                    <option value="Scheduled For Walk-In" disabled>
-                      {terminologiesMap.get("Scheduled For Walk-In") ||
-                        "Scheduled For Walk-In"}
-                    </option>
-                  )}
-
-                  {lead.lead_status === "Scheduled Call With Manager" && (
-                    <option value="Scheduled Call With Manager" disabled>
-                      {terminologiesMap.get("Scheduled Call With Manager") ||
-                        "Scheduled Call With Manager"}
-                    </option>
-                  )}
-                </select>
-              </div>
-
-              {/* Application Status */}
-              <div className="w-[17%] flex justify-left items-center text-[#2B323B] text-xs font-normal inter-inter leading-none pl-1 overflow-hidden pr-8">
-                {/* Colored Dot */}
-                <div
-                  className="w-[6px] h-[6px] rounded-full mr-1.5"
-                  style={{
-                    backgroundColor:
-                      optionColors.find(
-                        (option) =>
-                          option.optionName === (lead?.application_status || "")
-                      )?.optionColor || "#2B323B",
-                  }}
-                ></div>
-
-                {user.user.role !== ROLE_EMPLOYEE ? (
-                  <select
-                    className="w-full px-1 py-1 pl-0 text-xs font-normal inter-inter leading-none bg-transparent border border-none outline-none appearance-none cursor-pointer focus:outline-none focus:ring-0 focus:border-transparent pr-6 truncate"
-                    value={lead?.application_status}
-                    style={{
-                      backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23${
-                        optionColors
-                          .find(
-                            (option) =>
-                              option.optionName ===
-                              (lead?.application_status || "")
-                          )
-                          ?.optionColor?.replace("#", "") || "2B323B"
-                      }'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E")`,
-                      backgroundPosition: "right 8px center",
-                      backgroundRepeat: "no-repeat",
-                      backgroundSize: "14px",
-                      paddingLeft: "5px",
-                    }}
-                    onChange={(e) => handleApplicationStatusChange(e, lead)}
-                    disabled={
-                      user.user.role === ROLE_EMPLOYEE ||
-                      lead?.lead_status !== TWELVE_DOCUMENTS_COLLECTED
-                    }
-                  >
-                    {applicationStatusOptionsForWalkInsPageTable.map(
-                      (option, index) => (
-                        <option
-                          key={index}
-                          value={option.value}
-                          className="text-xs p-2 truncate"
-                          style={{ ...option.style }}
-                        >
-                          {terminologiesMap.get(option.value) || option.label}
-                        </option>
-                      )
-                    )}
-                  </select>
-                ) : (
-                  <span
-                    className="truncate w-full text-left px-1"
-                    style={{
-                      color:
-                        // optionColors.find(
-                        //   (item) => item.optionName === lead?.application_status
-                        // )?.optionColor || 
-                        "#2B323B",
-                    }}
-                  >
-                    {terminologiesMap.get(lead?.application_status) ||
-                      lead?.application_status ||
-                      "Select Application Status"}
-                  </span>
-                )}
-              </div>
+              {/* Verification Status */}
+                            <div
+                              className="w-[18%] flex items-center text-[#2B323B] text-xs font-normal inter-inter leading-tight overflow-hidden"
+                              title={`Verification Status: ${
+                                terminologiesMap.get(lead?.verification_status) || "Not Verified"
+                              }\nVerified By: ${
+                                lead?.verified_by || "N/A"
+                              }\nVerification Date: ${terminologiesMap.get(lead?.verification_date) || "N/A"}`}
+                            >
+                              <div className="flex-shrink-0 mr-2">
+                                <svg width="6" height="6" viewBox="0 0 8 8" fill="none">
+                                  <path
+                                    d="M4 0C2.939 0 1.922 0.421 1.172 1.172C0.421 1.922 0 2.939 0 4C0 5.061 0.421 6.078 1.172 6.828C1.922 7.579 2.939 8 4 8C6.22 8 8 6.22 8 4C8 2.939 7.579 1.922 6.828 1.172C6.078 0.421 5.061 0 4 0Z"
+                                    fill={
+                                      optionColors.find(
+                                        (option) =>
+                                          option.optionName ===
+                                          (lead?.verification_status || "")
+                                      )?.optionColor || "#46AACA"
+                                    }
+                                  />
+                                </svg>
+                              </div>
+              
+                              {user.user.role !== ROLE_EMPLOYEE ? (
+                                <select
+                                  className="w-full px-1 pl-0 py-1 text-xs font-normal inter-inter leading-tight bg-transparent border-none outline-none appearance-none cursor-pointer focus:outline-none focus:ring-0 focus:border-transparent pr-6 truncate"
+                                  value={lead?.verification_status || ""}
+                                  style={{
+                                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23464646'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E")`,
+                                    backgroundPosition: "right 8px center",
+                                    backgroundRepeat: "no-repeat",
+                                    backgroundSize: "14px",
+                                    zIndex: isConfirmationDialogueOpened && -1,
+                                    paddingLeft: "5px",
+                                  }}
+                                  onChange={(e) => handleVerificationStatusChange(e, lead)}
+                                  disabled={user.user.role === ROLE_EMPLOYEE}
+                                >
+                                  {verificationStatusOptionsForVerificationTable.map(
+                                    (option, index) => (
+                                      <option
+                                        key={index}
+                                        value={option.value}
+                                        className="text-xs p-2 truncate"
+                                        style={{ ...option.style }}
+                                        disabled={option.value === ""}
+                                      >
+                                        {terminologiesMap.get(option.value) || option.label}
+                                      </option>
+                                    )
+                                  )}
+                                </select>
+                              ) : (
+                                <span className="truncate w-full text-center flex justify-left">
+                                  {terminologiesMap.get(lead?.verification_status)}
+                                </span>
+                              )}
+                            </div>
 
               {/* Assigned */}
               <div
@@ -518,8 +515,10 @@ function NormalLoginTable({ leads }) {
           setOpenToast={setOpenToast}
           onStatusUpdate={() => {
             dispatch(
-              getAllWalkInLeads({
-                ...defaultWalkInLeadsTableFilters,
+              getApprovedLeads({
+                lead_bucket: PRELIMINERY_CHECK,
+                    ...(role === ROLE_EMPLOYEE && { assigned_to: user.user.id }),
+                    verification_status: [NORMAL_LOGIN],
                 page: pagination.page,
                 pageSize: pagination.pageSize,
               })
@@ -527,16 +526,18 @@ function NormalLoginTable({ leads }) {
           }}
         />
       )}
-      {showUpdateApplicationStatusDialogue && (
-        <UpdateApplicationStatusDialogue
-          onClose={() => setShowUpdateApplicationStatusDialogue(false)}
+      {showUpdateVerificationStatusDialogue && (
+        <UpdateVerificationStatusDialogue
+          onClose={() => setShowUpdateVerificationStatusDialogue(false)}
           payload={apiPayload}
           openToast={openToast}
           setOpenToast={setOpenToast}
           onStatusUpdate={() => {
             dispatch(
-              getAllWalkInLeads({
-                ...defaultWalkInLeadsTableFilters,
+              getApprovedLeads({
+                lead_bucket: PRELIMINERY_CHECK,
+                    ...(role === ROLE_EMPLOYEE && { assigned_to: user.user.id }),
+                    verification_status: [NORMAL_LOGIN],
                 page: pagination.page,
                 pageSize: pagination.pageSize,
               })

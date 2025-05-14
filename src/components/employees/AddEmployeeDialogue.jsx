@@ -26,11 +26,12 @@ function AddEmployeeDialogue({ onClose, employee }) {
     role_name: employee?.role_name || "",
     phone: employee?.phone || "",
     email: employee?.email || "",
-    password: employee?.password || "",
+    // password: "",
     employee_id: employee?.employee_id || "",
     date_of_join: employee?.date_of_join || "",
     role_id: employee?.role_id || "",
-    gender: employee?.gender || ""
+    // gender: employee?.gender || ""
+    ...(employee?.gender && { gender: employee.gender })
   });
   const [openToast, setOpenToast] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
@@ -104,16 +105,31 @@ function AddEmployeeDialogue({ onClose, employee }) {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+    setFormData(prev => {
+        // For password, only include if it has value (and changed from empty)
+        if (name === 'password') {
+            return value 
+                ? { ...prev, [name]: value } 
+                : { ...prev };
+        }
+        // For other fields, always update
+        return { ...prev, [name]: value };
+    });
+};
 
   const handleRoleChange = (fieldName, value) => {
-    setFormData((prev) => ({ ...prev, role_name: value }));
+    let role = userRoleOptions.filter((role)=>role.value === value)
+    setFormData((prev) => ({ ...prev, role_name: value, role_id: role[0].id }));
   };
 
-  const handleGenderChange = (fieldName, value) => {
-    setFormData((prev) => ({ ...prev, gender: value }));
-  };
+  const handleGenderChange = (value) => {
+    setFormData(prev => {
+        // Only include gender if it has value
+        return value 
+            ? { ...prev, gender: value } 
+            : Object.fromEntries(Object.entries(prev).filter(([key]) => key !== 'gender'));
+    });
+};
 
   const handleDateChange = (e) => {
     const { value } = e.target;

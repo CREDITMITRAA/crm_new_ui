@@ -1,11 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import {
   activityOptions,
+  ADVANCE_AMOUNT_PAID,
   CALL_BACK,
+  CLOSING_AMOUNT_PAID,
+  CLOSING_DATE,
+  CLOSING_DATE_CHANGED,
   FOLLOW_UP,
+  LOGIN_DATE,
+  LOGIN_DATE_CHANGED,
   REJECTED,
   SCHEDULED_CALL_WITH_MANAGER,
   terminologiesMap,
+  VERIFICATION_DATE,
 } from "../../../utilities/AppConstants";
 import DateButton from "../DateButton";
 import DropDown from "../dropdowns/DropDown";
@@ -13,7 +20,10 @@ import PopupButton from "../PopupButton";
 import { useDispatch, useSelector } from "react-redux";
 import { addActivity } from "../../../features/activities/activitiesThunks";
 import Snackbar from "../snackbars/Snackbar";
-import { formatDateTime } from "../../../utilities/utility-functions";
+import {
+  extractDate,
+  formatDateTime,
+} from "../../../utilities/utility-functions";
 import {
   updateLeadStatus,
   updateVerificationStatus,
@@ -27,6 +37,7 @@ function UpdateApplicationStatusDialogue({
   openToast,
   payload = null,
   onStatusUpdate,
+  showLoginDateButton=false
 }) {
   const dispatch = useDispatch();
   const dialogueRef = useRef(null);
@@ -35,6 +46,9 @@ function UpdateApplicationStatusDialogue({
   const [applicationStatusNote, setApplicationStatusNote] = useState("");
   const [rejectionReason, setRejectionReason] = useState("");
   const [rejectionReasonError, setRejectionReasonError] = useState("");
+  const [closingDate, setClosingDate] = useState(null);
+  const [loginDate, setLoginDate] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(false);
 
   useEffect(() => {
     console.log("payload = ", payload);
@@ -93,11 +107,36 @@ function UpdateApplicationStatusDialogue({
         }
       }
     } else {
+      let apiPayload = null;
+      if (payload.application_status === CLOSING_DATE_CHANGED) {
+        if (!closingDate) {
+          setErrorMessage("Closing date is required !");
+          return;
+        }
+        apiPayload = {
+          ...payload,
+          closing_date: closingDate,
+          // verification_date: verificationDate || extractDate(new Date()),
+          application_status_note: applicationStatusNote,
+        };
+      }else if([CLOSING_AMOUNT_PAID, ADVANCE_AMOUNT_PAID, LOGIN_DATE_CHANGED].includes(payload.application_status)){
+        if (!loginDate) {
+          setErrorMessage("Login date is required !");
+          return;
+        }
+        apiPayload = {
+          ...payload,
+          login_date : loginDate,
+          application_status_note: applicationStatusNote,
+        };
+      } 
+      else {
+        apiPayload = {
+          ...payload,
+          application_status_note: applicationStatusNote,
+        };
+      }
       setOpenToast(true);
-      let apiPayload = {
-        ...payload,
-        application_status_note: applicationStatusNote,
-      };
       try {
         dispatch(updateApplicationStatus(apiPayload));
       } catch (error) {
@@ -113,6 +152,19 @@ function UpdateApplicationStatusDialogue({
   function handleRejectionReasonChange(e) {
     setRejectionReason(e.target.value);
     setRejectionReasonError("");
+  }
+
+  function handleDateChange(fieldName, date) {
+    setErrorMessage("")
+    switch (fieldName) {
+      case CLOSING_DATE:
+        setClosingDate(extractDate(date));
+        setErrorMessage(false);
+        break;
+      case LOGIN_DATE:
+        setLoginDate(extractDate(date));
+        break;
+    }
   }
 
   return (
@@ -160,7 +212,9 @@ function UpdateApplicationStatusDialogue({
           </div>
 
           <div className="w-full flex justify-center my-2 text-[#888888]">
-            <span>{`You are about to change application status to ${terminologiesMap.get(payload?.application_status)}`}</span>
+            <span>{`You are about to change application status to ${terminologiesMap.get(
+              payload?.application_status
+            )}`}</span>
           </div>
 
           {payload?.application_status === REJECTED ? (
@@ -175,7 +229,7 @@ function UpdateApplicationStatusDialogue({
                 >
                   Rejection Reason
                 </div>
-                
+
                 {/* Multiline Input (Textarea) */}
                 <textarea
                   className={`border ${
@@ -197,6 +251,78 @@ function UpdateApplicationStatusDialogue({
             </>
           ) : (
             <>
+              {
+                payload.application_status === CLOSING_DATE_CHANGED &&
+                <div className="w-full h-max flex">
+                <div className="w-1/2 flex flex-col justify-between">
+                  <div className="flex justify-between">
+                    {/* closing date div */}
+                    <div className="flex flex-col w-max">
+                      <span className="text-[#214768] text-sm font-medium leading-5 mb-[0.625rem]">
+                        Closing Date
+                      </span>
+                      <div className="h-8">
+                        <DateButton
+                          showDot={false}
+                          showTimeFilterToggleButton={false}
+                          showSingleCalender={true}
+                          onDateChange={(fieldName, date) =>
+                            handleDateChange(fieldName, date)
+                          }
+                          buttonBackgroundColor="[#D9E4F2]"
+                          showBoxShadow={true}
+                          borderColor="[#214768]"
+                          date={closingDate}
+                          fromTable={true}
+                          fieldName="closing_date"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  {errorMessage && (
+                    <span className="text-red-500 text-xs mt-1">
+                      {errorMessage}
+                    </span>
+                  )}
+                </div>
+              </div>
+              }
+              {
+                (payload.application_status === CLOSING_AMOUNT_PAID || payload.application_status === ADVANCE_AMOUNT_PAID || payload.application_status === LOGIN_DATE_CHANGED) &&
+                <div className="w-full h-max flex">
+                <div className="w-1/2 flex flex-col justify-between">
+                  <div className="flex justify-between">
+                    {/* closing date div */}
+                    <div className="flex flex-col w-max">
+                      <span className="text-[#214768] text-sm font-medium leading-5 mb-[0.625rem]">
+                        Login Date
+                      </span>
+                      <div className="h-8">
+                        <DateButton
+                          showDot={false}
+                          showTimeFilterToggleButton={false}
+                          showSingleCalender={true}
+                          onDateChange={(fieldName, date) =>
+                            handleDateChange(fieldName, date)
+                          }
+                          buttonBackgroundColor="[#D9E4F2]"
+                          showBoxShadow={true}
+                          borderColor="[#214768]"
+                          date={loginDate}
+                          fromTable={true}
+                          fieldName="login_date"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  {errorMessage && (
+                    <span className="text-red-500 text-xs mt-1">
+                      {errorMessage}
+                    </span>
+                  )}
+                </div>
+              </div>
+              }
               <div className="relative w-full h-max mt-[1.375rem]">
                 {/* Note Label */}
                 <div

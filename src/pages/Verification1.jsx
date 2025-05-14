@@ -13,7 +13,7 @@ import { exportLeadsHandler, isEmpty } from "../utilities/utility-functions";
 import Loader from "../components/common/loaders/Loader";
 import EmptyDataMessageIcon from "../components/icons/EmptyDataMessageIcon";
 import { getAllDistinctLeadSources } from "../features/leads/leadsThunks";
-import { ROLE_EMPLOYEE, terminologiesMap, VERIFICATION_1 } from "../utilities/AppConstants";
+import { PRELIMINERY_CHECK, ROLE_EMPLOYEE, terminologiesMap, VERIFICATION_1 } from "../utilities/AppConstants";
 
 function Verification1() {
   const dispatch = useDispatch();
@@ -24,7 +24,8 @@ function Verification1() {
   const { height } = useSelector((state) => state.ui);
   const { user, role } = useSelector((state) => state.auth);
   const [filters, setFilters] = useState({ 
-    lead_status: "Verification 1",
+    // lead_status: "Verification 1",
+    lead_bucket: PRELIMINERY_CHECK,
     ...(role === ROLE_EMPLOYEE && { assigned_to: user.user.id })
   });
   const [pageSize, setPageSize] = useState(0);
@@ -99,8 +100,8 @@ function Verification1() {
   useEffect(() => {
     if (pageSize > 0) {
       const excludedKeys = role === ROLE_EMPLOYEE
-        ? ["page", "pageSize", "totalPages", "total", "assigned_to"]
-        : ["page", "pageSize", "totalPages", "total"];
+        ? ["page", "pageSize", "totalPages", "total", "lead_bucket", "assigned_to"]
+        : ["page", "pageSize", "totalPages", "total", "lead_bucket"];
 
       const filteredFilters = Object.entries(filters).reduce((acc, [key, value]) => {
         if (excludedKeys.includes(key)) return acc;
@@ -166,7 +167,8 @@ function Verification1() {
   function handleResetFilters() {
     if (showDot) {
       let initialFilters = {
-        lead_status: "Verification 1",
+        // lead_status: "Verification 1",
+        lead_bucket: PRELIMINERY_CHECK,
         ...(role === ROLE_EMPLOYEE && { assigned_to: user.user.id }),
         pageSize: pagination.pageSize || 10,
       };

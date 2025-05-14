@@ -84,8 +84,8 @@ function RecentTasksTable() {
     // Determine excluded keys based on role
     const excludedKeys =
       role === ROLE_EMPLOYEE
-        ? ["pageSize", "date", "date_time_range", "created_by"]
-        : ["pageSize", "date", "date_time_range"];
+        ? ["pageSize", "date", "follow_up_range", "created_by"]
+        : ["pageSize", "date", "follow_up_range"];
 
     // Filter out excluded keys and empty values
     const filteredFilters = Object.entries(filters).reduce(
@@ -298,7 +298,8 @@ function RecentTasksTable() {
               showDot={showDot}
               showFilter={showFilter}
             />
-            {showDot && <ClearButton onClick={() => handleResetFilters()} />}
+            {(showDot || filters.hasOwnProperty("date") ||
+              filters.hasOwnProperty("follow_up_range")) && (<ClearButton onClick={() => handleResetFilters()} />)}
             {role !== ROLE_EMPLOYEE && <ExportButton onClick={() => handleExportLeads()} />}
           </div>
         </div>
