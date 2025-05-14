@@ -8,6 +8,7 @@ import {
   ASSIGNED_TABLE,
   BUSY,
   CALL_BACK,
+  EX_EMPLOYEES_LEADS_TABLE,
   FOLLOW_UP,
   INTERESTED,
   INVALID_LEADS_TABLE,
@@ -42,7 +43,8 @@ function FilterDialogue({
   const { users, userOptions } = useSelector((state) => state.users);
   const { leadSources } = useSelector((state) => state.leads);
   const { role } = useSelector((state) => state.auth);
-  const { isConfirmationDialogueOpened, isAddActivityDialogueOpened } = useSelector((state) => state.ui);
+  const { isConfirmationDialogueOpened, isAddActivityDialogueOpened } =
+    useSelector((state) => state.ui);
   const [leadStatusOptions, setLeadStatusOptions] = useState([
     { label: "Filter by status", value: "" },
     { label: terminologiesMap.get(NOT_CONTACTED), value: NOT_CONTACTED },
@@ -70,7 +72,7 @@ function FilterDialogue({
       label: terminologiesMap.get(SCHEDULED_CALL_WITH_MANAGER),
       value: SCHEDULED_CALL_WITH_MANAGER,
     },
-    {label: terminologiesMap.get(OTHERS), value: OTHERS}
+    { label: terminologiesMap.get(OTHERS), value: OTHERS },
   ]);
   const [leadSourceOptions, setLeadSourceOptions] = useState([
     { label: "Select lead source", value: "" },
@@ -78,7 +80,11 @@ function FilterDialogue({
 
   useEffect(() => {
     if (users && users.length > 0) {
-      setEmployees([{ label: "Filter by associate", value: "" },{ label: "Re-Assigned", value: "re_assigned" }, ...userOptions]);
+      setEmployees([
+        { label: "Filter by associate", value: "" },
+        { label: "Re-Assigned", value: "re_assigned" },
+        ...userOptions,
+      ]);
     } else {
       dispatch(getUsersNameAndId());
     }
@@ -95,9 +101,9 @@ function FilterDialogue({
     switch (name) {
       case "assigned_to":
         const user = users.find((user) => user.name === value);
-        if(value === "re_assigned"){
+        if (value === "re_assigned") {
           setFilters((prev) => ({ ...prev, assigned_to: value }));
-        }else{
+        } else {
           setFilters((prev) => ({ ...prev, assigned_to: user?.id }));
         }
         setSelectedEmployeeName(user?.name);
@@ -112,8 +118,8 @@ function FilterDialogue({
         break;
 
       case "reason":
-       setFilters((prev) => ({ ...prev, reason: value }));
-       break;
+        setFilters((prev) => ({ ...prev, reason: value }));
+        break;
     }
   }
 
@@ -136,7 +142,7 @@ function FilterDialogue({
       {/* lead id */}
       <div
         className={`w-full h-8 ${
-          tableType === ASSIGNED_TABLE
+          tableType === ASSIGNED_TABLE || EX_EMPLOYEES_LEADS_TABLE
             ? "col-span-4"
             : tableType === INVALID_LEADS_TABLE
             ? "col-span-4"
@@ -160,7 +166,7 @@ function FilterDialogue({
       {/* phone no */}
       <div
         className={`w-full h-8 ${
-          tableType === ASSIGNED_TABLE
+          tableType === ASSIGNED_TABLE || EX_EMPLOYEES_LEADS_TABLE
             ? "col-span-4"
             : tableType === INVALID_LEADS_TABLE
             ? "col-span-4"
@@ -184,7 +190,7 @@ function FilterDialogue({
       {/* lead name */}
       <div
         className={`w-full h-8 ${
-          tableType === ASSIGNED_TABLE
+          tableType === ASSIGNED_TABLE || EX_EMPLOYEES_LEADS_TABLE
             ? "col-span-4"
             : tableType === INVALID_LEADS_TABLE
             ? "col-span-4"
@@ -212,7 +218,7 @@ function FilterDialogue({
       {tableType === INVALID_LEADS_TABLE && (
         <div
           className={`flex flex-col ${
-            tableType === ASSIGNED_TABLE
+            tableType === ASSIGNED_TABLE || EX_EMPLOYEES_LEADS_TABLE
               ? "col-span-4"
               : tableType === INVALID_LEADS_TABLE
               ? "col-span-4"
@@ -238,8 +244,10 @@ function FilterDialogue({
 
       {/* lead source */}
       <div
-        className={`w-full h-8 ${tableType === ASSIGNED_TABLE && "mt-2"} ${
-          tableType === ASSIGNED_TABLE
+        className={`w-full h-8 ${
+          tableType === ASSIGNED_TABLE || (EX_EMPLOYEES_LEADS_TABLE && "mt-2")
+        } ${
+          tableType === ASSIGNED_TABLE || EX_EMPLOYEES_LEADS_TABLE
             ? "col-span-4 "
             : tableType === INVALID_LEADS_TABLE
             ? "col-span-4 mt-4"
@@ -269,103 +277,18 @@ function FilterDialogue({
         </div>
       </div>
 
-      {
-        tableType === NOT_ASSIGNED_TABLE &&
-        <div className={`flex flex-col ${tableType === ASSIGNED_TABLE ? 'col-span-4' : tableType === INVALID_LEADS_TABLE ? 'col-span-4' : 'col-span-2'}`}>
-        <div className="text-[#214768] text-[10px] font-normal poppins-thin leading-none tracking-tight">
-          Imported on
-        </div>
-        <div className="w-full h-8 bg-[#D4D5D53D] rounded-xl border border-[#214768] justify-center items-center gap-2.5 inline-flex mt-[0.325rem]">
-          <DateButton
-            buttonBackgroundColor="[#B7B7B700]"
-            onDateChange={(fieldName, value) =>
-              handleDateChange(fieldName, value)
-            }
-            fieldName="importedOn"
-            resetFilters={resetFilters}
-            fromFilter={true}
-          />
-        </div>
-      </div>
-      }
-
-      {/* Employee name */}
-      {role !== ROLE_EMPLOYEE && tableType === ASSIGNED_TABLE && (
-        <div className="col-span-4 w-full h-8 mt-2">
-          <div className="w-full h-full bg-[#D4D5D53D] rounded-xl flex items-center">
-            <DropDown
-              options={employees}
-              onChange={(name, value) => handleSelect(name, value)}
-              optionsBackgroundColor="#B7B7B700"
-              buttonBackgroundColor="#B7B7B700"
-              className={"min-w-full"}
-              selectedOption={selectedEmployeeName}
-              resetFilters={resetFilters}
-              fieldName="assigned_to"
-              backgroundColor="#F2F7FE"
-              textColor="text-[#214768]"
-              buttonBorder="1px solid #214768"
-              buttonBorderRadius="0.8rem"
-              buttonHeight="100%"
-              optionsTextColor="#464646"
-              size="sm"
-              shouldFirstOptionDisabled={false}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* lead status */}
-      {tableType === ASSIGNED_TABLE && (
-        <div className="col-span-4 w-full h-8 mt-2">
-          <div className="w-full h-full bg-[#D4D5D53D] rounded-xl flex items-center">
-            <DropDown
-              options={leadStatusOptions}
-              onChange={(name, value) => handleSelect(name, value)}
-              optionsBackgroundColor="#B7B7B700"
-              buttonBackgroundColor="#B7B7B700"
-              className={"min-w-full"}
-              selectedOption={selectedEmployeeName}
-              resetFilters={resetFilters}
-              fieldName="lead_status"
-              backgroundColor="#F2F7FE"
-              textColor="text-[#214768]"
-              buttonBorder="1px solid #214768"
-              buttonBorderRadius="0.8rem"
-              buttonHeight="100%"
-              optionsTextColor="#464646"
-              size="sm"
-              shouldFirstOptionDisabled={false}
-            />
-          </div>
-        </div>
-      )}
-
-      {
-        tableType === ASSIGNED_TABLE && 
-        <div className={`flex flex-col ${tableType === ASSIGNED_TABLE ? 'col-span-4' : tableType === INVALID_LEADS_TABLE ? 'col-span-4' : 'col-span-2'}`}>
-        <div className="text-[#214768] text-[10px] font-normal poppins-thin leading-none tracking-tight">
-          Imported on
-        </div>
-        <div className="w-full h-8 bg-[#D4D5D53D] rounded-xl border border-[#214768] justify-center items-center gap-2.5 inline-flex mt-[0.325rem]">
-          <DateButton
-            buttonBackgroundColor="[#B7B7B700]"
-            onDateChange={(fieldName, value) =>
-              handleDateChange(fieldName, value)
-            }
-            fieldName="importedOn"
-            resetFilters={resetFilters}
-            fromFilter={true}
-          />
-        </div>
-      </div>
-      }
-
-      {/* assigned on */}
-      {tableType === ASSIGNED_TABLE && (
-        <div className="col-span-4 flex flex-col">
+      {tableType === NOT_ASSIGNED_TABLE && (
+        <div
+          className={`flex flex-col ${
+            tableType === ASSIGNED_TABLE || EX_EMPLOYEES_LEADS_TABLE
+              ? "col-span-4"
+              : tableType === INVALID_LEADS_TABLE
+              ? "col-span-4"
+              : "col-span-2"
+          }`}
+        >
           <div className="text-[#214768] text-[10px] font-normal poppins-thin leading-none tracking-tight">
-            Assigned on
+            Imported on
           </div>
           <div className="w-full h-8 bg-[#D4D5D53D] rounded-xl border border-[#214768] justify-center items-center gap-2.5 inline-flex mt-[0.325rem]">
             <DateButton
@@ -373,7 +296,7 @@ function FilterDialogue({
               onDateChange={(fieldName, value) =>
                 handleDateChange(fieldName, value)
               }
-              fieldName="assigned_on"
+              fieldName="importedOn"
               resetFilters={resetFilters}
               fromFilter={true}
             />
@@ -381,8 +304,111 @@ function FilterDialogue({
         </div>
       )}
 
+      {/* Employee name */}
+      {(role !== ROLE_EMPLOYEE && tableType === ASSIGNED_TABLE) ||
+        (EX_EMPLOYEES_LEADS_TABLE && (
+          <div className="col-span-4 w-full h-8 mt-2">
+            <div className="w-full h-full bg-[#D4D5D53D] rounded-xl flex items-center">
+              <DropDown
+                options={employees}
+                onChange={(name, value) => handleSelect(name, value)}
+                optionsBackgroundColor="#B7B7B700"
+                buttonBackgroundColor="#B7B7B700"
+                className={"min-w-full"}
+                selectedOption={selectedEmployeeName}
+                resetFilters={resetFilters}
+                fieldName="assigned_to"
+                backgroundColor="#F2F7FE"
+                textColor="text-[#214768]"
+                buttonBorder="1px solid #214768"
+                buttonBorderRadius="0.8rem"
+                buttonHeight="100%"
+                optionsTextColor="#464646"
+                size="sm"
+                shouldFirstOptionDisabled={false}
+              />
+            </div>
+          </div>
+        ))}
+
+      {/* lead status */}
+      {tableType === ASSIGNED_TABLE ||
+        (EX_EMPLOYEES_LEADS_TABLE && (
+          <div className="col-span-4 w-full h-8 mt-2">
+            <div className="w-full h-full bg-[#D4D5D53D] rounded-xl flex items-center">
+              <DropDown
+                options={leadStatusOptions}
+                onChange={(name, value) => handleSelect(name, value)}
+                optionsBackgroundColor="#B7B7B700"
+                buttonBackgroundColor="#B7B7B700"
+                className={"min-w-full"}
+                selectedOption={selectedEmployeeName}
+                resetFilters={resetFilters}
+                fieldName="lead_status"
+                backgroundColor="#F2F7FE"
+                textColor="text-[#214768]"
+                buttonBorder="1px solid #214768"
+                buttonBorderRadius="0.8rem"
+                buttonHeight="100%"
+                optionsTextColor="#464646"
+                size="sm"
+                shouldFirstOptionDisabled={false}
+              />
+            </div>
+          </div>
+        ))}
+
+      {tableType === ASSIGNED_TABLE ||
+        (EX_EMPLOYEES_LEADS_TABLE && (
+          <div
+            className={`flex flex-col ${
+              tableType === ASSIGNED_TABLE || EX_EMPLOYEES_LEADS_TABLE
+                ? "col-span-4"
+                : tableType === INVALID_LEADS_TABLE
+                ? "col-span-4"
+                : "col-span-2"
+            }`}
+          >
+            <div className="text-[#214768] text-[10px] font-normal poppins-thin leading-none tracking-tight">
+              Imported on
+            </div>
+            <div className="w-full h-8 bg-[#D4D5D53D] rounded-xl border border-[#214768] justify-center items-center gap-2.5 inline-flex mt-[0.325rem]">
+              <DateButton
+                buttonBackgroundColor="[#B7B7B700]"
+                onDateChange={(fieldName, value) =>
+                  handleDateChange(fieldName, value)
+                }
+                fieldName="importedOn"
+                resetFilters={resetFilters}
+                fromFilter={true}
+              />
+            </div>
+          </div>
+        ))}
+
+      {/* assigned on */}
+      {tableType === ASSIGNED_TABLE ||
+        (EX_EMPLOYEES_LEADS_TABLE && (
+          <div className="col-span-4 flex flex-col">
+            <div className="text-[#214768] text-[10px] font-normal poppins-thin leading-none tracking-tight">
+              Assigned on
+            </div>
+            <div className="w-full h-8 bg-[#D4D5D53D] rounded-xl border border-[#214768] justify-center items-center gap-2.5 inline-flex mt-[0.325rem]">
+              <DateButton
+                buttonBackgroundColor="[#B7B7B700]"
+                onDateChange={(fieldName, value) =>
+                  handleDateChange(fieldName, value)
+                }
+                fieldName="assigned_on"
+                resetFilters={resetFilters}
+                fromFilter={true}
+              />
+            </div>
+          </div>
+        ))}
+
       {/* last updated on */}
-      {[ASSIGNED_TABLE].includes(tableType) && (
+      {[ASSIGNED_TABLE, EX_EMPLOYEES_LEADS_TABLE].includes(tableType) && (
         <div className="col-span-4 flex flex-col">
           <div className="text-[#214768] text-[10px] font-normal poppins-thin leading-none tracking-tight">
             Last updated on

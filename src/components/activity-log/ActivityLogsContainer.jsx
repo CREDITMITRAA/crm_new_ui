@@ -14,10 +14,10 @@ function ActivityLogsContainer({
   activityLogs = [],
   userMap,
   fromTable = false,
-  setShowActivityLog
+  setShowActivityLog,
 }) {
   console.log("user map = ", userMap);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { isConfirmationDialogueOpened } = useSelector((state) => state.ui);
   const [expandedItems, setExpandedItems] = useState({});
 
@@ -29,16 +29,16 @@ function ActivityLogsContainer({
     }));
   };
 
-  function handleNavigate(leadId){
-    console.log('current location = ', location.pathname);
-    const path = location.pathname
-    const extracted = "/" + path.split("/")[1]
-    console.log('extracted = ', extracted);
-    
-    if(extracted === "/lead-details-page"){
-      setShowActivityLog(false)
-    }else{
-      navigate(`/lead-details-page/${leadId}`)
+  function handleNavigate(leadId) {
+    console.log("current location = ", location.pathname);
+    const path = location.pathname;
+    const extracted = "/" + path.split("/")[1];
+    console.log("extracted = ", extracted);
+
+    if (extracted === "/lead-details-page") {
+      setShowActivityLog(false);
+    } else {
+      navigate(`/lead-details-page/${leadId}`);
     }
   }
 
@@ -66,9 +66,26 @@ function ActivityLogsContainer({
                   return (
                     <div key={createdBy}>
                       {/* Content section container */}
-                      <div className={`flex justify-start mx-4 bg-[#E8EFF8] h-max py-2.5 ${(!isConfirmationDialogueOpened || fromTable) && "relative"}`}>
+                      <div
+                        className={`flex justify-start mx-4 bg-[#E8EFF8] h-max py-2.5 ${
+                          (!isConfirmationDialogueOpened || fromTable) &&
+                          "relative"
+                        }`}
+                      >
                         {/* SVG Divider */}
-                        <div className={`${(!isConfirmationDialogueOpened || fromTable) && "absolute"} left-[72px] top-0 h-full w-[132px] -translate-x-1/2`} style={{zIndex: fromTable ? 1 : isConfirmationDialogueOpened ? -1 : 1}}>
+                        <div
+                          className={`${
+                            (!isConfirmationDialogueOpened || fromTable) &&
+                            "absolute"
+                          } left-[72px] top-0 h-full w-[132px] -translate-x-1/2`}
+                          style={{
+                            zIndex: fromTable
+                              ? 1
+                              : isConfirmationDialogueOpened
+                              ? -1
+                              : 1,
+                          }}
+                        >
                           <svg
                             width="132"
                             height={contentHeight}
@@ -144,9 +161,12 @@ function ActivityLogsContainer({
                             } inline-flex justify-center items-center gap-2.5 mt-2 bg-[#5D5D5D]`}
                           >
                             <div className="relative justify-start text-[#FFFFFF] text-xs font-medium poppins-thin min-w-[60px]">
-                              {truncateWithEllipsis(formatName(
-                                userMap.get(Number(createdBy))?.name
-                              ), 8) || "Unknown"}
+                              {truncateWithEllipsis(
+                                formatName(
+                                  userMap.get(Number(createdBy))?.name
+                                ),
+                                8
+                              ) || "Unknown"}
                             </div>
                           </div>
                         </div>
@@ -170,7 +190,12 @@ function ActivityLogsContainer({
                                           {formatName(logs[0].lead_name)}
                                         </div>
                                         <div className="w-5 h-5 flex items-center justify-center cursor-pointer">
-                                          <LeadNavigationIcon color="#214768" onClick={()=>handleNavigate(leadId)}/>
+                                          <LeadNavigationIcon
+                                            color="#214768"
+                                            onClick={() =>
+                                              handleNavigate(leadId)
+                                            }
+                                          />
                                         </div>
                                       </div>
                                       {/* <div
@@ -205,55 +230,48 @@ function ActivityLogsContainer({
                                       }`}
                                     >
                                       <ul className="list-disc list-outside pl-5 text-[#32086d] mt-1">
-                                        {logs.map((log) => (
-                                          <li
-                                            key={log.id}
-                                            className="text-sm poppins-thin mt-1"
-                                          >
-                                            <span className="text-[#425565] text-xs font-normal poppins-thin">
-                                              {
-                                                log.activity_desc.split(
-                                                  " to "
-                                                )[0]
-                                              }
-                                            </span>
-                                            <span className="text-[#114F00] text-xs font-semibold poppins-thin">
-                                              {" to "}
-                                              {log.activity_type ===
-                                              "LEAD_ASSIGNMENT" || "APPLICATION_STATUS_UPDATE" || "VERIFICATION_STATUS_UPDATE" || "LEAD_STATUS_UPDATE"
-                                                ? log.activity_desc.split(
-                                                      " to "
-                                                    )[1]
-                                                  ||
-                                                  log.activity_desc.split(
-                                                    " to "
-                                                  )[1]
-                                                : log.activity_desc.split(
-                                                    " to "
-                                                  )[1]}
-                                            </span>
-                                          </li>
-                                        ))}
-                                      </ul>
+                                        {logs.map((log) => {
+                                          const [fromPart, toPart] =
+                                            log.activity_desc.split(" to ");
 
-                                      {logs[0].note && (
-                                        <div
-                                          className={`w-fit h-max relative bg-none rounded-[5px] text-xs border border-[#005085] mt-2 py-0.5 px-1 text-[#425565] transition-opacity duration-300 ${
-                                            !isExpanded
-                                              ? "opacity-100"
-                                              : "opacity-0"
-                                          }`}
-                                          style={{
-                                            zIndex: fromTable
-                                              ? !isConfirmationDialogueOpened
-                                              : isConfirmationDialogueOpened
-                                              ? -1
-                                              : 1,
-                                          }}
-                                        >
-                                          {formatName(logs[0].note)}
-                                        </div>
-                                      )}
+                                          return (
+                                            <li
+                                              key={log.id}
+                                              className="text-sm poppins-thin mt-1"
+                                            >
+                                              <span className="text-[#425565] text-xs font-normal poppins-thin">
+                                                {fromPart}
+                                              </span>
+
+                                              {toPart && (
+                                                <span className="text-[#114F00] text-xs font-semibold poppins-thin">
+                                                  {" to "}
+                                                  {toPart}
+                                                </span>
+                                              )}
+
+                                              {log.note && (
+                                                <div
+                                                  className={`w-fit h-max relative bg-none rounded-[5px] text-xs border border-[#005085] mt-2 py-0.5 px-1 text-[#425565] transition-opacity duration-300 ${
+                                                    !isExpanded
+                                                      ? "opacity-100"
+                                                      : "opacity-0"
+                                                  }`}
+                                                  style={{
+                                                    zIndex: fromTable
+                                                      ? !isConfirmationDialogueOpened
+                                                      : isConfirmationDialogueOpened
+                                                      ? -1
+                                                      : 1,
+                                                  }}
+                                                >
+                                                  {formatName(log.note)}
+                                                </div>
+                                              )}
+                                            </li>
+                                          );
+                                        })}
+                                      </ul>
                                     </div>
                                   </div>
                                 );
