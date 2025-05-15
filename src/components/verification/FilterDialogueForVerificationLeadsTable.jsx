@@ -31,6 +31,34 @@ function FilterDialogueForVerificationLeadsTable({
   const [leadSourceOptions, setLeadSourceOptions] = useState([
     { label: "Filter by lead source", value: "" },
   ]);
+  const [selectedLeadSource, setSelectedLeadSource] = useState(null)
+  const [selectedLeadStatus, setSelectedLeadStatus] = useState(null)
+  const [selectedVerificationStatus, setSelectedVerificationStatus] = useState(null)
+
+  useEffect(()=>{
+    const user = users.find((user) => user.id === filters?.assigned_to);
+    if(filters?.assigned_to){
+      setSelectedEmployeeName({value:user?.name});
+    }
+    if(filters?.lead_status){
+      setSelectedLeadStatus({value:filters.lead_status})
+    }
+    if(filters?.lead_source){
+      setSelectedLeadSource({value:filters.lead_source})
+    }
+    if(filters?.verification_status){
+      setSelectedVerificationStatus({value:filters.verification_status})
+    }
+  },[filters])
+
+  useEffect(()=>{
+    if(resetFilters){
+      setSelectedEmployeeName(null)
+      setSelectedLeadSource(null)
+      setSelectedLeadStatus(null)
+      setSelectedVerificationStatus(null)
+    }
+  },[resetFilters])
 
   useEffect(() => {
     if (users && users.length > 0) {
@@ -75,10 +103,12 @@ function FilterDialogueForVerificationLeadsTable({
           updatedFilters = { ...filters, [name]: [value] };
           setFilters(updatedFilters);
         }
+        setSelectedVerificationStatus(null)
         break;
 
       case "lead_source":
         setFilters((prev) => ({ ...prev, lead_source: value }));
+        setSelectedLeadSource(null)
         break;
 
       case "lead_status":
@@ -86,6 +116,7 @@ function FilterDialogueForVerificationLeadsTable({
           value = "Verification 1"
         }
         setFilters((prev) => ({ ...prev, lead_status: value }));
+        setSelectedLeadStatus(null)
         break;
     }
   }
@@ -156,7 +187,7 @@ function FilterDialogueForVerificationLeadsTable({
             optionsBackgroundColor="#B7B7B700"
             buttonBackgroundColor="#B7B7B700"
             className={"min-w-full"}
-            selectedOption={selectedEmployeeName}
+            selectedOption={selectedLeadSource}
             resetFilters={resetFilters}
             fieldName="lead_source"
             autoSuggestOptions={true}
@@ -215,7 +246,7 @@ function FilterDialogueForVerificationLeadsTable({
             optionsBackgroundColor="#B7B7B700"
             buttonBackgroundColor="#B7B7B700"
             className={"min-w-full"}
-            selectedOption={selectedEmployeeName}
+            selectedOption={selectedVerificationStatus}
             resetFilters={resetFilters}
             fieldName="verification_status"
             backgroundColor="#F2F7FE"
@@ -243,7 +274,7 @@ function FilterDialogueForVerificationLeadsTable({
             optionsBackgroundColor="#B7B7B700"
             buttonBackgroundColor="#B7B7B700"
             className={"min-w-full"}
-            selectedOption={selectedEmployeeName}
+            selectedOption={selectedLeadStatus}
             resetFilters={resetFilters}
             fieldName="lead_status"
             backgroundColor="#F2F7FE"

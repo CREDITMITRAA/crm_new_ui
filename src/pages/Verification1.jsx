@@ -14,10 +14,11 @@ import Loader from "../components/common/loaders/Loader";
 import EmptyDataMessageIcon from "../components/icons/EmptyDataMessageIcon";
 import { getAllDistinctLeadSources } from "../features/leads/leadsThunks";
 import { PRELIMINERY_CHECK, ROLE_EMPLOYEE, terminologiesMap, VERIFICATION_1 } from "../utilities/AppConstants";
+import { setLeadsFilters } from "../features/verification/verificationSlice";
 
 function Verification1() {
   const dispatch = useDispatch();
-  const { leads, pagination, loading } = useSelector(
+  const { leads, pagination, loading, filters:storedFilters } = useSelector(
     (state) => state.verification
   );
   const { users } = useSelector((state) => state.users);
@@ -78,21 +79,38 @@ function Verification1() {
   // Main effect for initial load and page size changes
   useEffect(() => {
     if (height > 0) {
-      const calculatedPageSize = Math.floor(height / 40);
+      if (storedFilters && Object.entries(storedFilters).length > 0) {
+        setFilters((prev) => ({ ...prev, ...storedFilters }));
+      }
+      const calculatedPageSize = pagination?.pageSize || Math.floor(height / 40);
+      const pageNumber = pagination?.page || 1
       setPageSize(calculatedPageSize);
       
       if (initialLoad.current || pageSize !== calculatedPageSize) {
-        debouncedFetchLeads.current({ ...filters, pageSize: calculatedPageSize });
+        const initialFilters = {
+          pageSize:calculatedPageSize,
+          page:pageNumber,
+          lead_bucket: PRELIMINERY_CHECK,
+          ...(role === ROLE_EMPLOYEE && { assigned_to: user.user.id })
+        }
+        debouncedFetchLeads.current(initialFilters);
         dispatch(getAllDistinctLeadSources());
         initialLoad.current = false;
       }
     }
-  }, [dispatch, height, pageSize, filters]);
+  }, [dispatch, height]);
 
   // Effect for filter changes
   useEffect(() => {
     if (!initialLoad.current && pageSize > 0) {
-      debouncedFetchLeads.current({ ...filters, pageSize });
+      const currentPage = pagination.page
+      const fetchFilters = {
+        ...filters,
+        pageSize,
+        page:currentPage
+      }
+      debouncedFetchLeads.current(fetchFilters);
+      dispatch(setLeadsFilters(filters))
     }
   }, [filters, pageSize]);
 
@@ -170,7 +188,8 @@ function Verification1() {
         // lead_status: "Verification 1",
         lead_bucket: PRELIMINERY_CHECK,
         ...(role === ROLE_EMPLOYEE && { assigned_to: user.user.id }),
-        pageSize: pagination.pageSize || 10,
+        pageSize: Math.floor(height/40),
+        page:1
       };
       setFilters(initialFilters);
       setResetFilters(true);
@@ -280,7 +299,7 @@ function Verification1() {
             onPageChange={handlePageChange}
             onNextPageClick={handleNextPageClick}
             onPrevPageClick={handlePrevPageClick}
-            options={paginationOptions}
+            options={[...paginationOptions, { label: pageSize, value: pageSize }]}
             resetFilters={resetFilters}
           />
         </div>

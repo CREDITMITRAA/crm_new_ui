@@ -7,13 +7,18 @@ const initialState = {
     error:null,
     pagination:{},
     scheduleWalkInLoading:false,
-    scheduleWalkInError:null
+    scheduleWalkInError:null,
+    filters:{}
 }
 
 const verificationSlice = createSlice({
     name:'verification',
     initialState:initialState,
-    reducers:{},
+    reducers:{
+        setLeadsFilters: (state,action) => {
+            state.filters = action.payload
+        }
+    },
     extraReducers:(builder)=>{
         builder
             .addCase(getVerificationLeads.pending,(state,action)=>{
@@ -41,4 +46,5 @@ const verificationSlice = createSlice({
     }
 })
 
+export const {setLeadsFilters} = verificationSlice.actions
 export default verificationSlice.reducer
