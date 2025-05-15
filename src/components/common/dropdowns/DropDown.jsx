@@ -49,7 +49,7 @@ function DropDown({
       lineHeight: "2rem",
     },
   };
-  console.log('options = ',options[defaultSelectedOptionIndex]?.value )
+  console.log('options = ',options,options[defaultSelectedOptionIndex]?.value, " selected option = ", selectedOption )
   const [internalSelected, setInternalSelected] = useState(
     options.length > 0 ? options[defaultSelectedOptionIndex]?.value : ""
   );

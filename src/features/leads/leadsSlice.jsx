@@ -14,6 +14,7 @@ import {
   updateVerificationStatus,
 } from "./leadsThunks";
 import { updateEmployee } from "../employee/employeeThunks";
+import { ASSIGNED_TABLE, EX_EMPLOYEES_LEADS_TABLE, INVALID_LEADS_TABLE, NOT_ASSIGNED_TABLE } from "../../utilities/AppConstants";
 
 const initialState = {
   leads: [],
@@ -29,6 +30,8 @@ const initialState = {
   exEmployeesPagination: {},
   lead: {},
   recentActivityNotes: [],
+  filters:{},
+  currentTableType:ASSIGNED_TABLE
 };
 
 const leadsSlice = createSlice({
@@ -43,6 +46,29 @@ const leadsSlice = createSlice({
     },
     resetLead: (state,action)=>{
       state.lead = initialState.lead
+    },
+    setLeadsFilters: (state,action) => {
+      state.filters = action.payload
+    },
+    setPagination: (state,action) => {
+      switch(action.payload.tableType){
+        case ASSIGNED_TABLE:
+        case NOT_ASSIGNED_TABLE:
+          state.pagination.page = action.payload.pagination.page
+          state.pagination.pageSize = action.payload.pagination.pageSize
+          break;
+        case INVALID_LEADS_TABLE:
+          state.invalidLeadsPagination.page = action.payload.pagination.page
+          state.invalidLeadsPagination.pageSize = action.payload.pagination.pageSize
+          break;
+        case EX_EMPLOYEES_LEADS_TABLE:
+          state.exEmployeesPagination.page = action.payload.pagination.page
+          state.exEmployeesPagination.pageSize = action.payload.pagination.pageSize
+          break;
+      }
+    },
+    setCurrentTableType: (state,action)=>{
+      state.currentTableType = action.payload
     }
   },
   extraReducers: (builder) => {
@@ -197,5 +223,5 @@ const leadsSlice = createSlice({
   },
 });
 
-export const { updateLeadFields, resetLead } = leadsSlice.actions;
+export const { updateLeadFields, resetLead, setLeadsFilters, setPagination, setCurrentTableType } = leadsSlice.actions;
 export default leadsSlice.reducer;

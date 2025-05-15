@@ -50,6 +50,11 @@ import Loader from "../components/common/loaders/Loader";
 import EmptyDataMessageIcon from "../components/icons/EmptyDataMessageIcon";
 import { getUsersNameAndId } from "../features/users/usersThunks";
 import ExEmployeesLeadsTable from "../components/leads/ExEmployeesLeadsTable";
+import {
+  setCurrentTableType,
+  setLeadsFilters,
+  setPagination,
+} from "../features/leads/leadsSlice";
 
 function Leads() {
   const dispatch = useDispatch();
@@ -61,6 +66,8 @@ function Leads() {
     loading,
     exEmployeesPagination,
     exEmployeesLeads,
+    filters: storedFilters,
+    currentTableType,
   } = useSelector((state) => state.leads);
   const { users, userOptions } = useSelector((state) => state.users);
   const { user, role } = useSelector((state) => state.auth);
@@ -105,10 +112,13 @@ function Leads() {
     shouldSnackbarCloseOnClickOfOutside,
     setShouldSnackbarCloseOnClickOfOutside,
   ] = useState(true);
-  const [tableType, setTableType] = useState(ASSIGNED_TABLE);
+  const [tableType, setTableType] = useState(
+    currentTableType || ASSIGNED_TABLE
+  );
   const [pageSize, setPageSize] = useState(0);
   const [showLoader, setShowLoader] = useState(false);
   const [isInitialDataLoaded, setIsInitialDataLoaded] = useState(false);
+  const [pageNumber, setPageNumber] = useState(0)
 
   const initialLoad = useRef(true);
   const debouncedFetchLeads = useRef(null);
@@ -134,6 +144,11 @@ function Leads() {
     { label: "50", value: 50 },
   ];
 
+  // useEffect(()=>{
+  //   if(storedFilters && Object.entries(storedFilters).length > 0){
+  //     setFilters((prev)=>({...prev, ...storedFilters}))
+  //   }
+  // },[])
   // Initialize debounced function
   useEffect(() => {
     console.log("table type = ", tableType);
@@ -168,12 +183,27 @@ function Leads() {
   // Main effect for initial load and page size changes
   useEffect(() => {
     if (height > 0) {
-      const newPageSize = Math.floor(height / 40);
-      setPageSize(newPageSize);
+      // const newPageSize = Math.floor(height / 40);
+      console.warn("filters = ", filters);
+      if (storedFilters && Object.entries(storedFilters).length > 0) {
+        setFilters((prev) => ({ ...prev, ...storedFilters }));
+      }
 
+      // const hasCustomFilters = Object.entries(storedFilters).some(
+      //   ([key]) => !["page", "pageSize", "userId", "exclude_verification"].includes(key)
+      // );
+
+      const newPageSize = getPageSize(tableType)
+        ? getPageSize(tableType)
+        : Math.floor(height / 40);
+      const pageNumber = getPageNumber(tableType) || 1;
+      console.warn("page size = ", newPageSize);
+      setPageSize(newPageSize);
+      setPageNumber(pageNumber)
       if (initialLoad.current) {
         const initialFilters = {
           pageSize: newPageSize,
+          page: pageNumber,
           ...(user?.user?.role === ROLE_EMPLOYEE && {
             userId: user.user.id,
             exclude_verification: true,
@@ -196,12 +226,43 @@ function Leads() {
     }
   }, [height, user?.user?.role, user?.user?.id, tableType]);
 
+  function getPageSize(tableType) {
+    switch (tableType) {
+      case ASSIGNED_TABLE:
+      case NOT_ASSIGNED_TABLE:
+        return pagination?.pageSize || null;
+      case INVALID_LEADS_TABLE:
+        return invalidLeadsPagination?.pageSize || null;
+      case EX_EMPLOYEES_LEADS_TABLE:
+        return exEmployeesPagination?.pageSize || null;
+    }
+  }
+
+  function getPageNumber(tableType) {
+    switch (tableType) {
+      case ASSIGNED_TABLE:
+      case NOT_ASSIGNED_TABLE:
+        return pagination?.page || 1;
+      case INVALID_LEADS_TABLE:
+        return invalidLeadsPagination?.page || 1;
+      case EX_EMPLOYEES_LEADS_TABLE:
+        return exEmployeesPagination?.page || 1;
+      default:
+        return 1;
+    }
+  }
+
   // Effect for filter changes and table type changes
   useEffect(() => {
     if (pageSize > 0 && !initialLoad.current) {
-      const fetchFilters = { ...filters, pageSize };
+      const currentPage = getPageNumber(tableType);
+      const fetchFilters = {
+        ...filters,
+        pageSize,
+        page: currentPage, // Explicitly include the current page
+      };
       debouncedFetchLeads.current(fetchFilters);
-
+      dispatch(setLeadsFilters(filters));
       // Update active filters dot
       const filteredFilters = Object.keys(filters).reduce((acc, key) => {
         const isEmptyValue = filters[key] === "" || filters[key] == null;
@@ -265,6 +326,9 @@ function Leads() {
 
   function handleRowsPerChange(data) {
     const payload = { ...filters, page: 1, pageSize: data };
+    dispatch(
+      setPagination({ tableType, pagination: { page: 1, pageSize: data } })
+    );
     if (tableType === INVALID_LEADS_TABLE) {
       dispatch(getAllInvalidLeads(payload));
     } else if (user.user.role === ROLE_EMPLOYEE) {
@@ -287,6 +351,12 @@ function Leads() {
           : pagination.pageSize,
       page: data,
     };
+    dispatch(
+      setPagination({
+        tableType,
+        pagination: { page: payload.page, pageSize: payload.pageSize },
+      })
+    );
 
     if (tableType === INVALID_LEADS_TABLE) {
       dispatch(getAllInvalidLeads(payload));
@@ -313,6 +383,12 @@ function Leads() {
         pageSize: paginationData.pageSize,
         page: paginationData.page + 1,
       };
+      dispatch(
+        setPagination({
+          tableType,
+          pagination: { page: payload.page, pageSize: payload.pageSize },
+        })
+      );
 
       if (tableType === INVALID_LEADS_TABLE) {
         dispatch(getAllInvalidLeads(payload));
@@ -340,6 +416,12 @@ function Leads() {
         pageSize: paginationData.pageSize,
         page: paginationData.page - 1,
       };
+      dispatch(
+        setPagination({
+          tableType,
+          pagination: { page: payload.page, pageSize: payload.pageSize },
+        })
+      );
 
       if (tableType === INVALID_LEADS_TABLE) {
         dispatch(getAllInvalidLeads(payload));
@@ -354,13 +436,32 @@ function Leads() {
   }
 
   function handleResetFilters(tableType) {
-    const initialFilters = {
-      pageSize: pagination.pageSize || 10,
+    // Get the correct pagination based on table type
+    const getCurrentPagination = () => {
+      switch (tableType) {
+        case INVALID_LEADS_TABLE:
+          return invalidLeadsPagination;
+        case EX_EMPLOYEES_LEADS_TABLE:
+          return exEmployeesPagination;
+        default:
+          return pagination;
+      }
+    };
+
+    // Create initial filters based on role and table type
+    let initialFilters = {
+      pageSize: getCurrentPagination().pageSize || 10,
+      page: 1, // Always reset to first page
       ...(user.user.role === ROLE_EMPLOYEE && {
         userId: user.user.id,
         exclude_verification: true,
       }),
     };
+
+    if(tableType === NOT_ASSIGNED_TABLE){
+      initialFilters= {...initialFilters,assigned_to:"not_assigned"}
+    }
+    // Update local state
     setFilters(initialFilters);
     setResetFilters(true);
     setSelectedEmployeeName(null);
@@ -370,6 +471,32 @@ function Leads() {
     setAssignedEmployee(null);
     setShowDot(false);
     setShowFilter(false);
+
+    // Dispatch to Redux
+    dispatch(setLeadsFilters(initialFilters));
+
+    // Reset pagination in Redux
+    dispatch(
+      setPagination({
+        tableType,
+        pagination: {
+          page: 1,
+          pageSize: initialFilters.pageSize,
+        },
+      })
+    );
+
+    // Fetch data with reset filters
+    if (user.user.role === ROLE_EMPLOYEE) {
+      dispatch(getLeadsByAssignedUserId(initialFilters));
+    } else if (tableType === INVALID_LEADS_TABLE) {
+      dispatch(getAllInvalidLeads(initialFilters));
+    } else if (tableType === EX_EMPLOYEES_LEADS_TABLE) {
+      dispatch(getExEmployeesLeads(initialFilters));
+    } else {
+      dispatch(getAllLeads(initialFilters));
+    }
+
     setTimeout(() => {
       setResetFilters(false);
     }, 1000);
@@ -867,6 +994,7 @@ function Leads() {
       }
     } else {
       setTableType(value);
+      dispatch(setCurrentTableType(value));
       handleResetFilters(value);
     }
   }
@@ -926,25 +1054,24 @@ function Leads() {
   }
 
   async function handleDeleteSelectedLeadIds(payload) {
-    console.log('selected lead ids to be deleted = ', payload);
+    console.log("selected lead ids to be deleted = ", payload);
     let leadIds = payload.map((lead) => lead.id);
-    console.log('lead ids = ', leadIds);
-  
+    console.log("lead ids = ", leadIds);
+
     try {
       setOpenToast(true);
       setToastStatusType("INFO");
       setToastStatusMessage("In Progress...");
       setToastMessage("Deleting invalid leads...");
-  
+
       const response = await deleteInvalidLeadsByLeadIdsApi({ leadIds });
-  
+
       // Assuming a successful response
       setToastStatusType("SUCCESS");
       setToastStatusMessage("Success");
       setToastMessage("Invalid leads deleted successfully.");
-      
-      dispatch(getAllInvalidLeads())
-  
+
+      dispatch(getAllInvalidLeads());
     } catch (error) {
       console.error("Error deleting invalid leads:", error);
       setToastStatusType("ERROR");
@@ -956,7 +1083,7 @@ function Leads() {
         setOpenToast(false);
       }, 3000);
     }
-  }  
+  }
 
   return (
     <div className="w-full">
@@ -975,6 +1102,8 @@ function Leads() {
                 name="Assigned"
                 onClick={() => {
                   setTableType(ASSIGNED_TABLE);
+                  dispatch(setCurrentTableType(ASSIGNED_TABLE));
+                  dispatch(setPagination({tableType, pagination:{page:1}}))
                   handleResetFilters(ASSIGNED_TABLE);
                   setShowNotAssignedTable(false);
                   setShowFilter(false);
@@ -988,6 +1117,8 @@ function Leads() {
                 isActive={tableType === NOT_ASSIGNED_TABLE}
                 onClick={() => {
                   setTableType(NOT_ASSIGNED_TABLE);
+                  dispatch(setCurrentTableType(NOT_ASSIGNED_TABLE));
+                  dispatch(setPagination({tableType, pagination:{page:1}}))
                   handleResetFilters(NOT_ASSIGNED_TABLE);
                   setShowNotAssignedTable(true);
                   setFilters((prev) => ({
@@ -1045,9 +1176,14 @@ function Leads() {
               tableType === ASSIGNED_TABLE && (
                 <ExportButton onClick={() => handleExportLeads()} />
               )}
-            {selectedLeadIds.length > 0 && role === ROLE_ADMIN && tableType === INVALID_LEADS_TABLE && (
-              <DeleteButton color="#464646" onClick={()=>handleDeleteSelectedLeadIds(selectedLeadIds)}/>
-            )}
+            {selectedLeadIds.length > 0 &&
+              role === ROLE_ADMIN &&
+              tableType === INVALID_LEADS_TABLE && (
+                <DeleteButton
+                  color="#464646"
+                  onClick={() => handleDeleteSelectedLeadIds(selectedLeadIds)}
+                />
+              )}
             {tableType === NOT_ASSIGNED_TABLE && (
               <UploadLeadsButton onFileUpload={(e) => handleFileUpload(e)} />
             )}
@@ -1123,7 +1259,7 @@ function Leads() {
                 onPageChange={handlePageChange}
                 onNextPageClick={handleNextPageClick}
                 onPrevPageClick={handlePrevPageClick}
-                options={paginationOptions}
+                options={[...paginationOptions, { label: pageSize, value: pageSize }]}
                 resetFilters={resetFilters}
               />
             </div>

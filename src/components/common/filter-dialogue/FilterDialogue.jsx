@@ -17,6 +17,7 @@ import {
   NOT_INTERESTED,
   NOT_POSSIBLE,
   NOT_WORKING_NOT_REACHABLE,
+  OTHERS,
   RNR_RING_NO_RESPONSE,
   ROLE_EMPLOYEE,
   SCHEDULED_CALL_WITH_MANAGER,
@@ -39,6 +40,8 @@ function FilterDialogue({
     { label: "Re-Assigned", value: "re_assigned" },
   ]);
   const [selectedEmployeeName, setSelectedEmployeeName] = useState(null);
+  const [selectedLeadSource, setSelectedLeadSource] = useState(null)
+  const [selectedLeadStatus, setSelectedLeadStatus] = useState(null)
   const { users, userOptions } = useSelector((state) => state.users);
   const { leadSources } = useSelector((state) => state.leads);
   const { role } = useSelector((state) => state.auth);
@@ -70,10 +73,30 @@ function FilterDialogue({
       label: terminologiesMap.get(SCHEDULED_CALL_WITH_MANAGER),
       value: SCHEDULED_CALL_WITH_MANAGER,
     },
+    {label: terminologiesMap.get(OTHERS), value: OTHERS},
   ]);
   const [leadSourceOptions, setLeadSourceOptions] = useState([
     { label: "Select lead source", value: "" },
   ]);
+
+  useEffect(()=>{
+    const user = users.find((user) => user.id === filters?.assigned_to);
+    setSelectedEmployeeName({value:user?.name});
+    if(filters?.lead_status){
+      setSelectedLeadStatus({value:filters.lead_status})
+    }
+    if(filters?.lead_source){
+      setSelectedLeadSource({value:filters.lead_source})
+    }
+  },[filters])
+
+  useEffect(()=>{
+    if(resetFilters){
+      setSelectedEmployeeName(null)
+      setSelectedLeadSource(null)
+      setSelectedLeadStatus(null)
+    }
+  },[resetFilters])
 
   useEffect(() => {
     if (users && users.length > 0) {
@@ -104,10 +127,12 @@ function FilterDialogue({
 
       case "lead_status":
         setFilters((prev) => ({ ...prev, lead_status: value }));
+        setSelectedLeadStatus(null)
         break;
 
       case "lead_source":
         setFilters((prev) => ({ ...prev, lead_source: value }));
+        setSelectedLeadSource(null)
         break;
 
       case "reason":
@@ -252,7 +277,7 @@ function FilterDialogue({
             optionsBackgroundColor="#B7B7B700"
             buttonBackgroundColor="#B7B7B700"
             className={"min-w-full"}
-            selectedOption={selectedEmployeeName}
+            selectedOption={selectedLeadSource}
             resetFilters={resetFilters}
             fieldName="lead_source"
             autoSuggestOptions={true}
@@ -324,7 +349,7 @@ function FilterDialogue({
               optionsBackgroundColor="#B7B7B700"
               buttonBackgroundColor="#B7B7B700"
               className={"min-w-full"}
-              selectedOption={selectedEmployeeName}
+              selectedOption={selectedLeadStatus}
               resetFilters={resetFilters}
               fieldName="lead_status"
               backgroundColor="#F2F7FE"
@@ -355,6 +380,7 @@ function FilterDialogue({
             fieldName="importedOn"
             resetFilters={resetFilters}
             fromFilter={true}
+            date={filters.importedOn}
           />
         </div>
       </div>
@@ -375,6 +401,7 @@ function FilterDialogue({
               fieldName="assigned_on"
               resetFilters={resetFilters}
               fromFilter={true}
+              date={filters.assigned_on}
             />
           </div>
         </div>
@@ -395,6 +422,7 @@ function FilterDialogue({
               fieldName="last_updated"
               resetFilters={resetFilters}
               fromFilter={true}
+              date={filters?.last_updated}
             />
           </div>
         </div>
